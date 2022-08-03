@@ -17,33 +17,18 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import metamorphicRelationInference.MetamorphicRelationInference;
+import metamorphicRelationInference.utils.Pair;
 import org.checkerframework.checker.signature.qual.ClassGetName;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.plumelib.options.Options;
 import org.plumelib.options.Options.ArgException;
-import org.plumelib.util.CollectionsPlume;
-import org.plumelib.util.EntryReader;
-import org.plumelib.util.StringsPlume;
-import org.plumelib.util.UtilPlume;
-import randoop.ExecutionVisitor;
-import randoop.Globals;
-import randoop.MethodReplacements;
+import org.plumelib.util.*;
+import randoop.*;
 import randoop.condition.RandoopSpecificationError;
 import randoop.condition.SpecificationCollection;
 import randoop.execution.TestEnvironment;
@@ -75,33 +60,10 @@ import randoop.reflection.RandoopInstantiationError;
 import randoop.reflection.RawSignature;
 import randoop.reflection.ReflectionPredicate;
 import randoop.reflection.SignatureParseException;
-import randoop.sequence.ExecutableSequence;
-import randoop.sequence.Sequence;
-import randoop.sequence.SequenceExceptionError;
-import randoop.sequence.SequenceExecutionException;
-import randoop.sequence.Statement;
-import randoop.test.CompilableTestPredicate;
-import randoop.test.ContractCheckingGenerator;
-import randoop.test.ContractSet;
-import randoop.test.ErrorTestPredicate;
-import randoop.test.ExcludeTestPredicate;
-import randoop.test.ExpectedExceptionCheckGen;
-import randoop.test.ExtendGenerator;
-import randoop.test.IncludeIfCoversPredicate;
-import randoop.test.IncludeTestPredicate;
-import randoop.test.RegressionCaptureGenerator;
-import randoop.test.RegressionTestPredicate;
-import randoop.test.TestCheckGenerator;
-import randoop.test.ValidityCheckingGenerator;
-import randoop.test.ValueSizePredicate;
-import randoop.types.ClassOrInterfaceType;
-import randoop.types.Type;
-import randoop.util.Log;
-import randoop.util.MultiMap;
-import randoop.util.Randomness;
-import randoop.util.RandoopLoggingError;
-import randoop.util.ReflectionExecutor;
-import randoop.util.SimpleList;
+import randoop.sequence.*;
+import randoop.test.*;
+import randoop.types.*;
+import randoop.util.*;
 import randoop.util.predicate.AlwaysFalse;
 
 /** Test generation. */
@@ -260,9 +222,19 @@ public class GenTests extends GenInputsAbstract {
     // Temporary, for backward compatibility
     omitFields.addAll(GenInputsAbstract.getStringSetFromFile(omit_field_list, "fields"));
 
+    // TODO: Could be useful omit the "pure" methods from the generation
     for (Path omitMethodsFile : GenInputsAbstract.omit_methods_file) {
       omit_methods.addAll(readPatterns(omitMethodsFile));
     }
+    // TODO: Remove this example
+    omit_methods.add(
+        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.isEmpty\\(\\)"));
+    omit_methods.add(
+        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.isFull\\(\\)"));
+    omit_methods.add(
+        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.toString\\(\\)"));
+    omit_methods.add(
+        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.top\\(\\)"));
 
     for (Path omitClassesFile : GenInputsAbstract.omit_classes_file) {
       omit_classes.addAll(readPatterns(omitClassesFile));
@@ -563,7 +535,35 @@ public class GenTests extends GenInputsAbstract {
         testEnvironment.setReplaceCallAgent(agentPath, agentArgs);
       }
 
+      /*******************************************/
+
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
+      try {
+        MetamorphicRelationInference.setCut(
+            Class.forName("com.example.myboundedstack.MyBoundedStack"));
+      } catch (ClassNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+      MetamorphicRelationInference.loadEnabledMethodsPerState(
+          "/Users/agustinnolasco/Documents/university/mfis/"
+              + "metamorphic-relations-inference/output/MyBoundedStack/EnabledMethodsPerState.txt");
+      MetamorphicRelationInference.createBagsPerState(
+          regressionSequences, new HashSet<>(classnames));
+
+      for (String state : MetamorphicRelationInference.getBags().keySet()) {
+        List<Pair<ExecutableSequence, Integer>> pairs =
+            MetamorphicRelationInference.getBags().get(state);
+        for (Pair<ExecutableSequence, Integer> pair : pairs) {
+          System.out.println("--------------------------------");
+          System.out.println(
+              state + " : " + MetamorphicRelationInference.getObject(pair.getFst(), pair.getSnd()));
+        }
+      }
+
+      // Terminates the program here TODO: Remove it
+      System.exit(0);
+
+      /*******************************************/
 
       if (GenInputsAbstract.progressdisplay) {
         System.out.printf(
