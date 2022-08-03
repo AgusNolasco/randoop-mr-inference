@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import metamorphicRelationInference.MetamorphicRelationInference;
-import metamorphicRelationInference.utils.Pair;
 import org.checkerframework.checker.signature.qual.ClassGetName;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.plumelib.options.Options;
@@ -536,29 +535,21 @@ public class GenTests extends GenInputsAbstract {
       }
 
       /*******************************************/
-
-      List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
+      Optional<@ClassGetName String> optionalClassname = classnames.stream().findFirst();
+      if (classnames.size() > 1 || !optionalClassname.isPresent()) {
+        throw new IllegalArgumentException("Only can have exactly 1 class to test");
+      }
+      Class<?> cut = null;
       try {
-        MetamorphicRelationInference.setCut(
-            Class.forName("com.example.myboundedstack.MyBoundedStack"));
+        String classname = optionalClassname.get();
+        cut = Class.forName(classname);
       } catch (ClassNotFoundException e) {
         throw new RuntimeException(e);
       }
-      MetamorphicRelationInference.loadEnabledMethodsPerState(
-          "/Users/agustinnolasco/Documents/university/mfis/"
-              + "metamorphic-relations-inference/output/MyBoundedStack/EnabledMethodsPerState.txt");
-      MetamorphicRelationInference.createBagsPerState(
-          regressionSequences, new HashSet<>(classnames));
 
-      for (String state : MetamorphicRelationInference.getBags().keySet()) {
-        List<Pair<ExecutableSequence, Integer>> pairs =
-            MetamorphicRelationInference.getBags().get(state);
-        for (Pair<ExecutableSequence, Integer> pair : pairs) {
-          System.out.println("--------------------------------");
-          System.out.println(
-              state + " : " + MetamorphicRelationInference.getObject(pair.getFst(), pair.getSnd()));
-        }
-      }
+      List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
+
+      MetamorphicRelationInference.main(cut, regressionSequences);
 
       // Terminates the program here TODO: Remove it
       System.exit(0);

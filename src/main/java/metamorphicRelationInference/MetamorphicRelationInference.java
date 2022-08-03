@@ -1,102 +1,42 @@
 package metamorphicRelationInference;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-import metamorphicRelationInference.utils.Pair;
-import metamorphicRelationInference.utils.ReaderUtils;
-import randoop.DummyVisitor;
+import metamorphicRelationInference.bag.Bag;
+import metamorphicRelationInference.bag.BagsBuilder;
+import metamorphicRelationInference.util.reader.EnabledMethodsReader;
 import randoop.sequence.ExecutableSequence;
-import randoop.sequence.ReferenceValue;
-import randoop.test.DummyCheckGenerator;
 
 public class MetamorphicRelationInference {
 
   private static Class<?> cut;
+  private static List<ExecutableSequence> sequences;
   private static Map<String, Map<Method, Boolean>> enabledMethodsPerState;
-  private static Map<String, List<Pair<ExecutableSequence, Integer>>> bags;
+  private static Map<String, Bag> bags;
 
-  public static void setCut(Class<?> clazz) {
+  // TODO: Replace this hard-coded dir for a parameter taken from bash or a env-var
+  private static String pathToDir =
+      "/Users/agustinnolasco/Documents/university/mfis/metamorphic-relations-inference/output/";
+  private static String filename = "EnabledMethodsPerState.txt";
+
+  public static void main(Class<?> clazz, List<ExecutableSequence> seq) {
     cut = clazz;
-  }
+    sequences =
+        seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
-  public static void loadEnabledMethodsPerState(String pathToFile) {
-    List<String> lines = ReaderUtils.getLines(pathToFile);
-    enabledMethodsPerState = new HashMap<>();
-    for (String line : lines) {
-      String[] components = line.trim().split(" : ");
-      String state = components[0];
-      Method method;
-      try {
-        method = cut.getDeclaredMethod(components[1]);
-      } catch (NoSuchMethodException e) {
-        throw new RuntimeException(e);
-      }
-      boolean result = Boolean.parseBoolean(components[2]);
+    Objects.requireNonNull(cut);
+    Objects.requireNonNull(sequences);
 
-      Map<Method, Boolean> methodsAndResults = enabledMethodsPerState.get(state);
-      if (methodsAndResults == null) {
-        methodsAndResults = new HashMap<>();
-      }
-      methodsAndResults.put(method, result);
-      enabledMethodsPerState.put(state, methodsAndResults);
-    }
-  }
+    String pathToFile = pathToDir + cut.getSimpleName() + "/" + filename;
+    enabledMethodsPerState = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToFile);
+    BagsBuilder builder = new BagsBuilder(cut, enabledMethodsPerState);
+    bags = builder.createBags(sequences);
 
-  public static void createBagsPerState(
-      List<ExecutableSequence> regressionSequences, Set<String> classnames) {
-    List<ExecutableSequence> normalExecutionSeq =
-        regressionSequences.stream()
-            .filter(ExecutableSequence::isNormalExecution)
-            .collect(Collectors.toList());
-
-    bags = new HashMap<>();
-    for (String state : enabledMethodsPerState.keySet()) {
-      bags.put(state, new ArrayList<>());
-    }
-    for (ExecutableSequence s : normalExecutionSeq) {
-      s.execute(new DummyVisitor(), new DummyCheckGenerator());
-      int i = 0;
-      for (ReferenceValue referenceValue : s.getAllValues()) {
-        if (classnames.contains(referenceValue.getObjectValue().getClass().getName())) {
-          bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(s, i));
-        }
-        i++;
+    for (String state : bags.keySet()) {
+      for (Object elem : bags.get(state).getElements()) {
+        System.out.println(state + " : " + elem);
       }
     }
-  }
-
-  public static Map<String, List<Pair<ExecutableSequence, Integer>>> getBags() {
-    return bags;
-  }
-
-  public static Object getObject(ExecutableSequence sequence, Integer index) {
-    sequence.execute(new DummyVisitor(), new DummyCheckGenerator());
-    return sequence.getAllValues().get(index).getObjectValue();
-  }
-
-  private static String computeState(Object obj) {
-    for (String state : enabledMethodsPerState.keySet()) {
-      boolean allEqual = true;
-
-      Map<Method, Boolean> methodsAndResults = enabledMethodsPerState.get(state);
-      for (Method m : methodsAndResults.keySet()) {
-        m.setAccessible(true);
-        boolean result;
-        try {
-          result = (Boolean) m.invoke(obj);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          throw new RuntimeException(e);
-        }
-        allEqual &= methodsAndResults.get(m) == result;
-      }
-
-      if (allEqual) {
-        return state;
-      }
-    }
-
-    throw new IllegalStateException("Can not exist a object that is not in any state");
   }
 }
