@@ -866,7 +866,7 @@ task html5validatorExists {
 	    standardOutput = new ByteArrayOutputStream()
         }
         if (result.getExitValue() != 0) {
-            ant.fail('html5validator is not installed.  See https://randoop.github.io/randoop/manual/dev.html#prerequisites .')
+            //ant.fail('html5validator is not installed.  See https://randoop.github.io/randoop/manual/dev.html#prerequisites .')
         }
     }
 }
@@ -880,10 +880,12 @@ task manual(type: DefaultTask, dependsOn: [ 'updateUserOptions', 'updateUserTOC'
   description "Adds options and TOC to documentation in src/docs"
   doLast {
     if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+      /*
       exec {
         environment PATH: "$System.env.PATH"
         commandLine "html5validator", "--root", file("${projectDir}/src/docs/manual")
       }
+       */
     }
   }
 }
