@@ -1,4 +1,5 @@
-package metamorphicRelationInference.util;
+package metamorphicRelationsInference.util;
+
 
 import java.io.*;
 import java.nio.charset.Charset;

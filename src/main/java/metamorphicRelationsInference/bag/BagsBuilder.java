@@ -1,11 +1,11 @@
-package metamorphicRelationInference.bag;
+package metamorphicRelationsInference.bag;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import metamorphicRelationInference.util.Pair;
+import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
 import randoop.sequence.ExecutableSequence;
 import randoop.sequence.ReferenceValue;

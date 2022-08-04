@@ -1,10 +1,10 @@
-package metamorphicRelationInference.util.reader;
+package metamorphicRelationsInference.util.reader;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import metamorphicRelationInference.util.ReaderUtils;
+import metamorphicRelationsInference.util.ReaderUtils;
 
 public class EnabledMethodsReader {
 

@@ -1,7 +1,7 @@
-package metamorphicRelationInference.bag;
+package metamorphicRelationsInference.bag;
 
 import java.util.*;
-import metamorphicRelationInference.util.Pair;
+import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
 import randoop.sequence.ExecutableSequence;
 import randoop.test.DummyCheckGenerator;

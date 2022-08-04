@@ -1,4 +1,4 @@
-package metamorphicRelationInference.util;
+package metamorphicRelationsInference.util;
 
 public class Pair<A, B> {
 

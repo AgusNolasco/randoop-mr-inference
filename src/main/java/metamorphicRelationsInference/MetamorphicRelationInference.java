@@ -22,8 +22,7 @@ public class MetamorphicRelationInference {
 
   public static void main(Class<?> clazz, List<ExecutableSequence> seq) {
     cut = clazz;
-    sequences =
-        seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
+    sequences = seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
