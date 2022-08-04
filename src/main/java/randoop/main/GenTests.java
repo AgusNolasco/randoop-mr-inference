@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import metamorphicRelationInference.MetamorphicRelationInference;
+import metamorphicRelationsInference.MetamorphicRelationInference;
 import org.checkerframework.checker.signature.qual.ClassGetName;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.plumelib.options.Options;
@@ -539,7 +539,7 @@ public class GenTests extends GenInputsAbstract {
       if (classnames.size() > 1 || !optionalClassname.isPresent()) {
         throw new IllegalArgumentException("Only can have exactly 1 class to test");
       }
-      Class<?> cut = null;
+      Class<?> cut;
       try {
         String classname = optionalClassname.get();
         cut = Class.forName(classname);
