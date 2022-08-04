@@ -1,41 +1,42 @@
-package metamorphicRelationInference;
+package metamorphicRelationsInference;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-import metamorphicRelationInference.bag.Bag;
-import metamorphicRelationInference.bag.BagsBuilder;
-import metamorphicRelationInference.util.reader.EnabledMethodsReader;
+import metamorphicRelationsInference.bag.Bag;
+import metamorphicRelationsInference.bag.BagsBuilder;
+import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
+import metamorphicRelationsInference.util.reader.CandidatesReader;
+import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
 import randoop.sequence.ExecutableSequence;
 
 public class MetamorphicRelationInference {
 
-  private static Class<?> cut;
   private static List<ExecutableSequence> sequences;
   private static Map<String, Map<Method, Boolean>> enabledMethodsPerState;
-  private static Map<String, Bag> bags;
 
   // TODO: Replace this hard-coded dir for a parameter taken from bash or a env-var
   private static String pathToDir =
       "/Users/agustinnolasco/Documents/university/mfis/metamorphic-relations-inference/output/";
-  private static String filename = "EnabledMethodsPerState.txt";
+  private static String enabledMethodsPerStateFilename = "EnabledMethodsPerState.txt";
+  private static String mrsCandidatesFilename = "Candidates.csv";
 
-  public static void main(Class<?> clazz, List<ExecutableSequence> seq) {
-    cut = clazz;
-    sequences = seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
+  public static void main(Class<?> cut, List<ExecutableSequence> seq) {
+    sequences =
+        seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
 
-    String pathToFile = pathToDir + cut.getSimpleName() + "/" + filename;
+    String pathToFile = pathToDir + cut.getSimpleName() + "/" + enabledMethodsPerStateFilename;
     enabledMethodsPerState = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToFile);
     BagsBuilder builder = new BagsBuilder(cut, enabledMethodsPerState);
-    bags = builder.createBags(sequences);
+    Map<String, Bag> bags = builder.createBags(sequences);
 
-    for (String state : bags.keySet()) {
-      for (Object elem : bags.get(state).getElements()) {
-        System.out.println(state + " : " + elem);
-      }
-    }
+    pathToFile = pathToDir + cut.getSimpleName() + "/" + mrsCandidatesFilename;
+    CandidatesReader reader = new CandidatesReader(cut);
+    Set<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
+
+    System.out.println(bags + "" + metamorphicRelations);
   }
 }
