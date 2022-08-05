@@ -10,17 +10,20 @@ import metamorphicRelationsInference.util.ReaderUtils;
 public class CandidatesReader {
 
   private final Class<?> cut;
+  private final String COMPONENTS_DELIMITER = ",";
+  private final String ACTIONS_DELIMITER = ";";
+  private final String PARAMS_DELIMITER = ":";
 
   public CandidatesReader(Class<?> cut) {
     this.cut = cut;
   }
 
-  public Set<MetamorphicRelation> read(String pathToFile) {
-    Set<MetamorphicRelation> metamorphicRelations = new HashSet<>();
+  public List<MetamorphicRelation> read(String pathToFile) {
+    List<MetamorphicRelation> metamorphicRelations = new ArrayList<>();
 
     List<String> lines = ReaderUtils.getLines(pathToFile);
     for (String line : lines) {
-      String[] components = line.trim().split(",");
+      String[] components = line.trim().split(COMPONENTS_DELIMITER);
       Constructor<?> leftConstructor = getConstructor(components[0]);
       List<Method> leftMethods = getMethods(components[1]);
       Constructor<?> rightConstructor = getConstructor(components[2]);
@@ -43,7 +46,7 @@ public class CandidatesReader {
     if (!str.isEmpty()) {
       String classesStr = str.substring(1, str.length() - 1);
       List<String> classes =
-          Arrays.stream(classesStr.split(";"))
+          Arrays.stream(classesStr.split(ACTIONS_DELIMITER))
               .filter(c -> !c.equals(""))
               .collect(Collectors.toList());
       Class<?>[] constructorParams =
@@ -63,7 +66,9 @@ public class CandidatesReader {
 
   private List<Method> getMethods(String str) {
     List<String> methodsStr =
-        Arrays.stream(str.split(";")).filter(m -> !m.equals("")).collect(Collectors.toList());
+        Arrays.stream(str.split(ACTIONS_DELIMITER))
+            .filter(m -> !m.equals(""))
+            .collect(Collectors.toList());
     return methodsStr.stream().map(this::getMethod).collect(Collectors.toList());
   }
 
@@ -71,7 +76,9 @@ public class CandidatesReader {
     String name = mStr.substring(0, mStr.indexOf("["));
     String paramStr = mStr.substring(mStr.indexOf("[") + 1, mStr.indexOf("]"));
     List<String> classes =
-        Arrays.stream(paramStr.split(":")).filter(t -> !t.equals("")).collect(Collectors.toList());
+        Arrays.stream(paramStr.split(PARAMS_DELIMITER))
+            .filter(t -> !t.equals(""))
+            .collect(Collectors.toList());
     Class<?>[] params = classes.stream().map(this::getClassForName).toArray(Class<?>[]::new);
     try {
       return cut.getMethod(name, params);
