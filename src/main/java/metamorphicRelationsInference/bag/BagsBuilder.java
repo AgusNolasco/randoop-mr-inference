@@ -9,6 +9,7 @@ import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
 import randoop.sequence.ExecutableSequence;
 import randoop.sequence.ReferenceValue;
+import randoop.sequence.Variable;
 import randoop.test.DummyCheckGenerator;
 
 public class BagsBuilder {
@@ -30,8 +31,9 @@ public class BagsBuilder {
       s.execute(new DummyVisitor(), new DummyCheckGenerator());
       int i = 0;
       for (ReferenceValue referenceValue : s.getAllValues()) {
-        if (clazz.getName().equals(referenceValue.getObjectValue().getClass().getName())) {
-          bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(s, i));
+        if (referenceValue.getType().getCanonicalName().equals(clazz.getName())) {
+          Variable var = s.getVariable(referenceValue.getObjectValue());
+          bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(var, i));
         }
         i++;
       }
