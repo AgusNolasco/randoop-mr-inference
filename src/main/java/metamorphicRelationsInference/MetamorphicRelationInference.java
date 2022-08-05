@@ -8,6 +8,7 @@ import metamorphicRelationsInference.bag.BagsBuilder;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
+import metamorphicRelationsInference.validator.Validator;
 import randoop.sequence.ExecutableSequence;
 
 public class MetamorphicRelationInference {
@@ -35,8 +36,23 @@ public class MetamorphicRelationInference {
 
     pathToFile = pathToDir + cut.getSimpleName() + "/" + mrsCandidatesFilename;
     CandidatesReader reader = new CandidatesReader(cut);
-    Set<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
+    List<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
 
-    System.out.println(bags + "" + metamorphicRelations);
+    /* Validation phase */
+    Validator validator = new Validator(cut);
+    List<MetamorphicRelation> validMRs = validator.validate(metamorphicRelations, bags);
+    for (MetamorphicRelation mr : validMRs) {
+      System.out.println(mr);
+    }
+
+    System.out.println("Input:  " + metamorphicRelations.size() + " MRs");
+    System.out.println("Output: " + validMRs.size() + " MRs");
+    System.out.println(
+        "% of valid MRs: " + ((float) validMRs.size() / (float) metamorphicRelations.size()) * 100);
+    System.out.println(
+        "% of invalid MRs: "
+            + ((float) (metamorphicRelations.size() - validMRs.size())
+                    / (float) metamorphicRelations.size())
+                * 100);
   }
 }
