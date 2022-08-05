@@ -2,41 +2,31 @@ package metamorphicRelationsInference.bag;
 
 import java.util.*;
 import metamorphicRelationsInference.util.Pair;
-import randoop.DummyVisitor;
-import randoop.sequence.ExecutableSequence;
-import randoop.test.DummyCheckGenerator;
+import randoop.sequence.Variable;
 
 public class Bag {
 
-  private String state;
-  private List<Pair<ExecutableSequence, Integer>> getters;
+  private final String state;
+  // These pairs store the variable and the index of the referred value in the sequence
+  private final List<Pair<Variable, Integer>> variablesAndIndexes;
 
   public Bag(String state) {
     this.state = state;
-    getters = new ArrayList<>();
+    variablesAndIndexes = new ArrayList<>();
   }
 
-  public void add(Pair<ExecutableSequence, Integer> p) {
-    getters.add(p);
+  public void add(Pair<Variable, Integer> p) {
+    variablesAndIndexes.add(p);
   }
 
-  public List<Object> getElements() {
-    List<Object> elements = new ArrayList<>();
-    for (Pair<ExecutableSequence, Integer> p : getters) {
-      elements.add(getObject(p.getFst(), p.getSnd()));
-    }
-    return elements;
-  }
-
-  public static Object getObject(ExecutableSequence sequence, Integer index) {
-    sequence.execute(new DummyVisitor(), new DummyCheckGenerator());
-    return sequence.getAllValues().get(index).getObjectValue();
+  public List<Pair<Variable, Integer>> getVariablesAndIndexes() {
+    return variablesAndIndexes;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || !(o instanceof Bag)) return false;
+    if (!(o instanceof Bag)) return false;
 
     Bag bag = (Bag) o;
 
@@ -46,5 +36,10 @@ public class Bag {
   @Override
   public int hashCode() {
     return state.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return state + " -> size: " + variablesAndIndexes.size();
   }
 }
