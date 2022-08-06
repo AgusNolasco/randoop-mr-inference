@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.ReaderUtils;
 
@@ -28,10 +29,7 @@ public class CandidatesReader {
       List<Method> leftMethods = getMethods(components[1]);
       Constructor<?> rightConstructor = getConstructor(components[2]);
       List<Method> rightMethods = getMethods(components[3]);
-      Set<String> statesWhereSurvives =
-          Arrays.stream(components[4].split(";"))
-              .filter(s -> !s.equals(""))
-              .collect(Collectors.toSet());
+      Set<EPAState> statesWhereSurvives = getStates(components[4]);
 
       metamorphicRelations.add(
           new MetamorphicRelation(
@@ -85,6 +83,13 @@ public class CandidatesReader {
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private Set<EPAState> getStates(String statesStr) {
+    return Arrays.stream(statesStr.split(";"))
+        .filter(s -> !s.equals(""))
+        .map(EPAState::new)
+        .collect(Collectors.toSet());
   }
 
   @SuppressWarnings("signature")

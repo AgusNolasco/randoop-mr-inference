@@ -1,16 +1,17 @@
 package metamorphicRelationsInference.bag;
 
 import java.util.*;
+import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.sequence.Variable;
 
 public class Bag {
 
-  private final String state;
+  private final EPAState state;
   // These pairs store the variable and the index of the referred value in the sequence
   private final List<Pair<Variable, Integer>> variablesAndIndexes;
 
-  public Bag(String state) {
+  public Bag(EPAState state) {
     this.state = state;
     variablesAndIndexes = new ArrayList<>();
   }

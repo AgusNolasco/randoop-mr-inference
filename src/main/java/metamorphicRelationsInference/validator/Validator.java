@@ -3,6 +3,7 @@ package metamorphicRelationsInference.validator;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.bag.Bag;
+import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
@@ -20,7 +21,7 @@ public class Validator {
   }
 
   public List<MetamorphicRelation> validate(
-      List<MetamorphicRelation> metamorphicRelations, Map<String, Bag> bags) {
+      List<MetamorphicRelation> metamorphicRelations, Map<EPAState, Bag> bags) {
     List<MetamorphicRelation> validMRs = new ArrayList<>();
 
     for (MetamorphicRelation mr : metamorphicRelations) {
@@ -61,7 +62,7 @@ public class Validator {
   }
 
   private Object getObjectToCompare(
-      ExecutableSequence sequence, int index, boolean nullConstructor) {
+      ExecutableSequence sequence, Integer index, boolean nullConstructor) {
     sequence.execute(new DummyVisitor(), new DummyCheckGenerator());
     if (nullConstructor) {
       return sequence.getAllValues().get(index);

@@ -1,15 +1,14 @@
 package metamorphicRelationsInference.util.reader;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.ReaderUtils;
 
 public class EnabledMethodsReader {
 
-  public static Map<String, Map<Method, Boolean>> readEnabledMethodsPerState(
-      Class<?> cut, String pathToFile) {
+  public static Set<EPAState> readEnabledMethodsPerState(Class<?> cut, String pathToFile) {
+    Set<EPAState> states = new HashSet<>();
     List<String> lines = ReaderUtils.getLines(pathToFile);
     Map<String, Map<Method, Boolean>> enabledMethodsPerState = new HashMap<>();
     for (String line : lines) {
@@ -30,6 +29,12 @@ public class EnabledMethodsReader {
       methodsAndResults.put(method, result);
       enabledMethodsPerState.put(state, methodsAndResults);
     }
-    return enabledMethodsPerState;
+    for (String stateName : enabledMethodsPerState.keySet()) {
+      states.add(new EPAState(stateName, enabledMethodsPerState.get(stateName)));
+    }
+    if (states.stream().filter(EPAState::isInitial).count() > 1) {
+      throw new IllegalArgumentException("Only can exist one initial state");
+    }
+    return states;
   }
 }

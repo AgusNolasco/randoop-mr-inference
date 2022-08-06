@@ -3,6 +3,7 @@ package metamorphicRelationsInference.metamorphicRelation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.operation.TypedOperation;
 import randoop.sequence.Sequence;
@@ -15,14 +16,14 @@ public class MetamorphicRelation {
   private final List<Method> leftMethods;
   private final Constructor<?> rightConstructor;
   private final List<Method> rightMethods;
-  private final Set<String> statesWhereSurvives;
+  private final Set<EPAState> statesWhereSurvives;
 
   public MetamorphicRelation(
       Constructor<?> leftConstructor,
       List<Method> leftMethods,
       Constructor<?> rightConstructor,
       List<Method> rightMethods,
-      Set<String> statesWhereSurvives) {
+      Set<EPAState> statesWhereSurvives) {
     Objects.requireNonNull(leftMethods);
     Objects.requireNonNull(rightMethods);
     Objects.requireNonNull(statesWhereSurvives);
@@ -118,7 +119,7 @@ public class MetamorphicRelation {
     }
   }
 
-  public Set<String> getStatesWhereSurvives() {
+  public Set<EPAState> getStatesWhereSurvives() {
     return statesWhereSurvives;
   }
 
