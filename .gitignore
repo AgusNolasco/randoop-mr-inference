@@ -35,3 +35,6 @@ scripts/dockerdir
 
 # rg needs this:  https://github.com/BurntSushi/ripgrep/issues/1040
 .git/
+
+# Configuration files
+**/init_env.sh
