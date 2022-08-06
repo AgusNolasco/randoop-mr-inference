@@ -50,79 +50,67 @@ public class MetamorphicRelation {
     Sequence leftSeq = sequence;
     Sequence rightSeq = sequence;
 
-    Integer leftNewObjVarIndex = null;
-    if (leftConstructor != null) {
-      leftSeq = leftSeq.extend(TypedOperation.forConstructor(leftConstructor));
-      leftNewObjVarIndex = leftSeq.getLastVariable().index;
-      try {
-        leftSeq =
-            leftSeq.extend(
-                TypedOperation.forMethod(Object.class.getMethod("getClass")),
-                leftSeq.getVariable(leftNewObjVarIndex));
-      } catch (NoSuchMethodException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    Pair<Sequence, Integer> pair1 = constructorSequence(leftConstructor, leftSeq);
+    leftSeq = pair1.getFst();
+    Integer leftNewObjVarIndex = pair1.getSnd();
 
-    for (Method m : leftMethods) {
-      if (m.getParameterTypes().length > 0) {
-        leftSeq =
-            leftSeq.extend(
-                TypedOperation.createPrimitiveInitialization(JavaTypes.STRING_TYPE, "hi!"));
-        leftSeq =
-            leftSeq.extend(
-                TypedOperation.forMethod(m),
-                leftNewObjVarIndex == null
-                    ? leftSeq.getVariable(varIndex)
-                    : leftSeq.getVariable(leftNewObjVarIndex),
-                leftSeq.getLastVariable());
-      } else {
-        leftSeq =
-            leftSeq.extend(
-                TypedOperation.forMethod(m),
-                leftNewObjVarIndex == null
-                    ? leftSeq.getVariable(varIndex)
-                    : leftSeq.getVariable(leftNewObjVarIndex));
-      }
-    }
+    int leftVarIndex = leftNewObjVarIndex == null ? varIndex : leftNewObjVarIndex;
+    leftSeq = methodsSequence(leftMethods, leftSeq, leftVarIndex);
 
-    Integer rightNewObjVarIndex = null;
-    if (rightConstructor != null) {
-      rightSeq = rightSeq.extend(TypedOperation.forConstructor(rightConstructor));
-      rightNewObjVarIndex = rightSeq.getLastVariable().index;
-      try {
-        rightSeq =
-            rightSeq.extend(
-                TypedOperation.forMethod(Object.class.getMethod("getClass")),
-                rightSeq.getVariable(rightNewObjVarIndex));
-      } catch (NoSuchMethodException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    Pair<Sequence, Integer> pair2 = constructorSequence(rightConstructor, rightSeq);
+    rightSeq = pair2.getFst();
+    Integer rightNewObjVarIndex = pair2.getSnd();
 
-    for (Method m : rightMethods) {
-      if (m.getParameterTypes().length > 0) {
-        rightSeq =
-            rightSeq.extend(
-                TypedOperation.createPrimitiveInitialization(JavaTypes.STRING_TYPE, "bye!"));
-        rightSeq =
-            rightSeq.extend(
-                TypedOperation.forMethod(m),
-                rightNewObjVarIndex == null
-                    ? rightSeq.getVariable(varIndex)
-                    : rightSeq.getVariable(rightNewObjVarIndex),
-                rightSeq.getLastVariable());
-      } else {
-        rightSeq =
-            rightSeq.extend(
-                TypedOperation.forMethod(m),
-                rightNewObjVarIndex == null
-                    ? rightSeq.getVariable(varIndex)
-                    : rightSeq.getVariable(rightNewObjVarIndex));
-      }
-    }
+    int rightVarIndex = rightNewObjVarIndex == null ? varIndex : rightNewObjVarIndex;
+    rightSeq = methodsSequence(rightMethods, rightSeq, rightVarIndex);
 
     return new Pair<>(leftSeq, rightSeq);
+  }
+
+  private Pair<Sequence, Integer> constructorSequence(
+      Constructor<?> constructor, Sequence sequence) {
+    Integer newObjVarIndex = null;
+    if (constructor != null) {
+      sequence = sequence.extend(TypedOperation.forConstructor(constructor));
+      newObjVarIndex = sequence.getLastVariable().index;
+      TypedOperation op = TypedOperation.forMethod(getClassMethod());
+      sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
+    }
+    return new Pair<>(sequence, newObjVarIndex);
+  }
+
+  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
+    for (Method m : methods) {
+      if (m.getParameterTypes().length > 0) {
+        // TODO: Replace this for a random-generated object
+        sequence =
+            sequence.extend(
+                TypedOperation.createPrimitiveInitialization(JavaTypes.STRING_TYPE, "hi!"));
+        sequence =
+            sequence.extend(
+                TypedOperation.forMethod(m),
+                sequence.getVariable(varIndex),
+                sequence.getLastVariable());
+      } else {
+        sequence = sequence.extend(TypedOperation.forMethod(m), sequence.getVariable(varIndex));
+      }
+    }
+    return sequence;
+  }
+
+  /**
+   * This method is used to return a method, in particular "getClass" to be used in the constructor
+   * sequence generation to make at least one operation with the new object for generate the value
+   * of it. Also is used to wrap the exception in case of no encounter the method.
+   *
+   * @return getClass method
+   */
+  private Method getClassMethod() {
+    try {
+      return Object.class.getMethod("getClass");
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public Set<String> getStatesWhereSurvives() {
