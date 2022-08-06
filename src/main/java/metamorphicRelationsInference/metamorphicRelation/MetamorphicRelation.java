@@ -2,13 +2,12 @@ package metamorphicRelationsInference.metamorphicRelation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import metamorphicRelationsInference.util.Pair;
 import randoop.operation.TypedOperation;
 import randoop.sequence.Sequence;
 import randoop.types.JavaTypes;
+import randoop.types.PrimitiveType;
 
 public class MetamorphicRelation {
 
@@ -83,9 +82,8 @@ public class MetamorphicRelation {
     for (Method m : methods) {
       if (m.getParameterTypes().length > 0) {
         // TODO: Replace this for a random-generated object
-        sequence =
-            sequence.extend(
-                TypedOperation.createPrimitiveInitialization(JavaTypes.STRING_TYPE, "hi!"));
+        TypedOperation op = generateRandomObjectConstructionOperation();
+        sequence = sequence.extend(op);
         sequence =
             sequence.extend(
                 TypedOperation.forMethod(m),
@@ -96,6 +94,13 @@ public class MetamorphicRelation {
       }
     }
     return sequence;
+  }
+
+  private TypedOperation generateRandomObjectConstructionOperation() {
+    Random rand = new Random();
+    PrimitiveType type =
+        JavaTypes.getPrimitiveTypes().get(rand.nextInt(JavaTypes.getPrimitiveTypes().size()));
+    return TypedOperation.createNullOrZeroInitializationForType(type);
   }
 
   /**
