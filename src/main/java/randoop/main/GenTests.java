@@ -542,7 +542,7 @@ public class GenTests extends GenInputsAbstract {
       }
 
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
-      MetamorphicRelationInference.main(cut, regressionSequences);
+      MetamorphicRelationInference.main(cut, regressionSequences, explorer);
       System.exit(0);
 
       /*******************************************/
