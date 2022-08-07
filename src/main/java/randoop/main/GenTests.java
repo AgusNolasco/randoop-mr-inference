@@ -221,19 +221,13 @@ public class GenTests extends GenInputsAbstract {
     // Temporary, for backward compatibility
     omitFields.addAll(GenInputsAbstract.getStringSetFromFile(omit_field_list, "fields"));
 
-    // TODO: Could be useful omit the "pure" methods from the generation
     for (Path omitMethodsFile : GenInputsAbstract.omit_methods_file) {
       omit_methods.addAll(readPatterns(omitMethodsFile));
     }
-    // TODO: Remove this example
-    omit_methods.add(
-        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.isEmpty\\(\\)"));
-    omit_methods.add(
-        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.isFull\\(\\)"));
+
+    // TODO: Remove this
     omit_methods.add(
         Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.toString\\(\\)"));
-    omit_methods.add(
-        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.top\\(\\)"));
 
     for (Path omitClassesFile : GenInputsAbstract.omit_classes_file) {
       omit_classes.addAll(readPatterns(omitClassesFile));
@@ -548,10 +542,7 @@ public class GenTests extends GenInputsAbstract {
       }
 
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
-
       MetamorphicRelationInference.main(cut, regressionSequences);
-
-      // Terminates the program here TODO: Remove it
       System.exit(0);
 
       /*******************************************/

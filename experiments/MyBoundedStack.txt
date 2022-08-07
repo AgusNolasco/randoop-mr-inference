@@ -1,5 +1,1 @@
-target.class=com.example.myboundedstack.MyBoundedStack
-target.grammar=grammars/MyBoundedStackGrammar.json
-target.epa=epa/MyBoundedStack.xml
-
-mrs.to.fuzz=2000
+com.example.myboundedstack.MyBoundedStack

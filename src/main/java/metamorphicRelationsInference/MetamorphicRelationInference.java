@@ -14,12 +14,7 @@ import randoop.sequence.ExecutableSequence;
 public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
-
-  // TODO: Replace this hard-coded dir for a parameter taken from bash or a env-var
-  private static String pathToDir =
-      "/Users/agustinnolasco/Documents/university/mfis/metamorphic-relations-inference/output/";
-  private static String enabledMethodsPerStateFilename = "EnabledMethodsPerState.txt";
-  private static String mrsCandidatesFilename = "Candidates.csv";
+  private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
   public static void main(Class<?> cut, List<ExecutableSequence> seq) {
     sequences =
@@ -28,12 +23,13 @@ public class MetamorphicRelationInference {
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
 
-    String pathToFile = pathToDir + cut.getSimpleName() + "/" + enabledMethodsPerStateFilename;
+    String pathToFile =
+        String.join("/", pathToDir, cut.getSimpleName(), "EnabledMethodsPerState.txt");
     Set<EPAState> states = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToFile);
     BagsBuilder builder = new BagsBuilder(cut, states);
     Map<EPAState, Bag> bags = builder.createBags(sequences);
 
-    pathToFile = pathToDir + cut.getSimpleName() + "/" + mrsCandidatesFilename;
+    pathToFile = String.join("/", pathToDir, cut.getSimpleName(), "Candidates.csv");
     CandidatesReader reader = new CandidatesReader(cut);
     List<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
 
