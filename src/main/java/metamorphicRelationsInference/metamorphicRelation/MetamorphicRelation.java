@@ -3,12 +3,15 @@ package metamorphicRelationsInference.metamorphicRelation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
+import org.plumelib.util.CollectionsPlume;
+import randoop.generation.AbstractGenerator;
+import randoop.generation.InputsAndSuccessFlag;
 import randoop.operation.TypedOperation;
 import randoop.sequence.Sequence;
-import randoop.types.JavaTypes;
-import randoop.types.PrimitiveType;
+import randoop.sequence.Variable;
 
 public class MetamorphicRelation {
 
@@ -17,6 +20,9 @@ public class MetamorphicRelation {
   private final Constructor<?> rightConstructor;
   private final List<Method> rightMethods;
   private final Set<EPAState> statesWhereSurvives;
+  private Pair<Sequence, Sequence> counterExample;
+
+  private AbstractGenerator explorer;
 
   public MetamorphicRelation(
       Constructor<?> leftConstructor,
@@ -46,7 +52,9 @@ public class MetamorphicRelation {
     return rightConstructor;
   }
 
-  public Pair<Sequence, Sequence> createSequences(Sequence sequence, Integer varIndex) {
+  public Pair<Sequence, Sequence> createSequences(
+      Sequence sequence, Integer varIndex, AbstractGenerator explorer) {
+    this.explorer = explorer;
     Sequence leftSeq = sequence;
     Sequence rightSeq = sequence;
 
@@ -64,7 +72,16 @@ public class MetamorphicRelation {
     int rightVarIndex = rightNewObjVarIndex == null ? varIndex : rightNewObjVarIndex;
     rightSeq = methodsSequence(rightMethods, rightSeq, rightVarIndex);
 
+    leftVar = leftSeq.getVariable(leftVarIndex);
+    rightVar = rightSeq.getVariable(rightVarIndex);
+
     return new Pair<>(leftSeq, rightSeq);
+  }
+
+  private Variable leftVar, rightVar;
+
+  public Pair<Variable, Variable> getVariablesToCompare() {
+    return new Pair<>(leftVar, rightVar);
   }
 
   private Pair<Sequence, Integer> constructorSequence(
@@ -81,27 +98,25 @@ public class MetamorphicRelation {
 
   private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
     for (Method m : methods) {
-      if (m.getParameterTypes().length > 0) {
-        // TODO: Replace this for a random-generated object
-        TypedOperation op = generateRandomObjectConstructionOperation();
-        sequence = sequence.extend(op);
-        sequence =
-            sequence.extend(
-                TypedOperation.forMethod(m),
-                sequence.getVariable(varIndex),
-                sequence.getLastVariable());
-      } else {
-        sequence = sequence.extend(TypedOperation.forMethod(m), sequence.getVariable(varIndex));
-      }
+      TypedOperation operation = TypedOperation.forMethod(m);
+      InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
+      Sequence concatSeq = Sequence.concatenate(inputs.sequences);
+
+      List<Sequence> sequences = new ArrayList<>();
+      sequences.add(sequence);
+      sequences.add(concatSeq);
+
+      Sequence finalSequence = sequence;
+      List<Integer> indices =
+          inputs.indices.stream()
+              .map(i -> i + finalSequence.getLastVariable().index + 1)
+              .collect(Collectors.toList());
+      sequence = Sequence.concatenate(sequences);
+      List<Variable> vars = CollectionsPlume.mapList(sequence::getVariable, indices);
+      vars.add(0, sequence.getVariable(varIndex));
+      sequence = sequence.extend(operation, vars);
     }
     return sequence;
-  }
-
-  private TypedOperation generateRandomObjectConstructionOperation() {
-    Random rand = new Random();
-    PrimitiveType type =
-        JavaTypes.getPrimitiveTypes().get(rand.nextInt(JavaTypes.getPrimitiveTypes().size()));
-    return TypedOperation.createNullOrZeroInitializationForType(type);
   }
 
   /**
@@ -121,6 +136,14 @@ public class MetamorphicRelation {
 
   public Set<EPAState> getStatesWhereSurvives() {
     return statesWhereSurvives;
+  }
+
+  public void setCounterExample(Pair<Sequence, Sequence> counterExamples) {
+    this.counterExample = counterExamples;
+  }
+
+  public Pair<Sequence, Sequence> getCounterExample() {
+    return counterExample;
   }
 
   @Override
