@@ -9,7 +9,7 @@ import randoop.sequence.Sequence;
  * <p>This is the return type for ForwardGenerator's private {@code selectInputs} method, which is
  * responsible for selecting a set of component sequences to be concatenated into a longer sequence.
  */
-class InputsAndSuccessFlag {
+public class InputsAndSuccessFlag {
 
   /**
    * True if private method {@code ForwardGenerator.selectInputs(TypedOperation operation)} was able
