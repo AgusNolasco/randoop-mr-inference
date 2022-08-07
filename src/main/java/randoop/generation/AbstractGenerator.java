@@ -252,6 +252,8 @@ public abstract class AbstractGenerator {
    */
   public abstract @Nullable ExecutableSequence step();
 
+  public abstract InputsAndSuccessFlag selectInputs(TypedOperation operation, boolean omitReceiver);
+
   /**
    * Returns the count of attempts to generate a sequence so far.
    *

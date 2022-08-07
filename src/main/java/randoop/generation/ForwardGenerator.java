@@ -457,7 +457,7 @@ public class ForwardGenerator extends AbstractGenerator {
     // add flags here
     InputsAndSuccessFlag inputs;
     try {
-      inputs = selectInputs(operation);
+      inputs = selectInputs(operation, false);
     } catch (Throwable e) {
       if (GenInputsAbstract.fail_on_generation_error) {
         throw new RandoopGenerationError(operation, e);
@@ -628,8 +628,9 @@ public class ForwardGenerator extends AbstractGenerator {
    * @param operation the statement to analyze
    * @return the selected sequences and indices
    */
+  @Override
   @SuppressWarnings("unchecked")
-  private InputsAndSuccessFlag selectInputs(TypedOperation operation) {
+  public InputsAndSuccessFlag selectInputs(TypedOperation operation, boolean omitReceiver) {
 
     // The input types for `operation`.
     TypeTuple inputTypes = operation.getInputTypes();
@@ -678,6 +679,10 @@ public class ForwardGenerator extends AbstractGenerator {
     MultiMap<Type, Integer> typesToVars = new MultiMap<>();
 
     for (int i = 0; i < inputTypes.size(); i++) {
+      if (omitReceiver && i == 0) {
+        continue;
+      }
+
       Type inputType = inputTypes.get(i);
 
       // true if statement st represents an instance method, and we are
