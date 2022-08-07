@@ -9,6 +9,7 @@ import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
 import metamorphicRelationsInference.validator.Validator;
+import randoop.generation.AbstractGenerator;
 import randoop.sequence.ExecutableSequence;
 
 public class MetamorphicRelationInference {
@@ -16,7 +17,7 @@ public class MetamorphicRelationInference {
   private static List<ExecutableSequence> sequences;
   private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
-  public static void main(Class<?> cut, List<ExecutableSequence> seq) {
+  public static void main(Class<?> cut, List<ExecutableSequence> seq, AbstractGenerator explorer) {
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
@@ -34,7 +35,7 @@ public class MetamorphicRelationInference {
     List<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
 
     /* Validation phase */
-    Validator validator = new Validator(cut);
+    Validator validator = new Validator(explorer);
     List<MetamorphicRelation> validMRs = validator.validate(metamorphicRelations, bags);
     for (MetamorphicRelation mr : validMRs) {
       System.out.println(mr);
