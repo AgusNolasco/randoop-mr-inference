@@ -3,15 +3,9 @@ package metamorphicRelationsInference.metamorphicRelation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
-import org.plumelib.util.CollectionsPlume;
-import randoop.generation.AbstractGenerator;
-import randoop.generation.InputsAndSuccessFlag;
-import randoop.operation.TypedOperation;
 import randoop.sequence.Sequence;
-import randoop.sequence.Variable;
 
 public class MetamorphicRelation {
 
@@ -21,8 +15,6 @@ public class MetamorphicRelation {
   private final List<Method> rightMethods;
   private final Set<EPAState> statesWhereSurvives;
   private Pair<Sequence, Sequence> counterExample;
-
-  private AbstractGenerator explorer;
 
   public MetamorphicRelation(
       Constructor<?> leftConstructor,
@@ -52,86 +44,12 @@ public class MetamorphicRelation {
     return rightConstructor;
   }
 
-  public Pair<Sequence, Sequence> createSequences(
-      Sequence sequence, Integer varIndex, AbstractGenerator explorer) {
-    this.explorer = explorer;
-    Sequence leftSeq = sequence;
-    Sequence rightSeq = sequence;
-
-    Pair<Sequence, Integer> pair1 = constructorSequence(leftConstructor, leftSeq);
-    leftSeq = pair1.getFst();
-    Integer leftNewObjVarIndex = pair1.getSnd();
-
-    int leftVarIndex = leftNewObjVarIndex == null ? varIndex : leftNewObjVarIndex;
-    leftSeq = methodsSequence(leftMethods, leftSeq, leftVarIndex);
-
-    Pair<Sequence, Integer> pair2 = constructorSequence(rightConstructor, rightSeq);
-    rightSeq = pair2.getFst();
-    Integer rightNewObjVarIndex = pair2.getSnd();
-
-    int rightVarIndex = rightNewObjVarIndex == null ? varIndex : rightNewObjVarIndex;
-    rightSeq = methodsSequence(rightMethods, rightSeq, rightVarIndex);
-
-    leftVar = leftSeq.getVariable(leftVarIndex);
-    rightVar = rightSeq.getVariable(rightVarIndex);
-
-    return new Pair<>(leftSeq, rightSeq);
+  public List<Method> getLeftMethods() {
+    return leftMethods;
   }
 
-  private Variable leftVar, rightVar;
-
-  public Pair<Variable, Variable> getVariablesToCompare() {
-    return new Pair<>(leftVar, rightVar);
-  }
-
-  private Pair<Sequence, Integer> constructorSequence(
-      Constructor<?> constructor, Sequence sequence) {
-    Integer newObjVarIndex = null;
-    if (constructor != null) {
-      sequence = sequence.extend(TypedOperation.forConstructor(constructor));
-      newObjVarIndex = sequence.getLastVariable().index;
-      TypedOperation op = TypedOperation.forMethod(getClassMethod());
-      sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
-    }
-    return new Pair<>(sequence, newObjVarIndex);
-  }
-
-  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
-    for (Method m : methods) {
-      TypedOperation operation = TypedOperation.forMethod(m);
-      InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
-      Sequence concatSeq = Sequence.concatenate(inputs.sequences);
-
-      List<Sequence> sequences = new ArrayList<>();
-      sequences.add(sequence);
-      sequences.add(concatSeq);
-
-      Sequence finalSequence = sequence;
-      List<Integer> indices =
-          inputs.indices.stream()
-              .map(i -> i + finalSequence.getLastVariable().index + 1)
-              .collect(Collectors.toList());
-      sequence = Sequence.concatenate(sequences);
-      List<Variable> vars = CollectionsPlume.mapList(sequence::getVariable, indices);
-      vars.add(0, sequence.getVariable(varIndex));
-      sequence = sequence.extend(operation, vars);
-    }
-    return sequence;
-  }
-
-  /**
-   * This method is used to return a method, in particular "getClass" to be used in the constructor
-   * sequence generation to make at least one operation with the new object for generate the value
-   * of it. Also is used to wrap the exception in case of no encounter the method.
-   *
-   * @return getClass method
-   */
-  private Method getClassMethod() {
-    try {
-      return Object.class.getMethod("getClass");
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException(e);
-    }
+  public List<Method> getRightMethods() {
+    return rightMethods;
   }
 
   public Set<EPAState> getStatesWhereSurvives() {
