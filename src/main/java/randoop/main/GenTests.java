@@ -228,6 +228,7 @@ public class GenTests extends GenInputsAbstract {
     // TODO: Remove this
     omit_methods.add(
         Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.toString\\(\\)"));
+    omit_methods.add(Pattern.compile("com\\.example\\.stackar\\.StackAr\\.toString\\(\\)"));
 
     for (Path omitClassesFile : GenInputsAbstract.omit_classes_file) {
       omit_classes.addAll(readPatterns(omitClassesFile));
@@ -459,9 +460,9 @@ public class GenTests extends GenInputsAbstract {
     explorer.setExecutionVisitor(visitors);
 
     // Diagnostic output
-    if (GenInputsAbstract.progressdisplay) {
-      System.out.printf("Explorer = %s%n", explorer);
-    }
+    // if (GenInputsAbstract.progressdisplay) {
+    // System.out.printf("Explorer = %s%n", explorer);
+    // }
     // These two debugging lines make runNoOutputTest() fail:
     // operationModel.dumpModel(System.out);
     // System.out.println("isLoggingOn = " + Log.isLoggingOn());
