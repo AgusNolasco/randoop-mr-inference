@@ -33,11 +33,8 @@ public class BagsBuilder {
     }
     for (ExecutableSequence s : sequences) {
       s.execute(new DummyVisitor(), new DummyCheckGenerator());
-      if (s.getAllValues().stream()
-          .noneMatch(rv -> rv.getType().getCanonicalName().equals(clazz.getName()))) {
-        bags.get(initialState).add(new Pair<>(s.sequence.getLastVariable(), null));
-        continue;
-      }
+      // Constructors are applicable in any sequence
+      bags.get(initialState).add(new Pair<>(s.sequence.getLastVariable(), null));
       int i = 0;
       for (ReferenceValue referenceValue : s.getAllValues()) {
         if (referenceValue.getType().getCanonicalName().equals(clazz.getName())) {
@@ -45,14 +42,6 @@ public class BagsBuilder {
           bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(var, i));
         }
         i++;
-      }
-    }
-    if (bags.get(initialState).getVariablesAndIndexes().isEmpty()) {
-      Optional<ExecutableSequence> optionalSeq = sequences.stream().findAny();
-      if (optionalSeq.isPresent()) {
-        bags.get(initialState).add(new Pair<>(optionalSeq.get().sequence.getLastVariable(), null));
-      } else {
-        throw new IllegalArgumentException("There's no sequences!");
       }
     }
     return bags;
