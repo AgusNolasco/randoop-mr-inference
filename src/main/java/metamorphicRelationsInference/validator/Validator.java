@@ -40,6 +40,9 @@ public class Validator {
           executor.setup(mr, var);
           Object result1 = executor.getLeftResult();
           Object result2 = executor.getRightResult();
+          // System.out.println(executor.getSequences().getFst());
+          // System.out.println(executor.getSequences().getSnd());
+          // System.out.println(result1.toString() + " - " + result2.toString());
           if (!result1.toString().equals(result2.toString())) {
             counterExampleFound = true;
             mr.setCounterExample(executor.getSequences());
@@ -50,9 +53,12 @@ public class Validator {
         validMRs.add(mr);
       } else {
         System.out.println("falsified");
+        System.out.println("Counter-example: \n");
+        System.out.println(mr.getCounterExample().getFst());
+        System.out.println(mr.getCounterExample().getSnd());
       }
     }
-    System.out.println("----------------------");
+    System.out.println("----------------------\n");
     return validMRs;
   }
 }
