@@ -6,9 +6,7 @@ import java.util.*;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
-import randoop.sequence.ExecutableSequence;
-import randoop.sequence.ReferenceValue;
-import randoop.sequence.Variable;
+import randoop.sequence.*;
 import randoop.test.DummyCheckGenerator;
 
 public class BagsBuilder {
@@ -47,6 +45,14 @@ public class BagsBuilder {
           bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(var, i));
         }
         i++;
+      }
+    }
+    if (bags.get(initialState).getVariablesAndIndexes().isEmpty()) {
+      Optional<ExecutableSequence> optionalSeq = sequences.stream().findAny();
+      if (optionalSeq.isPresent()) {
+        bags.get(initialState).add(new Pair<>(optionalSeq.get().sequence.getLastVariable(), null));
+      } else {
+        throw new IllegalArgumentException("There's no sequences!");
       }
     }
     return bags;
