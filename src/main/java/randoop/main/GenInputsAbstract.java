@@ -716,7 +716,9 @@ public abstract class GenInputsAbstract extends CommandHandler {
    * old tests are chosen, from among all existing tests.
    */
   @Option("How to choose tests for Randoop to extend")
-  public static InputSelectionMode input_selection = InputSelectionMode.UNIFORM;
+  // TODO: Review, using SMALL_TESTS instead of UNIFORM we can discard an invalid mr (topAndPop =
+  // makeEmpty)
+  public static InputSelectionMode input_selection = InputSelectionMode.SMALL_TESTS;
 
   /**
    * Clear the component set each time it contains the given number of inputs.
