@@ -2,7 +2,7 @@ package metamorphicRelationsInference.validator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,7 +85,23 @@ public class Executor {
       Constructor<?> constructor, Sequence sequence) {
     Integer newObjVarIndex = null;
     if (constructor != null) {
-      sequence = sequence.extend(TypedOperation.forConstructor(constructor));
+      TypedOperation operation = TypedOperation.forConstructor(constructor);
+
+      Sequence auxSeq = null;
+      boolean isNormalExec = false;
+      while (!isNormalExec) {
+        auxSeq = Sequence.concatenate(Collections.singletonList(sequence));
+        InputsAndSuccessFlag inputs = explorer.selectInputs(operation, false);
+        Sequence concatSeq = Sequence.concatenate(inputs.sequences);
+        List<Integer> indices = adjustIndices(inputs.indices, auxSeq.getLastVariable().index + 1);
+        auxSeq = Sequence.concatenate(Arrays.asList(auxSeq, concatSeq));
+        List<Variable> vars = CollectionsPlume.mapList(auxSeq::getVariable, indices);
+        auxSeq = auxSeq.extend(operation, vars);
+        ExecutableSequence executableSequence = new ExecutableSequence(auxSeq);
+        executableSequence.execute(new DummyVisitor(), new DummyCheckGenerator());
+        isNormalExec = executableSequence.isNormalExecution();
+      }
+      sequence = auxSeq;
       newObjVarIndex = sequence.getLastVariable().index;
       TypedOperation op = TypedOperation.forMethod(getClassMethod());
       sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
@@ -98,22 +114,17 @@ public class Executor {
       TypedOperation operation = TypedOperation.forMethod(m);
       InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
       Sequence concatSeq = Sequence.concatenate(inputs.sequences);
-
-      List<Sequence> sequences = new ArrayList<>();
-      sequences.add(sequence);
-      sequences.add(concatSeq);
-
-      Sequence finalSequence = sequence;
-      List<Integer> indices =
-          inputs.indices.stream()
-              .map(i -> i + finalSequence.getLastVariable().index + 1)
-              .collect(Collectors.toList());
-      sequence = Sequence.concatenate(sequences);
+      List<Integer> indices = adjustIndices(inputs.indices, sequence.getLastVariable().index + 1);
+      sequence = Sequence.concatenate(Arrays.asList(sequence, concatSeq));
       List<Variable> vars = CollectionsPlume.mapList(sequence::getVariable, indices);
       vars.add(0, sequence.getVariable(varIndex));
       sequence = sequence.extend(operation, vars);
     }
     return sequence;
+  }
+
+  private List<Integer> adjustIndices(List<Integer> indices, Integer adjustValue) {
+    return indices.stream().map(i -> i + adjustValue).collect(Collectors.toList());
   }
 
   /**
