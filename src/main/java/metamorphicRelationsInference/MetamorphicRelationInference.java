@@ -37,12 +37,14 @@ public class MetamorphicRelationInference {
     /* Validation phase */
     Validator validator = new Validator(explorer);
     List<MetamorphicRelation> validMRs = validator.validate(metamorphicRelations, bags);
+
+    /* Output */
+    System.out.println("Valid MRs: \n");
     for (MetamorphicRelation mr : validMRs) {
       System.out.println(mr);
     }
-
-    System.out.println("Input:  " + metamorphicRelations.size() + " MRs");
-    System.out.println("Output: " + validMRs.size() + " MRs");
+    System.out.println("\nInput:  " + metamorphicRelations.size() + " MRs");
+    System.out.println("Output: " + validMRs.size() + " MRs\n");
     System.out.println(
         "% of valid MRs: " + ((float) validMRs.size() / (float) metamorphicRelations.size()) * 100);
     System.out.println(
