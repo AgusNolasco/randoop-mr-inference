@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.ReaderUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 public class CandidatesReader {
 
@@ -92,10 +93,9 @@ public class CandidatesReader {
         .collect(Collectors.toSet());
   }
 
-  @SuppressWarnings("signature")
   private Class<?> getClassForName(String name) {
     try {
-      return Class.forName(name);
+      return ClassUtils.getClass(name);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
