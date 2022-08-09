@@ -3,6 +3,7 @@ package metamorphicRelationsInference.validator;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.bag.Bag;
+import metamorphicRelationsInference.distance.Distance;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.Pair;
@@ -43,7 +44,8 @@ public class Validator {
           // System.out.println(executor.getSequences().getFst());
           // System.out.println(executor.getSequences().getSnd());
           // System.out.println(result1.toString() + " - " + result2.toString());
-          if (!result1.toString().equals(result2.toString())) {
+          if (Distance.distance(result1, result2) != 0.0d) {
+            System.out.println("Objects distance:" + Distance.distance(result1, result2));
             counterExampleFound = true;
             mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           }
