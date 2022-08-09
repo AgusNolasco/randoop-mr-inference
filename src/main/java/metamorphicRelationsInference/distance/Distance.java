@@ -33,7 +33,6 @@ public class Distance {
 
   private static double calculate(Object o1, Object o2) {
     double distance = 0.0d;
-    int fieldCount = 0;
 
     worklist.add(new DistancePair(o1, o2));
 
@@ -55,6 +54,11 @@ public class Distance {
       // ------------DIFFERENT CLASSES------------
       else if (!obj1.getClass().equals(obj2.getClass())) {
         distance += DIFFERENT_CLASSES_WEIGHT;
+        continue;
+      }
+
+      // ---------------CLASS-TYPE----------------
+      if (obj1.getClass().equals(Class.class)) {
         continue;
       }
 
@@ -87,58 +91,60 @@ public class Distance {
       List<Field> fs1 = ReflectionUtils.getInheritedPrivateFields(obj1.getClass());
       List<Field> fs2 = ReflectionUtils.getInheritedPrivateFields(obj2.getClass());
       for (int i = 0; i < fs1.size(); i++) {
-        try {
-          Field f1 = fs1.get(i);
-          Field f2 = fs2.get(i);
+        Field f1 = fs1.get(i);
+        Field f2 = fs2.get(i);
 
-          f1.setAccessible(true);
-          f2.setAccessible(true);
+        f1.setAccessible(true);
+        f2.setAccessible(true);
 
-          // skip comparison of constants
-          if (ReflectionUtils.isConstant(f1) && ReflectionUtils.isConstant(f2)) {
-            continue;
-          } else if (FieldFilter.exclude(f1) || FieldFilter.exclude(f2)) {
-            continue;
-          }
+        // skip comparison of constants
+        if (ReflectionUtils.isConstant(f1) && ReflectionUtils.isConstant(f2)) {
+          continue;
+        } else if (FieldFilter.exclude(f1) || FieldFilter.exclude(f2)) {
+          continue;
+        }
 
-          ComparisonType type = getComparisonType(f1.getType());
-          switch (type) {
-            case PRIMITIVE:
-              // this definition of primitives contains only real
-              // primitive values (e.g int, char, ..) primitive
-              // classes (e.g. Integer) are treated as object and
-              // handled in the subsequent iteration as corner case
-              distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
-              break;
-            case STRING:
+        ComparisonType type = getComparisonType(f1.getType());
+        switch (type) {
+          case PRIMITIVE:
+            // this definition of primitives contains only real
+            // primitive values (e.g int, char, ..) primitive
+            // classes (e.g. Integer) are treated as object and
+            // handled in the subsequent iteration as corner case
+            distance += PrimitiveDistance.distance(f1, obj1, f2, obj2);
+            break;
+          case STRING:
+            try {
               distance +=
                   LevenshteinDistance.calculateDistance(
                       (String) f1.get(obj1), (String) f2.get(obj2));
-              break;
-            case ARRAY:
-              distance += handleArray(f1, obj1, f2, obj2);
-              break;
-            case OBJECT:
-              // null values and corner cases are managed at the
-              // beginning of the iteration
-              Object obj1value = f1.get(obj1);
-              Object obj2value = f2.get(obj2);
-              worklist.add(new DistancePair(obj1value, obj2value));
-              break;
-            default:
-              break;
-          }
-        } catch (Exception e) {
-          throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+              throw new RuntimeException(e);
+            }
+            break;
+          case ARRAY:
+            distance += handleArray(f1, obj1, f2, obj2);
+            break;
+          case OBJECT:
+            // null values and corner cases are managed at the
+            // beginning of the iteration
+            Object obj1value;
+            Object obj2value;
+            try {
+              obj1value = f1.get(obj1);
+              obj2value = f2.get(obj2);
+            } catch (IllegalAccessException e) {
+              throw new RuntimeException(e);
+            }
+            worklist.add(new DistancePair(obj1value, obj2value));
+            break;
+          default:
+            break;
         }
       }
     }
 
-    if (fieldCount > 0) {
-      return distance / (double) fieldCount;
-    } else {
-      return distance;
-    }
+    return distance;
   }
 
   private static double handleArray(Object obj1, Object obj2) {
@@ -148,8 +154,8 @@ public class Distance {
     switch (arrayType) {
       case OBJECT:
         try {
-          Object[] castedF1 = Object[].class.cast(obj1);
-          Object[] castedF2 = Object[].class.cast(obj2);
+          Object[] castedF1 = (Object[]) obj1;
+          Object[] castedF2 = (Object[]) obj2;
           int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
           for (int i = 0; i < length; i++) {
             worklist.add(new DistancePair(castedF1[i], castedF2[i]));
@@ -166,8 +172,8 @@ public class Distance {
         break;
       case STRING:
         try {
-          String[] castedF1 = String[].class.cast(obj1);
-          String[] castedF2 = String[].class.cast(obj2);
+          String[] castedF1 = (String[]) obj1;
+          String[] castedF2 = (String[]) obj2;
           int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
           for (int i = 0; i < length; i++) {
             distance += LevenshteinDistance.calculateDistance(castedF1[i], castedF2[i]);
@@ -202,8 +208,8 @@ public class Distance {
     switch (arrayType) {
       case OBJECT:
         try {
-          Object[] castedF1 = Object[].class.cast(f1.get(obj1));
-          Object[] castedF2 = Object[].class.cast(f2.get(obj2));
+          Object[] castedF1 = (Object[]) f1.get(obj1);
+          Object[] castedF2 = (Object[]) f2.get(obj2);
           int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
           for (int i = 0; i < length; i++) {
             worklist.add(new DistancePair(castedF1[i], castedF2[i]));
@@ -222,8 +228,8 @@ public class Distance {
                   ? f1.getType()
                   : f1.getType().getComponentType();
           if (f1Type.equals(int.class)) {
-            int[] castedF1 = int[].class.cast(f1.get(obj1));
-            int[] castedF2 = int[].class.cast(f2.get(obj2));
+            int[] castedF1 = (int[]) f1.get(obj1);
+            int[] castedF2 = (int[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -233,8 +239,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(char.class)) {
-            char[] castedF1 = char[].class.cast(f1.get(obj1));
-            char[] castedF2 = char[].class.cast(f2.get(obj2));
+            char[] castedF1 = (char[]) f1.get(obj1);
+            char[] castedF2 = (char[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -244,8 +250,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(short.class)) {
-            short[] castedF1 = short[].class.cast(f1.get(obj1));
-            short[] castedF2 = short[].class.cast(f2.get(obj2));
+            short[] castedF1 = (short[]) f1.get(obj1);
+            short[] castedF2 = (short[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -255,8 +261,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(long.class)) {
-            long[] castedF1 = long[].class.cast(f1.get(obj1));
-            long[] castedF2 = long[].class.cast(f2.get(obj2));
+            long[] castedF1 = (long[]) f1.get(obj1);
+            long[] castedF2 = (long[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -266,8 +272,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(float.class)) {
-            float[] castedF1 = float[].class.cast(f1.get(obj1));
-            float[] castedF2 = float[].class.cast(f2.get(obj2));
+            float[] castedF1 = (float[]) f1.get(obj1);
+            float[] castedF2 = (float[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -277,8 +283,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(double.class)) {
-            double[] castedF1 = double[].class.cast(f1.get(obj1));
-            double[] castedF2 = double[].class.cast(f2.get(obj2));
+            double[] castedF1 = (double[]) f1.get(obj1);
+            double[] castedF2 = (double[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -288,8 +294,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(boolean.class)) {
-            boolean[] castedF1 = boolean[].class.cast(f1.get(obj1));
-            boolean[] castedF2 = boolean[].class.cast(f2.get(obj2));
+            boolean[] castedF1 = (boolean[]) f1.get(obj1);
+            boolean[] castedF2 = (boolean[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
@@ -299,8 +305,8 @@ public class Distance {
                 (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                     * Distance.ARRAY_CELL_FACTOR;
           } else if (f1Type.equals(byte.class)) {
-            byte[] castedF1 = byte[].class.cast(f1.get(obj1));
-            byte[] castedF2 = byte[].class.cast(f2.get(obj2));
+            byte[] castedF1 = (byte[]) f1.get(obj1);
+            byte[] castedF2 = (byte[]) f2.get(obj2);
 
             int length = Math.min(Array.getLength(castedF1), Array.getLength(castedF2));
             for (int i = 0; i < length; i++) {
