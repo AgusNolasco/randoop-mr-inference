@@ -45,7 +45,7 @@ public class CandidatesReader {
     if (!str.isEmpty()) {
       String classesStr = str.substring(1, str.length() - 1);
       List<String> classes =
-          Arrays.stream(classesStr.split(ACTIONS_DELIMITER))
+          Arrays.stream(classesStr.split(PARAMS_DELIMITER))
               .filter(c -> !c.equals(""))
               .collect(Collectors.toList());
       Class<?>[] constructorParams =
@@ -57,7 +57,9 @@ public class CandidatesReader {
 
   private Constructor<?> getConstructorForParams(Class<?>[] params) {
     try {
-      return cut.getConstructor(params);
+      Constructor<?> constructor = cut.getDeclaredConstructor(params);
+      constructor.setAccessible(true);
+      return constructor;
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
