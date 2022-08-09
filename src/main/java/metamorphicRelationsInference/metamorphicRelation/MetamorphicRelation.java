@@ -14,7 +14,8 @@ public class MetamorphicRelation {
   private final Constructor<?> rightConstructor;
   private final List<Method> rightMethods;
   private final Set<EPAState> statesWhereSurvives;
-  private Pair<Sequence, Sequence> counterExample;
+  private Pair<Sequence, Sequence> counterExampleSequences;
+  private Pair<Object, Object> counterExampleObjects;
 
   public MetamorphicRelation(
       Constructor<?> leftConstructor,
@@ -56,12 +57,19 @@ public class MetamorphicRelation {
     return statesWhereSurvives;
   }
 
-  public void setCounterExample(Pair<Sequence, Sequence> counterExamples) {
-    this.counterExample = counterExamples;
+  public void setCounterExample(
+      Pair<Sequence, Sequence> counterExampleSequences,
+      Pair<Object, Object> counterExampleObjects) {
+    this.counterExampleSequences = counterExampleSequences;
+    this.counterExampleObjects = counterExampleObjects;
   }
 
-  public Pair<Sequence, Sequence> getCounterExample() {
-    return counterExample;
+  public Pair<Sequence, Sequence> getCounterExampleSequences() {
+    return counterExampleSequences;
+  }
+
+  public Pair<Object, Object> getCounterExampleObjects() {
+    return counterExampleObjects;
   }
 
   @Override

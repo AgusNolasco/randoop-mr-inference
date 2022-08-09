@@ -45,7 +45,7 @@ public class Validator {
           // System.out.println(result1.toString() + " - " + result2.toString());
           if (!result1.toString().equals(result2.toString())) {
             counterExampleFound = true;
-            mr.setCounterExample(executor.getSequences());
+            mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           }
         }
       }
@@ -54,8 +54,12 @@ public class Validator {
       } else {
         System.out.println("falsified");
         System.out.println("Counter-example: \n");
-        System.out.println(mr.getCounterExample().getFst());
-        System.out.println(mr.getCounterExample().getSnd());
+        System.out.println(mr.getCounterExampleSequences().getFst());
+        System.out.println(mr.getCounterExampleSequences().getSnd());
+        System.out.println(
+            mr.getCounterExampleObjects().getFst()
+                + " - "
+                + mr.getCounterExampleObjects().getSnd());
       }
     }
     System.out.println("----------------------\n");
