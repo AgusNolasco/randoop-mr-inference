@@ -39,6 +39,8 @@ public class MetamorphicRelationInference {
     List<MetamorphicRelation> validMRs = validator.validate(metamorphicRelations, bags);
 
     /* Output */
+    System.out.println("Class: " + cut.getSimpleName() + "\n");
+
     System.out.println("Valid MRs: \n");
     for (MetamorphicRelation mr : validMRs) {
       System.out.println(mr);
@@ -52,5 +54,9 @@ public class MetamorphicRelationInference {
             + ((float) (metamorphicRelations.size() - validMRs.size())
                     / (float) metamorphicRelations.size())
                 * 100);
+
+    for (EPAState s : bags.keySet()) {
+      System.out.println(s + " -> size: " + bags.get(s).getVariablesAndIndexes().size());
+    }
   }
 }
