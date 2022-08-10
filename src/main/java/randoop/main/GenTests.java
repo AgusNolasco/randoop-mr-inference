@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import metamorphicRelationsInference.MetamorphicRelationInference;
+import org.apache.commons.lang3.ClassUtils;
 import org.checkerframework.checker.signature.qual.ClassGetName;
 import org.checkerframework.checker.signature.qual.Identifier;
 import org.plumelib.options.Options;
@@ -529,15 +530,14 @@ public class GenTests extends GenInputsAbstract {
         testEnvironment.setReplaceCallAgent(agentPath, agentArgs);
       }
 
-      /*******************************************/
-      Optional<@ClassGetName String> optionalClassname = classnames.stream().findFirst();
-      if (classnames.size() > 1 || !optionalClassname.isPresent()) {
-        throw new IllegalArgumentException("Only can have exactly 1 class to test");
-      }
+      /*-------------------------------------------*/
+      Optional<String> optionalName = classnames.stream().findFirst();
       Class<?> cut;
       try {
-        String classname = optionalClassname.get();
-        cut = Class.forName(classname);
+        if (!optionalName.isPresent()) {
+          throw new ClassNotFoundException();
+        }
+        cut = ClassUtils.getClass(optionalName.get());
       } catch (ClassNotFoundException e) {
         throw new RuntimeException(e);
       }
@@ -545,8 +545,7 @@ public class GenTests extends GenInputsAbstract {
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
       MetamorphicRelationInference.main(cut, regressionSequences, explorer);
       System.exit(0);
-
-      /*******************************************/
+      /*-------------------------------------------*/
 
       if (GenInputsAbstract.progressdisplay) {
         System.out.printf(
