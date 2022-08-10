@@ -54,7 +54,7 @@ public class MetamorphicRelationInference {
             + ((float) (metamorphicRelations.size() - validMRs.size())
                     / (float) metamorphicRelations.size())
                 * 100);
-
+    System.out.println();
     for (EPAState s : bags.keySet()) {
       System.out.println(s + " -> size: " + bags.get(s).getVariablesAndIndexes().size());
     }
