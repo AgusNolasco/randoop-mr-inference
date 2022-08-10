@@ -28,6 +28,10 @@ public class Validator {
           mr.getStatesWhereSurvives().stream().map(bags::get).collect(Collectors.toSet());
       System.out.println("----------------------");
       System.out.println("To be evaluated: " + mr);
+      if (bagsWhereCheck.stream().allMatch(b -> b.getVariablesAndIndexes().isEmpty())) {
+        System.out.println("There's no states to check this MR");
+        continue;
+      }
       for (Bag bag : bagsWhereCheck) {
         System.out.println("In: " + bag.toString());
         if (counterExampleFound) {
