@@ -89,7 +89,7 @@ public class Executor {
 
       Sequence auxSeq = null;
       boolean isNormalExec = false;
-      while (!isNormalExec) {
+      for (int i = 0; i < 1000 && !isNormalExec; i++) {
         auxSeq = Sequence.concatenate(Collections.singletonList(sequence));
         InputsAndSuccessFlag inputs = explorer.selectInputs(operation, false);
         Sequence concatSeq = Sequence.concatenate(inputs.sequences);
@@ -102,6 +102,7 @@ public class Executor {
         isNormalExec = executableSequence.isNormalExecution();
       }
       sequence = auxSeq;
+
       newObjVarIndex = sequence.getLastVariable().index;
       TypedOperation op = TypedOperation.forMethod(getClassMethod());
       sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
