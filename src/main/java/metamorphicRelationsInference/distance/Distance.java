@@ -206,7 +206,7 @@ public class Distance {
 
     try {
       if (f1.get(obj1) == null || f2.get(obj2) == null) {
-        if (!(f1.get(obj1) == f2.get(obj2))) {
+        if (!Objects.equals(f1.get(obj1), f2.get(obj2))) {
           distance += NULL_WEIGHT;
         }
         return distance;
@@ -343,7 +343,7 @@ public class Distance {
           distance +=
               (Math.max(Array.getLength(castedF1), Array.getLength(castedF2)) - length)
                   * Distance.ARRAY_CELL_FACTOR;
-        } catch (IllegalArgumentException | IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
           throw new RuntimeException(e);
         }
         break;
