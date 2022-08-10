@@ -204,6 +204,17 @@ public class Distance {
   private static double handleArray(Field f1, Object obj1, Field f2, Object obj2) {
     double distance = 0.0d;
 
+    try {
+      if (f1.get(obj1) == null || f2.get(obj2) == null) {
+        if (!(f1.get(obj1) == f2.get(obj2))) {
+          distance += NULL_WEIGHT;
+        }
+        return distance;
+      }
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+
     ComparisonType arrayType = getComparisonType(f1.getType().getComponentType());
     switch (arrayType) {
       case OBJECT:
