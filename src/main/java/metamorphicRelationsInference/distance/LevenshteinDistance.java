@@ -1,5 +1,7 @@
 package metamorphicRelationsInference.distance;
 
+import java.util.Objects;
+
 /*
  * The difference between this impl. and the standard one is that, rather
  * than creating and retaining a matrix of size threadName.length()+1 by
@@ -17,7 +19,13 @@ public class LevenshteinDistance {
 
   public static int calculateDistance(final String s, final String t) {
     if (s == null || t == null) {
-      throw new IllegalArgumentException("Strings must not be null");
+      if (Objects.equals(s, t)) {
+        return 0;
+      } else if (s != null) {
+        return s.length();
+      } else {
+        return t.length();
+      }
     }
 
     int sLength = s.length(); // length of threadName
