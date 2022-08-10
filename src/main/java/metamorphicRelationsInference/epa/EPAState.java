@@ -11,10 +11,10 @@ public class EPAState {
   private final boolean isInitial;
   private final Map<Method, Boolean> enabledMethods;
 
-  public EPAState(String name, Map<Method, Boolean> enabledMethods) {
+  public EPAState(String name, boolean isInitial, Map<Method, Boolean> enabledMethods) {
     Objects.requireNonNull(name, "State name cannot be null");
     this.name = name;
-    isInitial = enabledMethods.values().stream().noneMatch(v -> v.equals(true));
+    this.isInitial = isInitial;
     this.enabledMethods = enabledMethods;
   }
 
@@ -33,6 +33,9 @@ public class EPAState {
   }
 
   public Map<Method, Boolean> getEnabledMethods() {
+    if (enabledMethods == null) {
+      throw new IllegalStateException("Enabled methods have not been set");
+    }
     return new HashMap<>(enabledMethods);
   }
 
