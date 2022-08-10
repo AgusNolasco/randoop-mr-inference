@@ -38,3 +38,6 @@ scripts/dockerdir
 
 # Configuration files
 **/init_env.sh
+
+# Outputs dir
+output/
