@@ -49,7 +49,6 @@ import randoop.output.CodeWriter;
 import randoop.output.FailingAssertionCommentWriter;
 import randoop.output.JUnitCreator;
 import randoop.output.JavaFileWriter;
-import randoop.output.MinimizerWriter;
 import randoop.output.NameGenerator;
 import randoop.output.RandoopOutputException;
 import randoop.reflection.AccessibilityPredicate;
@@ -507,6 +506,7 @@ public class GenTests extends GenInputsAbstract {
 
     JavaFileWriter javaFileWriter = new JavaFileWriter(junit_output_dir);
 
+    /*
     if (!GenInputsAbstract.no_error_revealing_tests) {
       CodeWriter codeWriter = javaFileWriter;
       if (GenInputsAbstract.minimize_error_test || GenInputsAbstract.stop_on_error_test) {
@@ -519,6 +519,7 @@ public class GenTests extends GenInputsAbstract {
           GenInputsAbstract.error_test_basename,
           "Error-revealing");
     }
+    */
 
     if (!GenInputsAbstract.no_regression_tests) {
       final TestEnvironment testEnvironment =
