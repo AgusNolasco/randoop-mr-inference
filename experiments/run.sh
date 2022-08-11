@@ -6,4 +6,4 @@ subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
 
 input_file="experiments/$subject_name.properties"
 omit_methods_file="$OUTPUTS_DIR/$subject_name/pure-methods.txt"
-java -cp "$subject_cp:$JAR" randoop.main.Main gentests --classlist=$input_file --omit-methods-file=$omit_methods_file --output-limit=2000 --literals-level=ALL --literals-file=literals/lits.txt
+java -cp "$subject_cp:$JAR" randoop.main.Main gentests --classlist=$input_file --omit-methods-file=$omit_methods_file --output-limit=2000 --time-limit=30 --literals-level=ALL --literals-file=literals/lits.txt
