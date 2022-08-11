@@ -54,3 +54,15 @@ double:9.6
 double:10.5
 double:100
 END CLASSLITERALS
+START CLASSLITERALS
+CLASSNAME
+java.lang.String
+LITERALS
+String:"8080"
+String:"hi!"
+String:"hello"
+String:"bye"
+String:"randoop"
+String:"metamorphic relation"
+String:"spec"
+END CLASSLITERALS
