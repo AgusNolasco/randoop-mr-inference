@@ -49,7 +49,7 @@ public class Validator {
           // System.out.println(executor.getSequences().getSnd());
           // System.out.println(result1.toString() + " - " + result2.toString());
           if (Distance.distance(result1, result2) != 0.0d) {
-            System.out.println("Objects distance:" + Distance.distance(result1, result2));
+            System.out.println("Objects distance: " + Distance.distance(result1, result2));
             counterExampleFound = true;
             mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           }
