@@ -1,6 +1,5 @@
 package metamorphicRelationsInference.bag;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import metamorphicRelationsInference.epa.EPAState;
@@ -39,7 +38,13 @@ public class BagsBuilder {
       for (ReferenceValue referenceValue : s.getAllValues()) {
         if (referenceValue.getType().getCanonicalName().equals(clazz.getName())) {
           Variable var = s.getVariable(referenceValue.getObjectValue());
-          bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(var, i));
+          try {
+            bags.get(computeState(referenceValue.getObjectValue())).add(new Pair<>(var, i));
+          } catch (Exception e) {
+            System.out.println("The state could not be computed for the next sequence: \n\n");
+            System.out.println(s.sequence);
+            System.out.println("Caused by: " + e + "\n");
+          }
         }
         i++;
       }
@@ -47,7 +52,7 @@ public class BagsBuilder {
     return bags;
   }
 
-  private EPAState computeState(Object obj) {
+  private EPAState computeState(Object obj) throws Exception {
     for (EPAState state : states) {
       boolean allEqual = true;
 
@@ -55,11 +60,7 @@ public class BagsBuilder {
       for (Method m : methodsAndResults.keySet()) {
         m.setAccessible(true);
         boolean result;
-        try {
-          result = (Boolean) m.invoke(obj);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          throw new RuntimeException(e);
-        }
+        result = (Boolean) m.invoke(obj);
         allEqual &= methodsAndResults.get(m) == result;
       }
 
