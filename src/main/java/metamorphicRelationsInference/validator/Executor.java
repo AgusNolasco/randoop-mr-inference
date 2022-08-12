@@ -101,8 +101,9 @@ public class Executor {
         executableSequence.execute(new DummyVisitor(), new DummyCheckGenerator());
         isNormalExec = executableSequence.isNormalExecution();
       }
-      sequence = auxSeq;
 
+      sequence = auxSeq;
+      // This section adds a call of .getClass over the new object to use it
       newObjVarIndex = sequence.getLastVariable().index;
       TypedOperation op = TypedOperation.forMethod(getClassMethod());
       sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
