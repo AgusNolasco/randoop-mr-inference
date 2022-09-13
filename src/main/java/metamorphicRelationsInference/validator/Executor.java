@@ -75,6 +75,9 @@ public class Executor {
   private Object computeResult(Sequence sequence, Variable var) {
     ExecutableSequence executableSequence = new ExecutableSequence(sequence);
     executableSequence.execute(new DummyVisitor(), new DummyCheckGenerator());
+    if (!executableSequence.isNormalExecution()) {
+      throw new IllegalStateException("Unable to execute this sequence because throws exceptions");
+    }
     Object[] values =
         ExecutableSequence.getRuntimeValuesForVars(
             Collections.singletonList(var), executableSequence.executionResults);

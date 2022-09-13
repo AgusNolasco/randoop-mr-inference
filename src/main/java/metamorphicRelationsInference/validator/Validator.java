@@ -43,11 +43,14 @@ public class Validator {
           }
           Variable var = pair.getFst();
           executor.setup(mr, var);
-          Object result1 = executor.getLeftResult();
-          Object result2 = executor.getRightResult();
-          // System.out.println(executor.getSequences().getFst());
-          // System.out.println(executor.getSequences().getSnd());
-          // System.out.println(result1.toString() + " - " + result2.toString());
+          Object result1;
+          Object result2;
+          try {
+            result1 = executor.getLeftResult();
+            result2 = executor.getRightResult();
+          } catch (Exception e) {
+            continue;
+          }
           if (Distance.distance(result1, result2) != 0.0d) {
             System.out.println("Objects distance: " + Distance.distance(result1, result2));
             counterExampleFound = true;
