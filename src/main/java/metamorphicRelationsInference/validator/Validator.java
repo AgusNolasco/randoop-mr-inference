@@ -24,6 +24,7 @@ public class Validator {
 
     for (MetamorphicRelation mr : metamorphicRelations) {
       boolean counterExampleFound = false;
+      boolean allFails = true;
       Set<Bag> bagsWhereCheck =
           mr.getStatesWhereSurvives().stream().map(bags::get).collect(Collectors.toSet());
       System.out.println("----------------------");
@@ -48,6 +49,7 @@ public class Validator {
           try {
             result1 = executor.getLeftResult();
             result2 = executor.getRightResult();
+            allFails = false;
           } catch (Exception e) {
             continue;
           }
@@ -58,17 +60,21 @@ public class Validator {
           }
         }
       }
-      if (!counterExampleFound) {
+      if (!counterExampleFound && !allFails) {
         validMRs.add(mr);
       } else {
-        System.out.println("falsified");
-        System.out.println("Counter-example: \n");
-        System.out.println(mr.getCounterExampleSequences().getFst());
-        System.out.println(mr.getCounterExampleSequences().getSnd());
-        System.out.println(
-            mr.getCounterExampleObjects().getFst()
-                + " - "
-                + mr.getCounterExampleObjects().getSnd());
+        if (counterExampleFound) {
+          System.out.println("falsified");
+          System.out.println("Counter-example: \n");
+          System.out.println(mr.getCounterExampleSequences().getFst());
+          System.out.println(mr.getCounterExampleSequences().getSnd());
+          System.out.println(
+              mr.getCounterExampleObjects().getFst()
+                  + " - "
+                  + mr.getCounterExampleObjects().getSnd());
+        } else {
+          System.out.println("All the executed sequences fail for this MR");
+        }
       }
     }
     System.out.println("----------------------\n");
