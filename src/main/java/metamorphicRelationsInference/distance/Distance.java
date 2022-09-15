@@ -25,6 +25,10 @@ public class Distance {
       return ObjectDistance.getNullDistance(o1, o2);
     }
 
+    if (o1.equals(o2)) {
+      return 0.0d;
+    }
+
     worklist.clear();
     visited.clear();
 
