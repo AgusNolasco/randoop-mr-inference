@@ -18,29 +18,29 @@ public class Distance {
 
   private Distance() {}
 
-  public static double distance(Object o1, Object o2) {
+  public static boolean strongEquals(Object o1, Object o2) {
     if (o1 == null && o2 == null) {
-      return 0.0d;
+      return true;
     } else if (o1 == null ^ o2 == null) {
-      return ObjectDistance.getNullDistance(o1, o2);
+      return false;
     }
 
     if (o1.equals(o2)) {
-      return 0.0d;
+      return true;
     }
 
     worklist.clear();
     visited.clear();
 
-    return calculate(o1, o2);
+    return strongEquals0(o1, o2);
   }
 
-  private static double calculate(Object o1, Object o2) {
+  private static boolean strongEquals0(Object o1, Object o2) {
     double distance = 0.0d;
 
     worklist.add(new DistancePair(o1, o2));
 
-    while (!worklist.isEmpty()) {
+    while (!worklist.isEmpty() && distance == 0.0d) {
       DistancePair pair = worklist.remove(0);
       Object obj1 = pair.o1;
       Object obj2 = pair.o2;
@@ -148,7 +148,7 @@ public class Distance {
       }
     }
 
-    return distance;
+    return distance == 0.0d;
   }
 
   private static double handleArray(Object obj1, Object obj2) {

@@ -53,8 +53,8 @@ public class Validator {
           } catch (Exception e) {
             continue;
           }
-          if (Distance.distance(result1, result2) != 0.0d) {
-            System.out.println("Objects distance: " + Distance.distance(result1, result2));
+          if (!Distance.strongEquals(result1, result2)) {
+            System.out.println("Objects distance: " + Distance.strongEquals(result1, result2));
             counterExampleFound = true;
             mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           }
