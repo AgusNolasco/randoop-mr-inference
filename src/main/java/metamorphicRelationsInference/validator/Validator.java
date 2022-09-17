@@ -54,7 +54,6 @@ public class Validator {
             continue;
           }
           if (!Distance.strongEquals(result1, result2)) {
-            System.out.println("Objects distance: " + Distance.strongEquals(result1, result2));
             counterExampleFound = true;
             mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           }
@@ -64,14 +63,10 @@ public class Validator {
         validMRs.add(mr);
       } else {
         if (counterExampleFound) {
-          System.out.println("falsified");
-          System.out.println("Counter-example: \n");
-          System.out.println(mr.getCounterExampleSequences().getFst());
-          System.out.println(mr.getCounterExampleSequences().getSnd());
-          System.out.println(
-              mr.getCounterExampleObjects().getFst()
-                  + " - "
-                  + mr.getCounterExampleObjects().getSnd());
+          System.out.println("Counter example found");
+          // System.out.println("Counter-example: \n");
+          // System.out.println(mr.getCounterExampleSequences().getFst());
+          // System.out.println(mr.getCounterExampleSequences().getSnd());
         } else {
           System.out.println("All the executed sequences fail for this MR");
         }
