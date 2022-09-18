@@ -43,10 +43,10 @@ public class Validator {
             continue;
           }
           Variable var = pair.getFst();
-          executor.setup(mr, var);
           Object result1;
           Object result2;
           try {
+            executor.setup(mr, var);
             result1 = executor.getLeftResult();
             result2 = executor.getRightResult();
             allFails = false;

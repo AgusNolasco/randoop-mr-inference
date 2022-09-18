@@ -28,7 +28,7 @@ public class Executor {
     this.explorer = explorer;
   }
 
-  public void setup(MetamorphicRelation mr, Variable var) {
+  public void setup(MetamorphicRelation mr, Variable var) throws Exception {
     initAttr();
     Pair<Sequence, Variable> left =
         extendSequence(var, mr.getLeftConstructor(), mr.getLeftMethods());
@@ -48,7 +48,7 @@ public class Executor {
   }
 
   private Pair<Sequence, Variable> extendSequence(
-      Variable var, Constructor<?> constructor, List<Method> methods) {
+      Variable var, Constructor<?> constructor, List<Method> methods) throws Exception {
     Sequence sequence = var.sequence;
     Pair<Sequence, Integer> pair1 = constructorSequence(constructor, sequence);
     sequence = pair1.getFst();
@@ -114,7 +114,8 @@ public class Executor {
     return new Pair<>(sequence, newObjVarIndex);
   }
 
-  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
+  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex)
+      throws Exception {
     for (Method m : methods) {
       TypedOperation operation = TypedOperation.forMethod(m);
       InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
