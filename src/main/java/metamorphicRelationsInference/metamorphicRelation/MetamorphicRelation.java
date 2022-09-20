@@ -64,6 +64,14 @@ public class MetamorphicRelation {
     this.counterExampleObjects = counterExampleObjects;
   }
 
+  public boolean hasLeftConstructor() {
+    return getLeftConstructor() != null;
+  }
+
+  public boolean hasRightConstructor() {
+    return getRightConstructor() != null;
+  }
+
   public Pair<Sequence, Sequence> getCounterExampleSequences() {
     return counterExampleSequences;
   }
