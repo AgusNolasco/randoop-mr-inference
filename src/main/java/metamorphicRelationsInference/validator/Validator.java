@@ -33,8 +33,16 @@ public class Validator {
         System.out.println("There's no states to check this MR");
         continue;
       }
+      boolean hasInitialStateBag = false;
       for (Bag bag : bagsWhereCheck) {
+        if (hasInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor())) {
+          allFails = true;
+          continue;
+        }
         System.out.println("In: " + bag.toString());
+        if (bag.isInitialStateBag()) {
+          hasInitialStateBag = true;
+        }
         if (counterExampleFound) {
           continue;
         }
@@ -43,8 +51,7 @@ public class Validator {
             continue;
           }
           Variable var = pair.getFst();
-          Object result1;
-          Object result2;
+          Object result1, result2;
           try {
             executor.setup(mr, var);
             result1 = executor.getLeftResult();
