@@ -20,6 +20,10 @@ public class Bag {
     variablesAndIndexes.add(p);
   }
 
+  public boolean isInitialStateBag() {
+    return state.isInitial();
+  }
+
   public List<Pair<Variable, Integer>> getVariablesAndIndexes() {
     return variablesAndIndexes;
   }
