@@ -48,7 +48,7 @@ public class Executor {
   }
 
   private Pair<Sequence, Variable> extendSequence(
-      Variable var, Constructor<?> constructor, List<Method> methods) throws Exception {
+      Variable var, Constructor<?> constructor, List<Method> methods) {
     Sequence sequence = var.sequence;
     Pair<Sequence, Integer> pair1 = constructorSequence(constructor, sequence);
     sequence = pair1.getFst();
@@ -114,8 +114,7 @@ public class Executor {
     return new Pair<>(sequence, newObjVarIndex);
   }
 
-  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex)
-      throws Exception {
+  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
     for (Method m : methods) {
       TypedOperation operation = TypedOperation.forMethod(m);
       InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
