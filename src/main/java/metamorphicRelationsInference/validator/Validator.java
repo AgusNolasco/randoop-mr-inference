@@ -34,14 +34,21 @@ public class Validator {
         continue;
       }
       boolean hasInitialStateBag = false;
+      boolean hasNotInitialStateBag = false;
       for (Bag bag : bagsWhereCheck) {
-        if (hasInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor())) {
-          allFails = true;
-          continue;
-        }
         System.out.println("In: " + bag.toString());
         if (bag.isInitialStateBag()) {
           hasInitialStateBag = true;
+        } else {
+          hasNotInitialStateBag = true;
+        }
+        if (hasNotInitialStateBag && mr.hasLeftConstructor() && mr.hasRightConstructor()) {
+          allFails = true;
+          continue;
+        }
+        if (hasInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor())) {
+          allFails = true;
+          continue;
         }
         if (counterExampleFound) {
           continue;
