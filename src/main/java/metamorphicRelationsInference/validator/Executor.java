@@ -28,7 +28,7 @@ public class Executor {
     this.explorer = explorer;
   }
 
-  public void setup(MetamorphicRelation mr, Variable var) throws Exception {
+  public void setup(MetamorphicRelation mr, Variable var) {
     initAttr();
     Pair<Sequence, Variable> left =
         extendSequence(var, mr.getLeftConstructor(), mr.getLeftMethods());
