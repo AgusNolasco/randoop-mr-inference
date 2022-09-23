@@ -80,6 +80,10 @@ public class MetamorphicRelation {
     return counterExampleObjects;
   }
 
+  public boolean hasCounterExample() {
+    return counterExampleObjects != null;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
