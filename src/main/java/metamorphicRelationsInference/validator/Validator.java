@@ -27,19 +27,9 @@ public class Validator {
       System.out.println("To be evaluated: " + mr);
       Set<Bag> bagsWhereCheck =
           mr.getStatesWhereSurvives().stream().map(bags::get).collect(Collectors.toSet());
-      if (bagsWhereCheck.stream().allMatch(b -> b.getVariablesAndIndexes().isEmpty())) {
-        System.out.println("There's no states to check this MR");
+      if (!areValidBags(mr, bagsWhereCheck)) {
         continue;
       }
-      boolean haveInitialStateBag = bagsWhereCheck.stream().anyMatch(Bag::isInitialStateBag);
-      boolean haveNonInitialStateBag =
-          bagsWhereCheck.stream().anyMatch(b -> !b.isInitialStateBag());
-      if ((haveInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor()))
-          || (haveNonInitialStateBag && mr.hasLeftConstructor() && mr.hasRightConstructor())) {
-        System.out.println("The mr and the bags that it need are incompatible");
-        continue;
-      }
-
       if (isValid(mr, bagsWhereCheck)) {
         System.out.println("Is valid MR");
         validMRs.add(mr);
@@ -59,9 +49,25 @@ public class Validator {
     return validMRs;
   }
 
+  private boolean areValidBags(MetamorphicRelation mr, Set<Bag> bags) {
+    if (bags.stream().allMatch(b -> b.getVariablesAndIndexes().isEmpty())) {
+      System.out.println("There's no states to check this MR");
+      return false;
+    }
+    boolean haveInitialStateBag = bags.stream().anyMatch(Bag::isInitialStateBag);
+    boolean haveNonInitialStateBag = bags.stream().anyMatch(b -> !b.isInitialStateBag());
+    if ((haveInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor()))
+        || (haveNonInitialStateBag && mr.hasLeftConstructor() && mr.hasRightConstructor())) {
+      System.out.println("The mr and the bags that it need are incompatible");
+      return false;
+    }
+    return true;
+  }
+
   private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
     for (Bag bag : bags) {
       System.out.println("In: " + bag.toString());
+      boolean allFail = true;
       for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
         Variable var = pair.getFst();
         Object result1, result2;
@@ -69,6 +75,7 @@ public class Validator {
           executor.setup(mr, var);
           result1 = executor.getLeftResult();
           result2 = executor.getRightResult();
+          allFail = false;
         } catch (Exception e) {
           continue;
         }
@@ -76,6 +83,9 @@ public class Validator {
           mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
           return false;
         }
+      }
+      if (allFail) {
+        return false;
       }
     }
     return true;
