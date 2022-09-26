@@ -14,8 +14,8 @@ public class MetamorphicRelation {
   private final Constructor<?> rightConstructor;
   private final List<Method> rightMethods;
   private final Set<EPAState> statesWhereSurvives;
-  private Pair<Sequence, Sequence> counterExampleSequences;
-  private Pair<Object, Object> counterExampleObjects;
+  private Map<EPAState, Pair<Sequence, Sequence>> counterExampleSequencesPerState;
+  private Map<EPAState, Pair<Object, Object>> counterExampleObjectsPerState;
 
   public MetamorphicRelation(
       Constructor<?> leftConstructor,
@@ -35,6 +35,8 @@ public class MetamorphicRelation {
     this.rightConstructor = rightConstructor;
     this.rightMethods = rightMethods;
     this.statesWhereSurvives = statesWhereSurvives;
+    counterExampleSequencesPerState = new HashMap<>();
+    counterExampleObjectsPerState = new HashMap<>();
   }
 
   public Constructor<?> getLeftConstructor() {
@@ -54,14 +56,20 @@ public class MetamorphicRelation {
   }
 
   public Set<EPAState> getStatesWhereSurvives() {
-    return statesWhereSurvives;
+    return new HashSet<>(statesWhereSurvives);
+  }
+
+  public void removeFromStatesWhereSurvives(EPAState state) {
+    statesWhereSurvives.remove(state);
   }
 
   public void setCounterExample(
+      EPAState state,
       Pair<Sequence, Sequence> counterExampleSequences,
       Pair<Object, Object> counterExampleObjects) {
-    this.counterExampleSequences = counterExampleSequences;
-    this.counterExampleObjects = counterExampleObjects;
+
+    counterExampleSequencesPerState.put(state, counterExampleSequences);
+    counterExampleObjectsPerState.put(state, counterExampleObjects);
   }
 
   public boolean hasLeftConstructor() {
@@ -72,16 +80,16 @@ public class MetamorphicRelation {
     return getRightConstructor() != null;
   }
 
-  public Pair<Sequence, Sequence> getCounterExampleSequences() {
-    return counterExampleSequences;
+  public Pair<Sequence, Sequence> getCounterExampleSequences(EPAState state) {
+    return counterExampleSequencesPerState.get(state);
   }
 
-  public Pair<Object, Object> getCounterExampleObjects() {
-    return counterExampleObjects;
+  public Pair<Object, Object> getCounterExampleObjects(EPAState state) {
+    return counterExampleObjectsPerState.get(state);
   }
 
   public boolean hasCounterExample() {
-    return counterExampleObjects != null;
+    return counterExampleObjectsPerState != null;
   }
 
   @Override
