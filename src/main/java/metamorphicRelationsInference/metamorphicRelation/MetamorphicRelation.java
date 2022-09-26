@@ -76,12 +76,8 @@ public class MetamorphicRelation {
     counterExampleObjectsPerState.put(state, counterExampleObjects);
   }
 
-  public boolean hasLeftConstructor() {
-    return getLeftConstructor() != null;
-  }
-
-  public boolean hasRightConstructor() {
-    return getRightConstructor() != null;
+  public boolean hasBothConstructors() {
+    return getLeftConstructor() != null && getRightConstructor() != null;
   }
 
   public Pair<Sequence, Sequence> getCounterExampleSequences(EPAState state) {
