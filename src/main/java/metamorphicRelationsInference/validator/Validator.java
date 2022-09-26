@@ -36,9 +36,6 @@ public class Validator {
       } else {
         if (mr.hasCounterExample()) {
           System.out.println("Counter example found");
-          // System.out.println("Counter-example: \n");
-          // System.out.println(mr.getCounterExampleSequences().getFst());
-          // System.out.println(mr.getCounterExampleSequences().getSnd());
         } else {
           System.out.println("All the executed sequences fail for this MR");
         }
@@ -66,28 +63,32 @@ public class Validator {
 
   private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
     for (Bag bag : bags) {
-      System.out.println("In: " + bag.toString());
-      boolean allFail = true;
-      for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
-        Variable var = pair.getFst();
-        Object result1, result2;
-        try {
-          executor.setup(mr, var);
-          result1 = executor.getLeftResult();
-          result2 = executor.getRightResult();
-          allFail = false;
-        } catch (Exception e) {
-          continue;
-        }
-        if (!Distance.strongEquals(result1, result2)) {
-          mr.setCounterExample(executor.getSequences(), new Pair<>(result1, result2));
-          return false;
-        }
+      if (!isValidInBag(mr, bag)) {
+        mr.removeFromStatesWhereSurvives(bag.getState());
       }
-      if (allFail) {
+    }
+    return !mr.getStatesWhereSurvives().isEmpty();
+  }
+
+  private boolean isValidInBag(MetamorphicRelation mr, Bag bag) {
+    System.out.println("In: " + bag.toString());
+    boolean allFail = true;
+    for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
+      Variable var = pair.getFst();
+      Object result1, result2;
+      try {
+        executor.setup(mr, var);
+        result1 = executor.getLeftResult();
+        result2 = executor.getRightResult();
+        allFail = false;
+      } catch (Exception e) {
+        continue;
+      }
+      if (!Distance.strongEquals(result1, result2)) {
+        mr.setCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
         return false;
       }
     }
-    return true;
+    return !allFail;
   }
 }
