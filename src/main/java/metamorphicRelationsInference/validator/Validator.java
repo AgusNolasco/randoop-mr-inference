@@ -27,13 +27,12 @@ public class Validator {
       System.out.println("To be evaluated: " + mr);
       Set<Bag> bagsWhereCheck =
           mr.getStatesWhereSurvives().stream().map(bags::get).collect(Collectors.toSet());
-      if (!areValidBags(mr, bagsWhereCheck)) {
-        continue;
-      }
       if (isValid(mr, bagsWhereCheck)) {
         System.out.println("Is valid MR");
         for (EPAState state : mr.getCounterExampledStates()) {
           System.out.println("Was counter exampled for state: " + state);
+          System.out.println(mr.getCounterExampleSequences(state).getFst());
+          System.out.println(mr.getCounterExampleSequences(state).getSnd());
         }
         validMRs.add(mr);
       } else {
@@ -47,21 +46,6 @@ public class Validator {
 
     System.out.println("----------------------\n");
     return validMRs;
-  }
-
-  private boolean areValidBags(MetamorphicRelation mr, Set<Bag> bags) {
-    if (bags.stream().allMatch(b -> b.getVariablesAndIndexes().isEmpty())) {
-      System.out.println("There's no states to check this MR");
-      return false;
-    }
-    boolean haveInitialStateBag = bags.stream().anyMatch(Bag::isInitialStateBag);
-    boolean haveNonInitialStateBag = bags.stream().anyMatch(b -> !b.isInitialStateBag());
-    if ((haveInitialStateBag && (!mr.hasLeftConstructor() || !mr.hasRightConstructor()))
-        || (haveNonInitialStateBag && mr.hasLeftConstructor() && mr.hasRightConstructor())) {
-      System.out.println("The mr and the bags that it need are incompatible");
-      return false;
-    }
-    return true;
   }
 
   private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
