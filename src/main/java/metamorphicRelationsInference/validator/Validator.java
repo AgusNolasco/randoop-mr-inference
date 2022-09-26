@@ -32,6 +32,9 @@ public class Validator {
       }
       if (isValid(mr, bagsWhereCheck)) {
         System.out.println("Is valid MR");
+        for (EPAState state : mr.getCounterExampledStates()) {
+          System.out.println("Was counter exampled for state: " + state);
+        }
         validMRs.add(mr);
       } else {
         if (mr.hasCounterExample()) {
@@ -85,7 +88,7 @@ public class Validator {
         continue;
       }
       if (!Distance.strongEquals(result1, result2)) {
-        mr.setCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
+        mr.addCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
         return false;
       }
     }

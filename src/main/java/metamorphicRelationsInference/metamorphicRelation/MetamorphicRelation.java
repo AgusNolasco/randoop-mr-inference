@@ -63,7 +63,11 @@ public class MetamorphicRelation {
     statesWhereSurvives.remove(state);
   }
 
-  public void setCounterExample(
+  public Set<EPAState> getCounterExampledStates() {
+    return counterExampleObjectsPerState.keySet();
+  }
+
+  public void addCounterExample(
       EPAState state,
       Pair<Sequence, Sequence> counterExampleSequences,
       Pair<Object, Object> counterExampleObjects) {
