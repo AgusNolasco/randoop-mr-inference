@@ -24,6 +24,10 @@ public class Bag {
     return state.isInitial();
   }
 
+  public EPAState getState() {
+    return state;
+  }
+
   public List<Pair<Variable, Integer>> getVariablesAndIndexes() {
     return variablesAndIndexes;
   }
