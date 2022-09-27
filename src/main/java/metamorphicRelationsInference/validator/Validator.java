@@ -48,6 +48,15 @@ public class Validator {
     return validMRs;
   }
 
+  private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
+    for (Bag bag : bags) {
+      if (!isValidBag(mr, bag) || !isValidInBag(mr, bag)) {
+        mr.removeFromStatesWhereSurvives(bag.getState());
+      }
+    }
+    return !mr.getStatesWhereSurvives().isEmpty();
+  }
+
   private boolean isValidBag(MetamorphicRelation mr, Bag bag) {
     if (bag.getVariablesAndIndexes().isEmpty()) {
       System.out.println("There's no states to check this MR in bag of state: " + bag.getState());
@@ -56,17 +65,11 @@ public class Validator {
     if (bag.isInitialStateBag() && mr.hasBothConstructors()) {
       return true;
     }
+    if (!bag.isInitialStateBag() && !mr.hasBothConstructors()) {
+      return true;
+    }
     System.out.println("The mr and the bags that it need are incompatible");
     return false;
-  }
-
-  private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
-    for (Bag bag : bags) {
-      if (!isValidBag(mr, bag) || !isValidInBag(mr, bag)) {
-        mr.removeFromStatesWhereSurvives(bag.getState());
-      }
-    }
-    return !mr.getStatesWhereSurvives().isEmpty();
   }
 
   private boolean isValidInBag(MetamorphicRelation mr, Bag bag) {
