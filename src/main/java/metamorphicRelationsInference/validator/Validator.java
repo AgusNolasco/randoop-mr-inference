@@ -28,19 +28,13 @@ public class Validator {
       Set<Bag> bagsWhereCheck =
           mr.getStatesWhereSurvives().stream().map(bags::get).collect(Collectors.toSet());
       if (isValid(mr, bagsWhereCheck)) {
-        System.out.println("Is valid MR");
-        for (EPAState state : mr.getCounterExampledStates()) {
-          System.out.println("Was counter exampled for state: " + state);
-          System.out.println(mr.getCounterExampleSequences(state).getFst());
-          System.out.println(mr.getCounterExampleSequences(state).getSnd());
-        }
+        System.out.println("Is valid MR for states: " + mr.getStatesWhereSurvives());
         validMRs.add(mr);
       } else {
-        if (mr.hasCounterExample()) {
-          System.out.println("Counter example found");
-        } else {
+        if (!mr.hasCounterExample()) {
           System.out.println("All the executed sequences fail for this MR");
         }
+        System.out.println("MRs invalidated");
       }
     }
 
@@ -87,6 +81,7 @@ public class Validator {
         continue;
       }
       if (!Distance.strongEquals(result1, result2)) {
+        System.out.println("Counter example found for state: " + bag.getState());
         mr.addCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
         return false;
       }
