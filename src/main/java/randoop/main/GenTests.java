@@ -226,9 +226,9 @@ public class GenTests extends GenInputsAbstract {
     }
 
     // TODO: Remove this
-    omit_methods.add(
-        Pattern.compile("com\\.example\\.myboundedstack\\.MyBoundedStack\\.toString\\(\\)"));
-    omit_methods.add(Pattern.compile("com\\.example\\.stackar\\.StackAr\\.toString\\(\\)"));
+    omit_methods.add(Pattern.compile(".*\\.toString\\(\\)"));
+    omit_methods.add(Pattern.compile(".*\\.hashCode\\(\\)"));
+    omit_methods.add(Pattern.compile(".*\\.equals\\(java\\.lang\\.Object\\)"));
 
     for (Path omitClassesFile : GenInputsAbstract.omit_classes_file) {
       omit_classes.addAll(readPatterns(omitClassesFile));
