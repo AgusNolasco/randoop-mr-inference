@@ -3,6 +3,8 @@ package metamorphicRelationsInference.metamorphicRelation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.sequence.Sequence;
@@ -14,15 +16,15 @@ public class MetamorphicRelation {
   private final Constructor<?> rightConstructor;
   private final List<Method> rightMethods;
   private final Set<EPAState> statesWhereSurvives;
-  private Map<EPAState, Pair<Sequence, Sequence>> counterExampleSequencesPerState;
-  private Map<EPAState, Pair<Object, Object>> counterExampleObjectsPerState;
+  private final Map<EPAState, Pair<Sequence, Sequence>> counterExampleSequencesPerState;
+  private final Map<EPAState, Pair<Object, Object>> counterExampleObjectsPerState;
 
   public MetamorphicRelation(
-      Constructor<?> leftConstructor,
-      List<Method> leftMethods,
-      Constructor<?> rightConstructor,
-      List<Method> rightMethods,
-      Set<EPAState> statesWhereSurvives) {
+          Constructor<?> leftConstructor,
+          List<Method> leftMethods,
+          Constructor<?> rightConstructor,
+          List<Method> rightMethods,
+          Set<EPAState> statesWhereSurvives) {
     Objects.requireNonNull(leftMethods);
     Objects.requireNonNull(rightMethods);
     Objects.requireNonNull(statesWhereSurvives);
@@ -68,9 +70,9 @@ public class MetamorphicRelation {
   }
 
   public void addCounterExample(
-      EPAState state,
-      Pair<Sequence, Sequence> counterExampleSequences,
-      Pair<Object, Object> counterExampleObjects) {
+          EPAState state,
+          Pair<Sequence, Sequence> counterExampleSequences,
+          Pair<Object, Object> counterExampleObjects) {
 
     counterExampleSequencesPerState.put(state, counterExampleSequences);
     counterExampleObjectsPerState.put(state, counterExampleObjects);
@@ -118,26 +120,29 @@ public class MetamorphicRelation {
 
   @Override
   public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append(statesWhereSurvives).append(" -> ");
+    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
+    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
     if (leftConstructor != null) {
-      String[] splitName = leftConstructor.getName().split("\\.");
-      str.append(splitName[splitName.length - 1]).append(" ");
+      if (!left.isEmpty()) {
+        left = leftConstructor.getDeclaringClass().getSimpleName() + " " + left;
+      } else {
+        left = leftConstructor.getDeclaringClass().getSimpleName();
+      }
     }
-    for (Method m : leftMethods) {
-      str.append(m.getName()).append(" ");
-    }
-    if (leftConstructor == null && leftMethods.isEmpty()) {
-      str.append("λ ");
-    }
-    str.append("= ");
     if (rightConstructor != null) {
-      String[] splitName = rightConstructor.getName().split("\\.");
-      str.append(splitName[splitName.length - 1]).append(" ");
+      if (!right.isEmpty()) {
+        right = rightConstructor.getDeclaringClass().getSimpleName() + " " + right;
+      } else {
+        right = rightConstructor.getDeclaringClass().getSimpleName();
+      }
     }
-    for (Method m : rightMethods) {
-      str.append(m.getName()).append(" ");
+    if (left.isEmpty()) {
+      left = "λ";
     }
-    return str.toString();
+    if (right.isEmpty()) {
+      right = "λ";
+    }
+    return statesWhereSurvives + " -> " + left + " = " + right;
   }
+
 }

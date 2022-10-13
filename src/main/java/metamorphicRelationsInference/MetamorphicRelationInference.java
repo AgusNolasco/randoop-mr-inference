@@ -17,6 +17,10 @@ public class MetamorphicRelationInference {
   private static List<ExecutableSequence> sequences;
   private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
+  // Use this for precision and recall computation
+  // private static final String mrsToEvalFileName = "FuzzedMRs.csv";
+  private static final String mrsToEvalFileName = "Candidates.csv";
+
   public static void main(Class<?> cut, List<ExecutableSequence> seq, AbstractGenerator explorer) {
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
@@ -24,15 +28,17 @@ public class MetamorphicRelationInference {
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
 
-    String pathToFile =
+    /* Read the file to know where each sequence correspond */
+    String pathToEnabledMethodsPerState =
         String.join("/", pathToDir, cut.getSimpleName(), "EnabledMethodsPerState.txt");
-    Set<EPAState> states = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToFile);
+    Set<EPAState> states = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
     BagsBuilder builder = new BagsBuilder(cut, states);
     Map<EPAState, Bag> bags = builder.createBags(sequences);
 
-    pathToFile = String.join("/", pathToDir, cut.getSimpleName(), "Candidates.csv");
+    /* Take the MRs from the previous phase */
+    String pathToCandidates = String.join("/", pathToDir, cut.getSimpleName(), mrsToEvalFileName);
     CandidatesReader reader = new CandidatesReader(cut);
-    List<MetamorphicRelation> metamorphicRelations = reader.read(pathToFile);
+    List<MetamorphicRelation> metamorphicRelations = reader.read(pathToCandidates);
 
     /* Validation phase */
     Validator validator = new Validator(explorer);

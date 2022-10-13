@@ -12,7 +12,7 @@ import randoop.sequence.Variable;
 
 public class Validator {
 
-  Executor executor;
+  private final Executor executor;
 
   public Validator(AbstractGenerator explorer) {
     executor = new Executor(explorer);
