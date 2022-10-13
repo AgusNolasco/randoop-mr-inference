@@ -31,7 +31,8 @@ public class MetamorphicRelationInference {
     /* Read the file to know where each sequence correspond */
     String pathToEnabledMethodsPerState =
         String.join("/", pathToDir, cut.getSimpleName(), "EnabledMethodsPerState.txt");
-    Set<EPAState> states = EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
+    Set<EPAState> states =
+        EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
     BagsBuilder builder = new BagsBuilder(cut, states);
     Map<EPAState, Bag> bags = builder.createBags(sequences);
 

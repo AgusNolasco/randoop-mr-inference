@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.sequence.Sequence;
@@ -20,11 +19,11 @@ public class MetamorphicRelation {
   private final Map<EPAState, Pair<Object, Object>> counterExampleObjectsPerState;
 
   public MetamorphicRelation(
-          Constructor<?> leftConstructor,
-          List<Method> leftMethods,
-          Constructor<?> rightConstructor,
-          List<Method> rightMethods,
-          Set<EPAState> statesWhereSurvives) {
+      Constructor<?> leftConstructor,
+      List<Method> leftMethods,
+      Constructor<?> rightConstructor,
+      List<Method> rightMethods,
+      Set<EPAState> statesWhereSurvives) {
     Objects.requireNonNull(leftMethods);
     Objects.requireNonNull(rightMethods);
     Objects.requireNonNull(statesWhereSurvives);
@@ -70,9 +69,9 @@ public class MetamorphicRelation {
   }
 
   public void addCounterExample(
-          EPAState state,
-          Pair<Sequence, Sequence> counterExampleSequences,
-          Pair<Object, Object> counterExampleObjects) {
+      EPAState state,
+      Pair<Sequence, Sequence> counterExampleSequences,
+      Pair<Object, Object> counterExampleObjects) {
 
     counterExampleSequencesPerState.put(state, counterExampleSequences);
     counterExampleObjectsPerState.put(state, counterExampleObjects);
@@ -144,5 +143,4 @@ public class MetamorphicRelation {
     }
     return statesWhereSurvives + " -> " + left + " = " + right;
   }
-
 }
