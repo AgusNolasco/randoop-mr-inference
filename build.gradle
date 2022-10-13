@@ -66,6 +66,7 @@ allprojects {
     plumelib 'org.plumelib:plume-util:1.5.9'
     // https://mvnrepository.com/artifact/org.plumelib/reflection-util
     plumelib 'org.plumelib:reflection-util:1.0.5'
+    implementation('org.apache.commons:commons-csv:1.9.0')
   }
  java {
     withJavadocJar()

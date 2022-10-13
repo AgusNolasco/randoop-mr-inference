@@ -143,4 +143,44 @@ public class MetamorphicRelation {
     }
     return statesWhereSurvives + " -> " + left + " = " + right;
   }
+
+  public String toFullString() {
+    String left = leftMethods.stream().map(this::fullMethodName).collect(Collectors.joining(";"));
+    String right = rightMethods.stream().map(this::fullMethodName).collect(Collectors.joining(";"));
+    if (leftConstructor != null) {
+      if (!left.isEmpty()) {
+        left = fullConstructorName(leftConstructor) + ";" + left;
+      } else {
+        left = fullConstructorName(leftConstructor);
+      }
+    }
+    if (rightConstructor != null) {
+      if (!right.isEmpty()) {
+        right = fullConstructorName(rightConstructor) + ";" + right;
+      } else {
+        right = fullConstructorName(rightConstructor);
+      }
+    }
+    if (left.isEmpty()) {
+      left = "null";
+    }
+    if (right.isEmpty()) {
+      right = "null";
+    }
+    return left + " = " + right;
+  }
+
+  private String fullMethodName(Method m) {
+    return m.getName() + getPrettyParams(m.getParameterTypes());
+  }
+
+  private String fullConstructorName(Constructor<?> c) {
+    return c.getDeclaringClass().getSimpleName() + getPrettyParams(c.getParameterTypes());
+  }
+
+  private String getPrettyParams(Class<?>[] params) {
+    String paramStr = "(";
+    paramStr += Arrays.stream(params).map(Class::getSimpleName).collect(Collectors.joining(","));
+    return paramStr + ")";
+  }
 }

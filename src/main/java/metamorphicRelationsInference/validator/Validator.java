@@ -13,9 +13,11 @@ import randoop.sequence.Variable;
 public class Validator {
 
   private final Executor executor;
+  private final List<MetamorphicRelation> allMRsProcessed;
 
   public Validator(AbstractGenerator explorer) {
     executor = new Executor(explorer);
+    allMRsProcessed = new ArrayList<>();
   }
 
   public List<MetamorphicRelation> validate(
@@ -23,6 +25,7 @@ public class Validator {
     List<MetamorphicRelation> validMRs = new ArrayList<>();
 
     for (MetamorphicRelation mr : mrs) {
+      allMRsProcessed.add(mr);
       System.out.println("----------------------");
       System.out.println("To be evaluated: " + mr);
       Set<Bag> bagsWhereCheck =
@@ -87,5 +90,11 @@ public class Validator {
       }
     }
     return !allFail;
+  }
+
+  public Set<MetamorphicRelation> getAllMRsProcessed() {
+    Set<MetamorphicRelation> allMRsProcessed = new HashSet<>(this.allMRsProcessed);
+    assert allMRsProcessed.size() == this.allMRsProcessed.size();
+    return allMRsProcessed;
   }
 }
