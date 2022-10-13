@@ -9,6 +9,7 @@ i = 0
 for filename in os.listdir(dir_path):
     if '.properties' in filename:
         subject_name = filename.split('.properties')[0]
+        print('Running: ' + subject_name)
         result = subprocess.run(f'experiments/run.sh {subject_name}', shell=True, stdout=subprocess.PIPE)
         output = result.stdout.decode('utf-8')
         print(output)
