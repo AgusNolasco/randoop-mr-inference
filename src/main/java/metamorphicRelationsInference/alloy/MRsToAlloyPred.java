@@ -18,7 +18,7 @@ public class MRsToAlloyPred {
   }
 
   public void save(List<MetamorphicRelation> mrs) {
-    File file = new File("output/" + clazz.getSimpleName() + "/alloy_predicates.als");
+    File file = new File("output/" + clazz.getSimpleName() + "/MRs_alloy_predicates.als");
     try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
       for (MetamorphicRelation mr : mrs) {
         writer.write(mr + DELIMITER + mr.toAlloyPred(clazz) + "\n");
