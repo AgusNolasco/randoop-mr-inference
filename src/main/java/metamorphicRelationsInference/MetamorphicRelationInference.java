@@ -20,8 +20,8 @@ public class MetamorphicRelationInference {
   private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
   // Use this for precision and recall computation
-  private static final String mrsToEvalFileName = "FuzzedMRs.csv";
-  // private static final String mrsToEvalFileName = "Candidates.csv";
+  // private static final String mrsToEvalFileName = "FuzzedMRs.csv";
+  private static final String mrsToEvalFileName = "Candidates.csv";
 
   public static void main(Class<?> cut, List<ExecutableSequence> seq, AbstractGenerator explorer) {
     sequences =
