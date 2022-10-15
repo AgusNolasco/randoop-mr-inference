@@ -2,6 +2,7 @@ package metamorphicRelationsInference;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import metamorphicRelationsInference.alloy.MRsToAlloyPred;
 import metamorphicRelationsInference.bag.Bag;
 import metamorphicRelationsInference.bag.BagsBuilder;
 import metamorphicRelationsInference.epa.EPAState;
@@ -81,5 +82,8 @@ public class MetamorphicRelationInference {
 
     InferredMRsWriter writer = new InferredMRsWriter(cut);
     writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet());
+
+    MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
+    alloyPred.save(validMRs);
   }
 }

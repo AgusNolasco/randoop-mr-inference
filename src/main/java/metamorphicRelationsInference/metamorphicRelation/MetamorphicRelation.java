@@ -183,4 +183,41 @@ public class MetamorphicRelation {
     paramStr += Arrays.stream(params).map(Class::getSimpleName).collect(Collectors.joining(","));
     return paramStr + ")";
   }
+
+  public String toAlloyPred(Class<?> clazz) {
+    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining("."));
+    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining("."));
+    if (leftConstructor != null) {
+      if (!left.isEmpty()) {
+        left = leftConstructor.getDeclaringClass().getSimpleName() + "." + left;
+      } else {
+        left = leftConstructor.getDeclaringClass().getSimpleName();
+      }
+    }
+    if (rightConstructor != null) {
+      if (!right.isEmpty()) {
+        right = rightConstructor.getDeclaringClass().getSimpleName() + "." + right;
+      } else {
+        right = rightConstructor.getDeclaringClass().getSimpleName();
+      }
+    }
+    String mrPred = "";
+    assert !right.isEmpty();
+    if (left.isEmpty()) {
+      mrPred += right + " iff e1 = e2";
+    } else {
+      mrPred += left + " iff (e1 -> e2) in " + right;
+    }
+    String statesWhereSurvivesStr =
+        statesWhereSurvives.stream().map(EPAState::getName).collect(Collectors.joining("+"));
+    return "all e1, e2: "
+        + clazz.getSimpleName()
+        + "Class | "
+        + "e1 in ("
+        + statesWhereSurvivesStr
+        + ") implies ("
+        + "(e1 -> e2) in "
+        + mrPred
+        + ")";
+  }
 }
