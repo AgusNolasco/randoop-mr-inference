@@ -90,7 +90,7 @@ public class MetamorphicRelation {
   }
 
   public boolean hasCounterExample() {
-    return counterExampleObjectsPerState != null;
+    return !counterExampleObjectsPerState.isEmpty();
   }
 
   @Override
