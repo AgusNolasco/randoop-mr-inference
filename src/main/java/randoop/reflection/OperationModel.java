@@ -174,7 +174,8 @@ public class OperationModel {
     model.operations.addAll(
         model.getOperationsFromFile(
             GenInputsAbstract.methodlist, accessibility, reflectionPredicate));
-    model.addObjectConstructor();
+    // model.addObjectConstructor(); // FIXME: We remove the objects constructor here, maybe exists
+    // another way
 
     return model;
   }
@@ -768,6 +769,7 @@ public class OperationModel {
   }
 
   /** Creates and adds the Object class default constructor call to the concrete operations. */
+  /*
   private void addObjectConstructor() {
     Constructor<?> objectConstructor;
     try {
@@ -779,4 +781,5 @@ public class OperationModel {
     classTypes.add(operation.getDeclaringType());
     operations.add(operation);
   }
+   */
 }
