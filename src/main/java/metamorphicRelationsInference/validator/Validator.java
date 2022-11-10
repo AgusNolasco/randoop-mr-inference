@@ -34,7 +34,7 @@ public class Validator {
         System.out.println("Is valid MR for states: " + mr.getStatesWhereSurvives());
         validMRs.add(mr);
       } else {
-        if (!mr.hasCounterExample()) {
+        if (!mr.hasCounterExamples()) {
           System.out.println("All the executed sequences fail for this MR");
         }
         System.out.println("MRs invalidated");

@@ -89,7 +89,7 @@ public class MetamorphicRelation {
     return counterExampleObjectsPerState.get(state);
   }
 
-  public boolean hasCounterExample() {
+  public boolean hasCounterExamples() {
     return !counterExampleObjectsPerState.isEmpty();
   }
 
