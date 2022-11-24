@@ -82,7 +82,7 @@ public class CandidatesReader {
             .collect(Collectors.toList());
     Class<?>[] params = classes.stream().map(this::getClassForName).toArray(Class<?>[]::new);
     try {
-      return cut.getMethod(name, params);
+      return cut.getDeclaredMethod(name, params);
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
