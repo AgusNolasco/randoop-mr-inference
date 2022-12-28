@@ -10,3 +10,6 @@ javax.swing randoop.mock.javax.swing
 // Replacements for java.util.Random.
 // Make Random deterministic by using a random seed of 0 if no seed was supplied.
 java.util.Random.<init>() randoop.mock.java.util.RandomReplace.randomWithSeedZero()
+
+// Replacements for System.exit(int)
+System.exit(int) throw new Exception()
