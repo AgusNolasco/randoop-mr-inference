@@ -12,4 +12,4 @@ javax.swing randoop.mock.javax.swing
 java.util.Random.<init>() randoop.mock.java.util.RandomReplace.randomWithSeedZero()
 
 // Replacements for System.exit(int)
-System.exit(int) throw new Exception()
+java.lang.System.exit(int) randoop.mock.java.exit.SystemMock.exit()
