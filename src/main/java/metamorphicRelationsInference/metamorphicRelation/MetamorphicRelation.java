@@ -185,22 +185,8 @@ public class MetamorphicRelation {
   }
 
   public String toAlloyPred(Class<?> clazz) {
-    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining("."));
-    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining("."));
-    if (leftConstructor != null) {
-      if (!left.isEmpty()) {
-        left = leftConstructor.getDeclaringClass().getSimpleName() + "." + left;
-      } else {
-        left = leftConstructor.getDeclaringClass().getSimpleName();
-      }
-    }
-    if (rightConstructor != null) {
-      if (!right.isEmpty()) {
-        right = rightConstructor.getDeclaringClass().getSimpleName() + "." + right;
-      } else {
-        right = rightConstructor.getDeclaringClass().getSimpleName();
-      }
-    }
+    String left = getActionSeqAsString(leftMethods, leftConstructor);
+    String right = getActionSeqAsString(rightMethods, rightConstructor);
     String mrPred = "";
     assert !right.isEmpty();
     if (left.isEmpty()) {
@@ -219,5 +205,47 @@ public class MetamorphicRelation {
         + "(e1 -> e2) in "
         + mrPred
         + ")";
+  }
+
+  private String getActionSeqAsString(List<Method> methods, Constructor<?> constructor) {
+    String actionSeqAsString =
+        methods.stream().map(this::getMethodName).collect(Collectors.joining("."));
+    if (constructor != null) {
+      if (!actionSeqAsString.isEmpty()) {
+        actionSeqAsString = getConstructorName(constructor) + "." + actionSeqAsString;
+      } else {
+        actionSeqAsString = getConstructorName(constructor);
+      }
+    }
+    return actionSeqAsString;
+  }
+
+  private String getConstructorName(Constructor<?> constructor) {
+    Class<?> clazz = constructor.getDeclaringClass();
+    String constructorName = constructor.getDeclaringClass().getSimpleName();
+    long countOfSameNamedConstructors = Arrays.stream(clazz.getConstructors()).count();
+    if (countOfSameNamedConstructors > 1) {
+      return constructorName
+          + Arrays.stream(constructor.getParameterTypes())
+              .map(Class::getSimpleName)
+              .collect(Collectors.joining());
+    }
+    return constructorName;
+  }
+
+  private String getMethodName(Method method) {
+    Class<?> clazz = method.getDeclaringClass();
+    String methodName = method.getName();
+    long countOfSameNamedMethods =
+        Arrays.stream(clazz.getDeclaredMethods())
+            .filter(m -> m.getName().equals(methodName))
+            .count();
+    if (countOfSameNamedMethods > 1) {
+      return methodName
+          + Arrays.stream(method.getParameterTypes())
+              .map(Class::getSimpleName)
+              .collect(Collectors.joining());
+    }
+    return methodName;
   }
 }
