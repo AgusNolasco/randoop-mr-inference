@@ -7,9 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
+import metamorphicRelationsInference.util.AdditionalOptions;
 
 public class MRsToAlloyPred {
 
+  private final String OUTPUT_DIR = "output";
   private final Class<?> clazz;
   private final String DELIMITER = " # ";
 
@@ -17,8 +19,21 @@ public class MRsToAlloyPred {
     this.clazz = clazz;
   }
 
-  public void save(List<MetamorphicRelation> mrs) {
-    File file = new File("output/" + clazz.getSimpleName() + "/MRs_alloy_predicates.als");
+  public void save(List<MetamorphicRelation> mrs, AdditionalOptions options) {
+    File file =
+        new File(
+            OUTPUT_DIR
+                + "/"
+                + clazz.getSimpleName()
+                + "/"
+                + "allow_epa_loops_"
+                + options.isEPALoopsAllowed()
+                + "/"
+                + options.generationStrategy()
+                + "/"
+                + options.mrsToFuzz()
+                + "/"
+                + "mrs_alloy_predicates.als");
     try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
       for (MetamorphicRelation mr : mrs) {
         writer.write(mr + DELIMITER + mr.toAlloyPred(clazz) + "\n");

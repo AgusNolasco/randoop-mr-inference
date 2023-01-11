@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
+import metamorphicRelationsInference.util.AdditionalOptions;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -29,15 +30,27 @@ public class InferredMRsWriter {
     this.cut = cut;
   }
 
-  public void writeAllMRsProcessed(Set<MetamorphicRelation> mrs, Set<EPAState> states) {
-    String dirName = OUTPUTS_DIR + "/" + cut.getSimpleName() + "/";
+  public void writeAllMRsProcessed(
+      Set<MetamorphicRelation> mrs, Set<EPAState> states, AdditionalOptions options) {
+    String dirName =
+        OUTPUTS_DIR
+            + "/"
+            + cut.getSimpleName()
+            + "/"
+            + "allow_epa_loops_"
+            + options.isEPALoopsAllowed()
+            + "/"
+            + options.generationStrategy()
+            + "/"
+            + options.mrsToFuzz()
+            + "/";
     File directory = new File(dirName);
     if (!directory.exists()) {
       directory.mkdirs();
     }
     try (Writer out =
         Files.newBufferedWriter(Paths.get(dirName + fileName), StandardCharsets.UTF_8)) {
-      try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.EXCEL); ) {
+      try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.EXCEL)) {
         printer.printRecord(HEADERS[0], HEADERS[1]);
         for (MetamorphicRelation mr : mrs) {
           for (EPAState s : states) {

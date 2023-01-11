@@ -94,9 +94,9 @@ public class MetamorphicRelationInference {
     }
 
     InferredMRsWriter writer = new InferredMRsWriter(cut);
-    writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet());
+    writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
 
     MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
-    alloyPred.save(validMRs);
+    alloyPred.save(validMRs, options);
   }
 }
