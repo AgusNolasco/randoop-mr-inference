@@ -7,6 +7,7 @@ import metamorphicRelationsInference.bag.Bag;
 import metamorphicRelationsInference.bag.BagsBuilder;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
+import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
 import metamorphicRelationsInference.util.writer.InferredMRsWriter;
@@ -20,10 +21,14 @@ public class MetamorphicRelationInference {
   private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
   // Use this for precision and recall computation
-  // private static final String mrsToEvalFileName = "FuzzedMRs.csv";
-  private static final String mrsToEvalFileName = "Candidates.csv";
+  // private static final String mrsToEvalFileName = "fuzzed-mrs.csv";
+  private static final String mrsToEvalFileName = "candidates.csv";
 
-  public static void main(Class<?> cut, List<ExecutableSequence> seq, AbstractGenerator explorer) {
+  public static void main(
+      Class<?> cut,
+      List<ExecutableSequence> seq,
+      AbstractGenerator explorer,
+      AdditionalOptions options) {
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
@@ -32,14 +37,22 @@ public class MetamorphicRelationInference {
 
     /* Read the file to know where each sequence correspond */
     String pathToEnabledMethodsPerState =
-        String.join("/", pathToDir, cut.getSimpleName(), "EnabledMethodsPerState.txt");
+        String.join("/", pathToDir, cut.getSimpleName(), "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
     BagsBuilder builder = new BagsBuilder(cut, states);
     Map<EPAState, Bag> bags = builder.createBags(sequences);
 
     /* Take the MRs from the previous phase */
-    String pathToCandidates = String.join("/", pathToDir, cut.getSimpleName(), mrsToEvalFileName);
+    String pathToCandidates =
+        String.join(
+            "/",
+            pathToDir,
+            cut.getSimpleName(),
+            "allow_epa_loops_" + options.isEPALoopsAllowed(),
+            options.generationStrategy().toString(),
+            String.valueOf(options.mrsToFuzz()),
+            mrsToEvalFileName);
     CandidatesReader reader = new CandidatesReader(cut);
     List<MetamorphicRelation> metamorphicRelations = reader.read(pathToCandidates);
     int totalInput =

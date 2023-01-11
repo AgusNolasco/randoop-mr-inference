@@ -2,6 +2,7 @@ package randoop.main;
 
 import static randoop.reflection.AccessibilityPredicate.IS_PUBLIC;
 
+import com.beust.jcommander.JCommander;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -22,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import metamorphicRelationsInference.MetamorphicRelationInference;
+import metamorphicRelationsInference.util.AdditionalOptions;
 import org.apache.commons.lang3.ClassUtils;
 import org.checkerframework.checker.signature.qual.ClassGetName;
 import org.checkerframework.checker.signature.qual.Identifier;
@@ -144,7 +146,10 @@ public class GenTests extends GenInputsAbstract {
 
   @Override
   public boolean handle(String[] args) {
-
+    String[] additionalArgs = Arrays.copyOfRange(args, args.length - 3, args.length);
+    args = Arrays.copyOf(args, args.length - 3);
+    AdditionalOptions additionalOptions = new AdditionalOptions();
+    JCommander.newBuilder().addObject(additionalOptions).build().parse(additionalArgs);
     try {
       String[] nonargs = options.parse(args);
       if (nonargs.length > 0) {
@@ -544,7 +549,7 @@ public class GenTests extends GenInputsAbstract {
       }
 
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
-      MetamorphicRelationInference.main(cut, regressionSequences, explorer);
+      MetamorphicRelationInference.main(cut, regressionSequences, explorer, additionalOptions);
       System.exit(0);
       /*-------------------------------------------*/
 
