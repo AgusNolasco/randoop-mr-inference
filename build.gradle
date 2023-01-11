@@ -67,6 +67,7 @@ allprojects {
     // https://mvnrepository.com/artifact/org.plumelib/reflection-util
     plumelib 'org.plumelib:reflection-util:1.0.5'
     implementation('org.apache.commons:commons-csv:1.9.0')
+    implementation('com.beust:jcommander:1.82')
     implementation fileTree(include: ['*.jar'], dir: 'lib')
   }
  java {
