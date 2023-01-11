@@ -1,3 +1,5 @@
+#Usage: ./experiments/run.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}
+
 source experiments/init_env.sh
 
 subject_set=$1
