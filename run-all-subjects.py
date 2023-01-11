@@ -18,8 +18,3 @@ for filename in os.listdir(dir_path):
         print('Running: ' + subject_name)
         result = subprocess.run(f'experiments/run.sh {subject_set} {subject_name} 
                 {gen_strategy} {mr_to_fuzz} {allow_epa_loops}', shell=True, stdout=subprocess.PIPE)
-        output = result.stdout.decode('utf-8')
-        print(output)
-        f = open(f'{outputs_dir}/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt', 'w')
-        f.write(output)
-        f.close()
