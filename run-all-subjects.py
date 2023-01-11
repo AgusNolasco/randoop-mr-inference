@@ -5,7 +5,10 @@ import sys
 
 outputs_dir = 'output'
 
-subject_set = sys.argv[1]
+subject_set   = sys.argv[1]
+gen_strategy  = sys.argv[2]
+mrs_to_fuzz   = sys.argv[3]
+allow_epa_loops = sys.argv[4]
 
 dir_path = f'experiments/{subject_set}-subjects'
 i = 0
@@ -13,9 +16,10 @@ for filename in os.listdir(dir_path):
     if '.properties' in filename:
         subject_name = filename.split('.properties')[0]
         print('Running: ' + subject_name)
-        result = subprocess.run(f'experiments/run.sh {subject_name} {subject_set}', shell=True, stdout=subprocess.PIPE)
+        result = subprocess.run(f'experiments/run.sh {subject_set} {subject_name} 
+                {gen_strategy} {mr_to_fuzz} {allow_epa_loops}', shell=True, stdout=subprocess.PIPE)
         output = result.stdout.decode('utf-8')
         print(output)
-        f = open(f'{outputs_dir}/{subject_name}.txt', 'w')
+        f = open(f'{outputs_dir}/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt', 'w')
         f.write(output)
         f.close()
