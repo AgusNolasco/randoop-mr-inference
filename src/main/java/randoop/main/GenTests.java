@@ -146,7 +146,6 @@ public class GenTests extends GenInputsAbstract {
 
   @Override
   public boolean handle(String[] args) {
-    System.out.println(args.length);
     int countOfAdditionalArgs = 3;
     if (args[args.length - 1].contains("--run-over-fuzzed-mrs")) {
       countOfAdditionalArgs = 4;
