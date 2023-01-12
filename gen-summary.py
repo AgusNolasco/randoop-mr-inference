@@ -3,7 +3,7 @@ import subprocess
 import csv
 import sys
 
-header = ['Class', 'Input', 'Output', 'Accept %', 'Reject %']
+header = ['Class', 'Input', 'Output', 'Valid %', 'Invalid %']
 rows = []
 
 gen_strategy = sys.argv[1]
