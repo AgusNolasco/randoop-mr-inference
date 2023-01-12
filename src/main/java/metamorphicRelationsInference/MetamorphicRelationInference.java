@@ -20,15 +20,20 @@ public class MetamorphicRelationInference {
   private static List<ExecutableSequence> sequences;
   private static final String pathToDir = System.getenv("OUTPUTS_DIR");
 
-  // Use this for precision and recall computation
-  // private static final String mrsToEvalFileName = "fuzzed-mrs.csv";
-  private static final String mrsToEvalFileName = "candidates.csv";
-
   public static void main(
       Class<?> cut,
       List<ExecutableSequence> seq,
       AbstractGenerator explorer,
       AdditionalOptions options) {
+
+    final String mrsToEvalFileName;
+    if (options.runOverFuzzerMRs()) {
+      // Use this for precision and recall computation
+      mrsToEvalFileName = "fuzzed-mrs.csv";
+    } else {
+      mrsToEvalFileName = "candidates.csv";
+    }
+
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 

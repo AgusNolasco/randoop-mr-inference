@@ -16,6 +16,9 @@ public class AdditionalOptions {
   @Parameter(names = "--allow-epa-loops", arity = 1)
   private boolean allowEPALoops = false;
 
+  @Parameter(names = "--run-over-fuzzed-mrs")
+  private boolean runOverFuzzerMRs = false;
+
   public GenerationStrategy generationStrategy() {
     return GenerationStrategy.valueOf(strategy);
   }
@@ -26,5 +29,9 @@ public class AdditionalOptions {
 
   public boolean isEPALoopsAllowed() {
     return allowEPALoops;
+  }
+
+  public boolean runOverFuzzerMRs() {
+    return runOverFuzzerMRs;
   }
 }

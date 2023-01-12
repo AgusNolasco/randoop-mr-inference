@@ -146,8 +146,14 @@ public class GenTests extends GenInputsAbstract {
 
   @Override
   public boolean handle(String[] args) {
-    String[] additionalArgs = Arrays.copyOfRange(args, args.length - 3, args.length);
-    args = Arrays.copyOf(args, args.length - 3);
+    System.out.println(args.length);
+    int countOfAdditionalArgs = 3;
+    if (args[args.length - 1].contains("--run-over-fuzzed-mrs")) {
+      countOfAdditionalArgs = 4;
+    }
+    String[] additionalArgs =
+        Arrays.copyOfRange(args, args.length - countOfAdditionalArgs, args.length);
+    args = Arrays.copyOf(args, args.length - countOfAdditionalArgs);
     AdditionalOptions additionalOptions = new AdditionalOptions();
     JCommander.newBuilder().addObject(additionalOptions).build().parse(additionalArgs);
     try {

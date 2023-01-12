@@ -18,7 +18,6 @@ public class InferredMRsWriter {
   private final Class<?> cut;
   private static final String[] HEADERS = {"Metamorphic Relation", "Survives EPA"};
   private final String OUTPUTS_DIR = "output";
-  private final String fileName = "randoop_mrs.csv";
 
   /**
    * Constructor
@@ -32,6 +31,12 @@ public class InferredMRsWriter {
 
   public void writeAllMRsProcessed(
       Set<MetamorphicRelation> mrs, Set<EPAState> states, AdditionalOptions options) {
+    String fileName;
+    if (options.runOverFuzzerMRs()) {
+      fileName = "randoop-run-over-fuzzed-mrs.csv";
+    } else {
+      fileName = "randoop-mrs.csv";
+    }
     String dirName =
         OUTPUTS_DIR
             + "/"

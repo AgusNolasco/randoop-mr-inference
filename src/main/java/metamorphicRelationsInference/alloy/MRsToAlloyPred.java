@@ -20,6 +20,12 @@ public class MRsToAlloyPred {
   }
 
   public void save(List<MetamorphicRelation> mrs, AdditionalOptions options) {
+    String fileName;
+    if (options.runOverFuzzerMRs()) {
+      fileName = "fuzzed-valid-mrs-alloy-predicates.als";
+    } else {
+      fileName = "mrs-alloy-predicates.als";
+    }
     File file =
         new File(
             OUTPUT_DIR
@@ -33,7 +39,7 @@ public class MRsToAlloyPred {
                 + "/"
                 + options.mrsToFuzz()
                 + "/"
-                + "mrs-alloy-predicates.als");
+                + fileName);
     try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
       for (MetamorphicRelation mr : mrs) {
         writer.write(mr + DELIMITER + mr.toAlloyPred(clazz) + "\n");
