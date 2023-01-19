@@ -14,8 +14,9 @@ public class SystemExitCalledError extends Error {
     super(String.format("Call to System exit(%d) detected; terminating execution", status));
     this.status = status;
     // If there are any java.awt windows active java runtime will deadlock.
-    for (java.awt.Window w : java.awt.Window.getWindows()) {
+    /*for (java.awt.Window w : java.awt.Window.getWindows()) {
       w.dispose();
-    }
+    }*/
+    throw new RuntimeException("Exit call");
   }
 }
