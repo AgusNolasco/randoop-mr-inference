@@ -146,13 +146,9 @@ public class GenTests extends GenInputsAbstract {
 
   @Override
   public boolean handle(String[] args) {
-    int countOfAdditionalArgs = 3;
-    if (args[args.length - 1].contains("--run-over-fuzzed-mrs")) {
-      countOfAdditionalArgs = 4;
-    }
     String[] additionalArgs =
-        Arrays.copyOfRange(args, args.length - countOfAdditionalArgs, args.length);
-    args = Arrays.copyOf(args, args.length - countOfAdditionalArgs);
+        Arrays.copyOfRange(args, indexOfAdditionalArguments(args), args.length);
+    args = Arrays.copyOf(args, indexOfAdditionalArguments(args));
     AdditionalOptions additionalOptions = new AdditionalOptions();
     JCommander.newBuilder().addObject(additionalOptions).build().parse(additionalArgs);
     try {
@@ -1338,5 +1334,14 @@ public class GenTests extends GenInputsAbstract {
   /** Increments the count of sequence compilation failures. */
   public void incrementSequenceCompileFailureCount() {
     this.sequenceCompileFailureCount++;
+  }
+
+  private int indexOfAdditionalArguments(String[] args) {
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].contains("--gen-strategy")) {
+        return i;
+      }
+    }
+    throw new IllegalStateException("There's no additional arguments for mr inference");
   }
 }
