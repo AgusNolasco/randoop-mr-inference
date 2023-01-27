@@ -10,6 +10,7 @@ import java.util.*;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.AdditionalOptions;
+import metamorphicRelationsInference.util.MRFormatter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -32,7 +33,7 @@ public class InferredMRsWriter {
   public void writeAllMRsProcessed(
       Set<MetamorphicRelation> mrs, Set<EPAState> states, AdditionalOptions options) {
     String fileName;
-    if (options.runOverFuzzerMRs()) {
+    if (options.isRunOverFuzzedMRs()) {
       fileName = "randoop-run-over-fuzzed-mrs.csv";
     } else {
       fileName = "randoop-mrs.csv";
@@ -74,6 +75,40 @@ public class InferredMRsWriter {
       }
     } catch (IOException e) {
       throw new IllegalStateException("Unable to write inferred mrs!", e);
+    }
+  }
+
+  public void writeAllMRsProcessedFormatted(
+      List<MetamorphicRelation> mrs, AdditionalOptions options) {
+    String fileName = "formatted-mrs.csv";
+    if (options.isRunOverFuzzedMRs()) {
+      return; // Do nothing if the execution is over all fuzzed mrs
+    }
+    String dirName =
+        OUTPUTS_DIR
+            + "/"
+            + cut.getSimpleName()
+            + "/"
+            + "allow_epa_loops_"
+            + options.isEPALoopsAllowed()
+            + "/"
+            + options.generationStrategy()
+            + "/"
+            + options.mrsToFuzz()
+            + "/";
+    File directory = new File(dirName);
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+    File file = new File(dirName + fileName);
+    try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
+      MRFormatter formatter = new MRFormatter();
+      for (MetamorphicRelation mr : mrs) {
+        String formattedMr = formatter.formatMR(mr);
+        writer.write(formattedMr + "\n");
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }

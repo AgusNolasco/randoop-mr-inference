@@ -19,6 +19,9 @@ public class AdditionalOptions {
   @Parameter(names = "--run-over-fuzzed-mrs")
   private boolean runOverFuzzerMRs = false;
 
+  @Parameter(names = "--run-over-mutant")
+  private boolean runOverMutant = false;
+
   public GenerationStrategy generationStrategy() {
     return GenerationStrategy.valueOf(strategy);
   }
@@ -31,7 +34,11 @@ public class AdditionalOptions {
     return allowEPALoops;
   }
 
-  public boolean runOverFuzzerMRs() {
+  public boolean isRunOverFuzzedMRs() {
     return runOverFuzzerMRs;
+  }
+
+  public boolean isRunOverMutant() {
+    return runOverMutant;
   }
 }

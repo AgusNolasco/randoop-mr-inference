@@ -18,7 +18,7 @@ import randoop.sequence.ExecutableSequence;
 public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
-  private static final String pathToDir = System.getenv("OUTPUTS_DIR");
+  private static final String pathToMRs = System.getenv("MRS_DIR");
 
   public static void main(
       Class<?> cut,
@@ -27,9 +27,11 @@ public class MetamorphicRelationInference {
       AdditionalOptions options) {
 
     final String mrsToEvalFileName;
-    if (options.runOverFuzzerMRs()) {
+    if (options.isRunOverFuzzedMRs()) {
       // Use this for precision and recall computation
       mrsToEvalFileName = "fuzzed-mrs.csv";
+    } else if (options.isRunOverMutant()) {
+      mrsToEvalFileName = "formatted-mrs.csv";
     } else {
       mrsToEvalFileName = "candidates.csv";
     }
@@ -42,7 +44,12 @@ public class MetamorphicRelationInference {
 
     /* Read the file to know where each sequence correspond */
     String pathToEnabledMethodsPerState =
-        String.join("/", pathToDir, cut.getSimpleName(), "enabled-methods-per-state.txt");
+        String.join(
+            "/",
+            System.getenv("EPA_INFERENCE_DIR"),
+            "output",
+            cut.getSimpleName(),
+            "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
     BagsBuilder builder = new BagsBuilder(cut, states);
@@ -52,7 +59,7 @@ public class MetamorphicRelationInference {
     String pathToCandidates =
         String.join(
             "/",
-            pathToDir,
+            pathToMRs,
             cut.getSimpleName(),
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
@@ -98,10 +105,13 @@ public class MetamorphicRelationInference {
       System.out.println(s + " -> size: " + bags.get(s).getVariablesAndIndexes().size());
     }
 
-    InferredMRsWriter writer = new InferredMRsWriter(cut);
-    writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
+    if (!options.isRunOverMutant()) {
+      InferredMRsWriter writer = new InferredMRsWriter(cut);
+      writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
+      writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-    MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
-    alloyPred.save(validMRs, options);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
+      alloyPred.save(validMRs, options);
+    }
   }
 }
