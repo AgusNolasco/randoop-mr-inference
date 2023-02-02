@@ -50,11 +50,9 @@ print(f'Number of mutants: {len(mutant_numbers)}')
 
 mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 
-'''
 for mutant_number in mutant_numbers:
     print(f'Running over mutant {mutant_number} for: {subject_name}')
     result = subprocess.run(f'experiments/run-over-mutant.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} {mutant_number} {over}', shell=True, stdout=subprocess.PIPE)
-'''
 
 path_to_mrs = ''
 if over == 'REDUCED':
