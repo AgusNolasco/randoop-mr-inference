@@ -100,4 +100,4 @@ for mutant_number in mutant_numbers:
     mrs_killing_mutant = list(set(mrs) - set(mrs_per_mutant[mutant_number]))
     data.loc[mrs_killing_mutant, mutant_number] = 1
 
-data.to_csv(f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mutants/mutation-results.csv')
+data.to_csv(f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mutants/mutation-results-{over}.csv')
