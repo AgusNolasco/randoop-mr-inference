@@ -18,7 +18,7 @@ import randoop.sequence.ExecutableSequence;
 public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
-  private static final String pathToMRs = System.getenv("MRS_DIR");
+  private static final String pathToOutput = System.getenv("MRS_DIR");
 
   public static void main(
       Class<?> cut,
@@ -56,15 +56,19 @@ public class MetamorphicRelationInference {
     Map<EPAState, Bag> bags = builder.createBags(sequences);
 
     /* Take the MRs from the previous phase */
-    String pathToCandidates =
+    String pathToMRs =
         String.join(
             "/",
-            pathToMRs,
+            pathToOutput,
             cut.getSimpleName(),
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
-            String.valueOf(options.mrsToFuzz()),
-            mrsToEvalFileName);
+            String.valueOf(options.mrsToFuzz()));
+    if (options.isTrivialEPA()) {
+      pathToMRs += "/trivial_epa";
+    }
+
+    String pathToCandidates = pathToMRs + "/" + mrsToEvalFileName;
     CandidatesReader reader = new CandidatesReader(cut);
     List<MetamorphicRelation> metamorphicRelations = reader.read(pathToCandidates);
     int totalInput =

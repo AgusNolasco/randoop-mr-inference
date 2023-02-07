@@ -22,6 +22,9 @@ public class AdditionalOptions {
   @Parameter(names = "--run-over-mutant")
   private boolean runOverMutant = false;
 
+  @Parameter(names = "--trivial-epa")
+  private boolean isTrivialEPA = false;
+
   public GenerationStrategy generationStrategy() {
     return GenerationStrategy.valueOf(strategy);
   }
@@ -40,5 +43,9 @@ public class AdditionalOptions {
 
   public boolean isRunOverMutant() {
     return runOverMutant;
+  }
+
+  public boolean isTrivialEPA() {
+    return isTrivialEPA;
   }
 }

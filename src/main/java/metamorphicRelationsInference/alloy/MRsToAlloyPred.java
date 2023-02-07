@@ -27,20 +27,22 @@ public class MRsToAlloyPred {
     } else {
       fileName = "mrs-alloy-predicates.als";
     }
-    File file =
-        new File(
-            OUTPUT_DIR
-                + "/"
-                + clazz.getSimpleName()
-                + "/"
-                + "allow_epa_loops_"
-                + options.isEPALoopsAllowed()
-                + "/"
-                + options.generationStrategy()
-                + "/"
-                + options.mrsToFuzz()
-                + "/"
-                + fileName);
+    String dirName =
+        OUTPUT_DIR
+            + "/"
+            + clazz.getSimpleName()
+            + "/"
+            + "allow_epa_loops_"
+            + options.isEPALoopsAllowed()
+            + "/"
+            + options.generationStrategy()
+            + "/"
+            + options.mrsToFuzz()
+            + "/";
+    if (options.isTrivialEPA()) {
+      dirName += "trivial_epa/";
+    }
+    File file = new File(dirName + fileName);
     try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
       MRFormatter formatter = new MRFormatter();
       for (MetamorphicRelation mr : mrs) {
