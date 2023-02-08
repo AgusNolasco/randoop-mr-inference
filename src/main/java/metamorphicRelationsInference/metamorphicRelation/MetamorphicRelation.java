@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
+import metamorphicRelationsInference.util.ReflectionUtils;
 import randoop.sequence.Sequence;
 
 public class MetamorphicRelation {
@@ -119,20 +120,22 @@ public class MetamorphicRelation {
 
   @Override
   public String toString() {
-    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
-    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
+    String left =
+        leftMethods.stream().map(ReflectionUtils::getProcName).collect(Collectors.joining(" "));
+    String right =
+        rightMethods.stream().map(ReflectionUtils::getProcName).collect(Collectors.joining(" "));
     if (leftConstructor != null) {
       if (!left.isEmpty()) {
-        left = leftConstructor.getDeclaringClass().getSimpleName() + " " + left;
+        left = ReflectionUtils.getProcName(leftConstructor) + " " + left;
       } else {
-        left = leftConstructor.getDeclaringClass().getSimpleName();
+        left = ReflectionUtils.getProcName(leftConstructor);
       }
     }
     if (rightConstructor != null) {
       if (!right.isEmpty()) {
-        right = rightConstructor.getDeclaringClass().getSimpleName() + " " + right;
+        right = ReflectionUtils.getProcName(rightConstructor) + " " + right;
       } else {
-        right = rightConstructor.getDeclaringClass().getSimpleName();
+        right = ReflectionUtils.getProcName(rightConstructor);
       }
     }
     if (left.isEmpty()) {
@@ -209,43 +212,15 @@ public class MetamorphicRelation {
 
   private String getActionSeqAsString(List<Method> methods, Constructor<?> constructor) {
     String actionSeqAsString =
-        methods.stream().map(this::getMethodName).collect(Collectors.joining("."));
+        methods.stream().map(ReflectionUtils::getMethodName).collect(Collectors.joining("."));
     if (constructor != null) {
       if (!actionSeqAsString.isEmpty()) {
-        actionSeqAsString = getConstructorName(constructor) + "." + actionSeqAsString;
+        actionSeqAsString =
+            ReflectionUtils.getConstructorName(constructor) + "." + actionSeqAsString;
       } else {
-        actionSeqAsString = getConstructorName(constructor);
+        actionSeqAsString = ReflectionUtils.getConstructorName(constructor);
       }
     }
     return actionSeqAsString;
-  }
-
-  private String getConstructorName(Constructor<?> constructor) {
-    Class<?> clazz = constructor.getDeclaringClass();
-    String constructorName = constructor.getDeclaringClass().getSimpleName();
-    long countOfSameNamedConstructors = Arrays.stream(clazz.getConstructors()).count();
-    if (countOfSameNamedConstructors > 1) {
-      return constructorName
-          + Arrays.stream(constructor.getParameterTypes())
-              .map(Class::getSimpleName)
-              .collect(Collectors.joining());
-    }
-    return constructorName;
-  }
-
-  private String getMethodName(Method method) {
-    Class<?> clazz = method.getDeclaringClass();
-    String methodName = method.getName();
-    long countOfSameNamedMethods =
-        Arrays.stream(clazz.getDeclaredMethods())
-            .filter(m -> m.getName().equals(methodName))
-            .count();
-    if (countOfSameNamedMethods > 1) {
-      return methodName
-          + Arrays.stream(method.getParameterTypes())
-              .map(Class::getSimpleName)
-              .collect(Collectors.joining());
-    }
-    return methodName;
   }
 }
