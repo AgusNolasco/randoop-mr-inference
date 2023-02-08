@@ -64,8 +64,8 @@ public class MetamorphicRelationInference {
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
             String.valueOf(options.mrsToFuzz()));
-    if (options.isTrivialEPA()) {
-      pathToMRs += "/trivial_epa";
+    if (options.isRandom()) {
+      pathToMRs += "/random";
     }
 
     String pathToCandidates = pathToMRs + "/" + mrsToEvalFileName;

@@ -50,8 +50,8 @@ public class InferredMRsWriter {
             + "/"
             + options.mrsToFuzz()
             + "/";
-    if (options.isTrivialEPA()) {
-      dirName += "trivial_epa/";
+    if (options.isRandom()) {
+      dirName += "random/";
     }
     File directory = new File(dirName);
     if (!directory.exists()) {
@@ -99,8 +99,8 @@ public class InferredMRsWriter {
             + "/"
             + options.mrsToFuzz()
             + "/";
-    if (options.isTrivialEPA()) {
-      dirName += "trivial_epa/";
+    if (options.isRandom()) {
+      dirName += "random/";
     }
     File directory = new File(dirName);
     if (!directory.exists()) {

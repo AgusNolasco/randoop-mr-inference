@@ -39,8 +39,8 @@ public class MRsToAlloyPred {
             + "/"
             + options.mrsToFuzz()
             + "/";
-    if (options.isTrivialEPA()) {
-      dirName += "trivial_epa/";
+    if (options.isRandom()) {
+      dirName += "random/";
     }
     File file = new File(dirName + fileName);
     try (Writer writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
