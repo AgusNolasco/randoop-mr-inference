@@ -53,7 +53,15 @@ public class MetamorphicRelationInference {
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
     BagsBuilder builder = new BagsBuilder(cut, states);
-    Map<EPAState, Bag> bags = builder.createBags(sequences);
+    boolean isEpaBroken = false;
+    Map<EPAState, Bag> bags = null;
+    try {
+      bags = builder.createBags(sequences);
+    } catch (Exception e) {
+      System.out.println("The EPA is broken");
+      isEpaBroken = true;
+      System.out.println(isEpaBroken);
+    }
 
     /* Take the MRs from the previous phase */
     String pathToMRs =
@@ -105,6 +113,7 @@ public class MetamorphicRelationInference {
                     / (float) metamorphicRelations.size())
                 * 100);
     System.out.println();
+    assert bags != null;
     for (EPAState s : bags.keySet()) {
       System.out.println(s + " -> size: " + bags.get(s).getVariablesAndIndexes().size());
     }

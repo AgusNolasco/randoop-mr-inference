@@ -25,7 +25,7 @@ public class BagsBuilder {
     this.initialState = optionalInitialState.get();
   }
 
-  public Map<EPAState, Bag> createBags(List<ExecutableSequence> sequences) {
+  public Map<EPAState, Bag> createBags(List<ExecutableSequence> sequences) throws Exception {
     Map<EPAState, Bag> bags = new HashMap<>();
     for (EPAState state : states) {
       bags.put(state, new Bag(state));
@@ -44,6 +44,7 @@ public class BagsBuilder {
             System.out.println("The state could not be computed for the next sequence: \n\n");
             System.out.println(s.sequence);
             System.out.println("Caused by: " + e + "\n");
+            throw e;
           }
         }
         i++;
