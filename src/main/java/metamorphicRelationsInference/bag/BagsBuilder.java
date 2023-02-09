@@ -67,7 +67,6 @@ public class BagsBuilder {
     Set<Method> methods = listOfSetOfMethods.get(0);
     for (Method m : methods) {
       m.setAccessible(true);
-      System.out.println(m);
       methodsAndActualResults.put(m, (Boolean) m.invoke(object));
     }
 
