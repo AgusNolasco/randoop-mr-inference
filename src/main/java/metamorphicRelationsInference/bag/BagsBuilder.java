@@ -67,6 +67,7 @@ public class BagsBuilder {
     Set<Method> methods = listOfSetOfMethods.get(0);
     for (Method m : methods) {
       m.setAccessible(true);
+      System.out.println(m);
       methodsAndActualResults.put(m, (Boolean) m.invoke(object));
     }
 
@@ -76,12 +77,6 @@ public class BagsBuilder {
       System.out.println("---------------------");
       System.out.println(state);
       for (Method m : methods) {
-        System.out.println(
-            m.getName()
-                + " expected: "
-                + methodsAndExpectedResults.get(m)
-                + " - actual: "
-                + methodsAndActualResults.get(m));
         if (!methodsAndExpectedResults.get(m).equals(methodsAndActualResults.get(m))) {
           allEqual = false;
           break;
