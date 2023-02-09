@@ -2,6 +2,8 @@ package metamorphicRelationsInference.bag;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
 import randoop.DummyVisitor;
@@ -53,16 +55,37 @@ public class BagsBuilder {
     return bags;
   }
 
-  private EPAState computeState(Object obj) throws Exception {
+  private EPAState computeState(Object object) throws Exception {
+    Map<Method, Boolean> methodsAndActualResults = new HashMap<>();
+    List<Set<Method>> listOfSetOfMethods =
+        states.stream()
+            .map(EPAState::getEnabledMethods)
+            .map(Map::keySet)
+            .collect(Collectors.toList());
+    Predicate<Set<Method>> predicate = set -> Objects.equals(listOfSetOfMethods.get(0), set);
+    assert listOfSetOfMethods.stream().allMatch(predicate);
+    Set<Method> methods = listOfSetOfMethods.get(0);
+    for (Method m : methods) {
+      m.setAccessible(true);
+      methodsAndActualResults.put(m, (Boolean) m.invoke(object));
+    }
+
     for (EPAState state : states) {
       boolean allEqual = true;
-
-      Map<Method, Boolean> methodsAndResults = state.getEnabledMethods();
-      for (Method m : methodsAndResults.keySet()) {
-        m.setAccessible(true);
-        boolean result;
-        result = (Boolean) m.invoke(obj);
-        allEqual &= methodsAndResults.get(m) == result;
+      Map<Method, Boolean> methodsAndExpectedResults = state.getEnabledMethods();
+      System.out.println("---------------------");
+      System.out.println(state);
+      for (Method m : methods) {
+        System.out.println(
+            m.getName()
+                + " expected: "
+                + methodsAndExpectedResults.get(m)
+                + " - actual: "
+                + methodsAndActualResults.get(m));
+        if (!methodsAndExpectedResults.get(m).equals(methodsAndActualResults.get(m))) {
+          allEqual = false;
+          break;
+        }
       }
 
       if (allEqual) {
