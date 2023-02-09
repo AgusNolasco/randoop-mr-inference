@@ -59,8 +59,10 @@ public class MetamorphicRelationInference {
       bags = builder.createBags(sequences);
     } catch (Exception e) {
       System.out.println("The EPA is broken");
+      if (!options.isRunOverMutant()) {
+        System.exit(1);
+      }
       isEpaBroken = true;
-      System.out.println(isEpaBroken);
     }
 
     /* Take the MRs from the previous phase */
@@ -87,8 +89,11 @@ public class MetamorphicRelationInference {
             .sum();
 
     /* Validation phase */
-    Validator validator = new Validator(explorer);
-    List<MetamorphicRelation> validMRs = validator.validate(metamorphicRelations, bags);
+    Validator validator = new Validator(explorer, options);
+    List<MetamorphicRelation> validMRs = new ArrayList<>();
+    if (!isEpaBroken || !options.isRunOverMutant()) {
+      validMRs = validator.validate(metamorphicRelations, bags);
+    }
     int totalOutput =
         validMRs.stream()
             .map(MetamorphicRelation::getStatesWhereSurvives)
