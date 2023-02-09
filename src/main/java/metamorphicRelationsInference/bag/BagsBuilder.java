@@ -73,8 +73,6 @@ public class BagsBuilder {
     for (EPAState state : states) {
       boolean allEqual = true;
       Map<Method, Boolean> methodsAndExpectedResults = state.getEnabledMethods();
-      System.out.println("---------------------");
-      System.out.println(state);
       for (Method m : methods) {
         if (!methodsAndExpectedResults.get(m).equals(methodsAndActualResults.get(m))) {
           allEqual = false;
