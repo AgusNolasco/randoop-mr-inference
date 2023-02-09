@@ -17,6 +17,7 @@ import randoop.sequence.ExecutableSequence;
 import randoop.sequence.Sequence;
 import randoop.sequence.Variable;
 import randoop.test.DummyCheckGenerator;
+import randoop.types.*;
 
 public class Executor {
 
@@ -50,12 +51,22 @@ public class Executor {
   private Pair<Sequence, Variable> extendSequence(
       Variable var, Constructor<?> constructor, List<Method> methods) {
     Sequence sequence = var.sequence;
-    Pair<Sequence, Integer> pair1 = constructorSequence(constructor, sequence);
+    ParameterizedType t;
+    Substitution s = null;
+    if (var.getType().isParameterized() && !var.getType().isGeneric()) {
+      t = (InstantiatedType) var.getType();
+      List<ReferenceType> raList =
+          t.getTypeArguments().stream()
+              .map(type -> ((ReferenceArgument) type).getReferenceType())
+              .collect(Collectors.toList());
+      s = new Substitution(t.getGenericClassType().getTypeParameters(), raList);
+    }
+    Pair<Sequence, Integer> pair1 = appendConstructor(constructor, sequence);
     sequence = pair1.getFst();
     Integer newObjVarIndex = pair1.getSnd();
 
     int varIndex = newObjVarIndex == null ? var.index : newObjVarIndex;
-    sequence = methodsSequence(methods, sequence, varIndex);
+    sequence = appendMethods(methods, sequence, varIndex, s);
 
     return new Pair<>(sequence, sequence.getVariable(varIndex));
   }
@@ -84,8 +95,7 @@ public class Executor {
     return values[0];
   }
 
-  private Pair<Sequence, Integer> constructorSequence(
-      Constructor<?> constructor, Sequence sequence) {
+  private Pair<Sequence, Integer> appendConstructor(Constructor<?> constructor, Sequence sequence) {
     Integer newObjVarIndex = null;
     if (constructor != null) {
       TypedOperation operation = TypedOperation.forConstructor(constructor);
@@ -114,9 +124,13 @@ public class Executor {
     return new Pair<>(sequence, newObjVarIndex);
   }
 
-  private Sequence methodsSequence(List<Method> methods, Sequence sequence, int varIndex) {
+  private Sequence appendMethods(
+      List<Method> methods, Sequence sequence, int varIndex, Substitution s) {
     for (Method m : methods) {
       TypedOperation operation = TypedOperation.forMethod(m);
+      if (s != null) {
+        operation = operation.substitute(s);
+      }
       InputsAndSuccessFlag inputs = explorer.selectInputs(operation, true);
       Sequence concatSeq = Sequence.concatenate(inputs.sequences);
       List<Integer> indices = adjustIndices(inputs.indices, sequence.getLastVariable().index + 1);

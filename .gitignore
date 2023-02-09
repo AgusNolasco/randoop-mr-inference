@@ -4,6 +4,7 @@
 ui/
 *.orig
 *~
+lib/
 
 # Generated files
 dist/

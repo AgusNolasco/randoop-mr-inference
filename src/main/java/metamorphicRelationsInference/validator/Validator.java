@@ -6,6 +6,7 @@ import metamorphicRelationsInference.bag.Bag;
 import metamorphicRelationsInference.distance.Distance;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
+import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.Pair;
 import randoop.generation.AbstractGenerator;
 import randoop.sequence.Variable;
@@ -14,10 +15,12 @@ public class Validator {
 
   private final Executor executor;
   private final List<MetamorphicRelation> allMRsProcessed;
+  private final AdditionalOptions options;
 
-  public Validator(AbstractGenerator explorer) {
+  public Validator(AbstractGenerator explorer, AdditionalOptions options) {
     executor = new Executor(explorer);
     allMRsProcessed = new ArrayList<>();
+    this.options = options;
   }
 
   public List<MetamorphicRelation> validate(
@@ -34,7 +37,7 @@ public class Validator {
         System.out.println("Is valid MR for states: " + mr.getStatesWhereSurvives());
         validMRs.add(mr);
       } else {
-        if (!mr.hasCounterExample()) {
+        if (!mr.hasCounterExamples()) {
           System.out.println("All the executed sequences fail for this MR");
         }
         System.out.println("MRs invalidated");
@@ -47,6 +50,9 @@ public class Validator {
 
   private boolean isValid(MetamorphicRelation mr, Set<Bag> bags) {
     for (Bag bag : bags) {
+      if (bag.getVariablesAndIndexes().isEmpty() && options.isRunOverMutant()) {
+        continue; // in mutation, if the precondition is false we say the property is valid
+      }
       if (!isValidBag(mr, bag) || !isValidInBag(mr, bag)) {
         mr.removeFromStatesWhereSurvives(bag.getState());
       }

@@ -2,6 +2,7 @@ package metamorphicRelationsInference.distance;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import metamorphicRelationsInference.distance.util.ReflectionUtils;
 
@@ -19,14 +20,14 @@ public class Distance {
   private Distance() {}
 
   public static boolean strongEquals(Object o1, Object o2) {
-    if (o1 == null && o2 == null) {
-      return true;
-    } else if (o1 == null ^ o2 == null) {
-      return false;
-    }
-
-    if (o1.equals(o2)) {
-      return true;
+    Class<?> clazz = o1.getClass();
+    try {
+      Method m = clazz.getMethod("equals", Object.class);
+      if (m.getDeclaringClass() == clazz) {
+        return Objects.equals(o1, o2);
+      }
+    } catch (NoSuchMethodException e) {
+      throw new RuntimeException(e);
     }
 
     worklist.clear();

@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.util.Pair;
+import metamorphicRelationsInference.util.ReflectionUtils;
 import randoop.sequence.Sequence;
 
 public class MetamorphicRelation {
@@ -89,8 +90,8 @@ public class MetamorphicRelation {
     return counterExampleObjectsPerState.get(state);
   }
 
-  public boolean hasCounterExample() {
-    return counterExampleObjectsPerState != null;
+  public boolean hasCounterExamples() {
+    return !counterExampleObjectsPerState.isEmpty();
   }
 
   @Override
@@ -119,20 +120,22 @@ public class MetamorphicRelation {
 
   @Override
   public String toString() {
-    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
-    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining(" "));
+    String left =
+        leftMethods.stream().map(ReflectionUtils::getProcName).collect(Collectors.joining(" "));
+    String right =
+        rightMethods.stream().map(ReflectionUtils::getProcName).collect(Collectors.joining(" "));
     if (leftConstructor != null) {
       if (!left.isEmpty()) {
-        left = leftConstructor.getDeclaringClass().getSimpleName() + " " + left;
+        left = ReflectionUtils.getProcName(leftConstructor) + " " + left;
       } else {
-        left = leftConstructor.getDeclaringClass().getSimpleName();
+        left = ReflectionUtils.getProcName(leftConstructor);
       }
     }
     if (rightConstructor != null) {
       if (!right.isEmpty()) {
-        right = rightConstructor.getDeclaringClass().getSimpleName() + " " + right;
+        right = ReflectionUtils.getProcName(rightConstructor) + " " + right;
       } else {
-        right = rightConstructor.getDeclaringClass().getSimpleName();
+        right = ReflectionUtils.getProcName(rightConstructor);
       }
     }
     if (left.isEmpty()) {
@@ -185,22 +188,8 @@ public class MetamorphicRelation {
   }
 
   public String toAlloyPred(Class<?> clazz) {
-    String left = leftMethods.stream().map(Method::getName).collect(Collectors.joining("."));
-    String right = rightMethods.stream().map(Method::getName).collect(Collectors.joining("."));
-    if (leftConstructor != null) {
-      if (!left.isEmpty()) {
-        left = leftConstructor.getDeclaringClass().getSimpleName() + "." + left;
-      } else {
-        left = leftConstructor.getDeclaringClass().getSimpleName();
-      }
-    }
-    if (rightConstructor != null) {
-      if (!right.isEmpty()) {
-        right = rightConstructor.getDeclaringClass().getSimpleName() + "." + right;
-      } else {
-        right = rightConstructor.getDeclaringClass().getSimpleName();
-      }
-    }
+    String left = getActionSeqAsString(leftMethods, leftConstructor);
+    String right = getActionSeqAsString(rightMethods, rightConstructor);
     String mrPred = "";
     assert !right.isEmpty();
     if (left.isEmpty()) {
@@ -219,5 +208,19 @@ public class MetamorphicRelation {
         + "(e1 -> e2) in "
         + mrPred
         + ")";
+  }
+
+  private String getActionSeqAsString(List<Method> methods, Constructor<?> constructor) {
+    String actionSeqAsString =
+        methods.stream().map(ReflectionUtils::getMethodName).collect(Collectors.joining("."));
+    if (constructor != null) {
+      if (!actionSeqAsString.isEmpty()) {
+        actionSeqAsString =
+            ReflectionUtils.getConstructorName(constructor) + "." + actionSeqAsString;
+      } else {
+        actionSeqAsString = ReflectionUtils.getConstructorName(constructor);
+      }
+    }
+    return actionSeqAsString;
   }
 }
