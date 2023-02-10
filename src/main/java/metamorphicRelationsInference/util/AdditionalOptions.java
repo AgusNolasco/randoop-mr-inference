@@ -7,6 +7,9 @@ import metamorphicRelationsInference.metamorphicRelation.GenerationStrategy;
 @Parameters(separators = "=")
 public class AdditionalOptions {
 
+  @Parameter(names = "--SBES")
+  boolean isSBESChecker = false;
+
   @Parameter(names = "--gen-strategy")
   private String strategy;
 
@@ -47,5 +50,9 @@ public class AdditionalOptions {
 
   public boolean isRandom() {
     return isRandom;
+  }
+
+  public boolean SBESChecker() {
+    return isSBESChecker;
   }
 }

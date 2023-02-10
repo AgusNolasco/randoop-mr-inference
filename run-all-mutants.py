@@ -32,7 +32,7 @@ mrs_to_fuzz   = sys.argv[4]
 allow_epa_loops = sys.argv[5]
 over = sys.argv[6]
 
-if over != 'INFERRED' and over != 'REDUCED':
+if over != 'INFERRED' and over != 'REDUCED' and over != 'RANDOM':
     print('Invalid set of MRs to assess')
     exit()
 
@@ -45,8 +45,9 @@ with open(f'{subjects_dir}/{subject_name}/mutants.log') as f:
         pattern = re.compile(".*is.*Enabled.*|.*toString.*|.*equals.*")
         if not pattern.match(mutant):
             mutant_numbers.append(int(mutant.split(':')[0]))
+    print(f'Number of total mutants: {len(mutants)}')
 
-print(f'Number of mutants: {len(mutant_numbers)}')
+print(f'Number of interest mutants: {len(mutant_numbers)}')
 
 mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 
@@ -59,6 +60,8 @@ if over == 'REDUCED':
     path_to_mrs = f'../alloy-mr-reducer/output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mrs.txt'
 elif over == 'INFERRED':
     path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt'
+elif over == 'RANDOM':
+    path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/random/log.txt'
 
 mrs = []
 with open(path_to_mrs) as mrs_file:
@@ -66,7 +69,7 @@ with open(path_to_mrs) as mrs_file:
     if over == 'REDUCED':
         first_mark = mrs.index('')
         mrs = mrs[first_mark+1:]
-    elif over == 'INFERRED':
+    elif over == 'INFERRED' or over == 'RANDOM':
         first_mark = mrs.index('Valid MRs:')
         mrs = mrs[first_mark+2:]
     second_mark = mrs.index('')

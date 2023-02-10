@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import metamorphicRelationsInference.MetamorphicRelationInference;
+import metamorphicRelationsInference.sbes.SBESChecker;
 import metamorphicRelationsInference.util.AdditionalOptions;
 import org.apache.commons.lang3.ClassUtils;
 import org.checkerframework.checker.signature.qual.ClassGetName;
@@ -550,7 +551,11 @@ public class GenTests extends GenInputsAbstract {
       }
 
       List<ExecutableSequence> regressionSequences = explorer.getRegressionSequences();
-      MetamorphicRelationInference.main(cut, regressionSequences, explorer, additionalOptions);
+      if (additionalOptions.SBESChecker()) {
+        SBESChecker.checkMRs(cut, regressionSequences, componentMgr);
+      } else {
+        MetamorphicRelationInference.main(cut, regressionSequences, explorer, additionalOptions);
+      }
       System.exit(0);
       /*-------------------------------------------*/
 
@@ -1338,7 +1343,7 @@ public class GenTests extends GenInputsAbstract {
 
   private int indexOfAdditionalArguments(String[] args) {
     for (int i = 0; i < args.length; i++) {
-      if (args[i].contains("--gen-strategy")) {
+      if (args[i].contains("--gen-strategy") || args[i].contains("--SBES")) {
         return i;
       }
     }
