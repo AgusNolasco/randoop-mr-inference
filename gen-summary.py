@@ -6,14 +6,16 @@ import sys
 header = ['Class', 'Input', 'Output', 'Valid %', 'Invalid %']
 rows = []
 
-gen_strategy = sys.argv[1]
-mrs_to_fuzz = sys.argv[2]
-allow_epa_loops = sys.argv[3]
+subject_set = sys.argv[1]
+gen_strategy = sys.argv[2]
+mrs_to_fuzz = sys.argv[3]
+allow_epa_loops = sys.argv[4]
 
-dir_path = 'output'
-for subject_dir in os.listdir(dir_path):
-    if os.path.isdir(f'{dir_path}/{subject_dir}'):
-        with open(f'{dir_path}/{subject_dir}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt') as f:
+for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
+    if os.path.isfile(f'experiments/{subject_set}-subjects/{subject}'):
+        subject = subject.split('.')[0]
+        with open(f'output/{subject}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt') as f:
+            print(subject)
             lines = f.readlines()
             clazz = [line for line in lines if 'Class: ' in line][0].split(': ')[1].strip()
             accept_percentage = float([line for line in lines if '% of valid MRs: ' in line][0].split(': ')[1])
@@ -28,7 +30,7 @@ for subject_dir in os.listdir(dir_path):
 
             rows.append([clazz, input1, output, accept_percentage, reject_percentage])
 
-filename = f"output/{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
+filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
     
 with open(filename, 'w') as csvfile: 
     csvwriter = csv.writer(csvfile) 
