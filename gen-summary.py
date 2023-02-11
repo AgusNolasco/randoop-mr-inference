@@ -10,11 +10,17 @@ subject_set = sys.argv[1]
 gen_strategy = sys.argv[2]
 mrs_to_fuzz = sys.argv[3]
 allow_epa_loops = sys.argv[4]
+random = False
+if len(sys.argv) == 6 and sys.argv[5] == 'random':
+    random = True
 
 for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
     if os.path.isfile(f'experiments/{subject_set}-subjects/{subject}'):
         subject = subject.split('.')[0]
-        with open(f'output/{subject}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt') as f:
+        path_to_output_dir = f'output/{subject}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/'
+        if random:
+            path_to_output_dir += 'random/'
+        with open(path_to_output_dir + 'log.txt') as f:
             print(subject)
             lines = f.readlines()
             clazz = [line for line in lines if 'Class: ' in line][0].split(': ')[1].strip()
@@ -30,7 +36,10 @@ for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
 
             rows.append([clazz, input1, output, accept_percentage, reject_percentage])
 
-filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
+if random:
+    filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-random-resume.csv"
+else:
+    filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
     
 with open(filename, 'w') as csvfile: 
     csvwriter = csv.writer(csvfile) 
