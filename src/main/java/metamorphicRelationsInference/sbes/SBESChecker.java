@@ -75,10 +75,11 @@ public class SBESChecker {
         }
         if (allFail) {
           mrsKillingMutant.add(method.getName());
-          continue;
+          break;
         }
         if (counterExampleFound) {
           mrsKillingMutant.add(method.getName());
+          break;
         }
       }
 

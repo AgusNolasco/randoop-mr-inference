@@ -19,9 +19,10 @@ mutant_numbers = []
 with open(f'{subjects_dir}/{subject_name}/mutants.log') as f:
     mutants = [line.rstrip() for line in f]
     for mutant in mutants:
-        pattern = re.compile(".*is.*Enabled.*|.*toString.*|.*equals.*")
+        pattern = re.compile(".*is.*Enabled.*|.*toString.*|.*equals.*|.*\$.*")
         if not pattern.match(mutant):
             mutant_numbers.append(int(mutant.split(':')[0]))
+            print(mutant)
     print(f'Number of total mutants: {len(mutants)}')
 
 print(f'Number of interest mutants: {len(mutant_numbers)}')
