@@ -12,7 +12,8 @@ import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 
 public class MRFormatter {
 
-  private final String ACTIONS_DELIMITER = ";";
+  private final String ACTIONS_DELIMITER = "'";
+  private final String STATES_DELIMITER = ";";
   private final String PARAMS_DELIMITER = ":";
   private final String COMPONENTS_DELIMITER = ",";
 
@@ -43,6 +44,6 @@ public class MRFormatter {
   }
 
   private String statesWhereSurvivesToString(Set<EPAState> states) {
-    return states.stream().map(EPAState::toString).collect(Collectors.joining(ACTIONS_DELIMITER));
+    return states.stream().map(EPAState::toString).collect(Collectors.joining(STATES_DELIMITER));
   }
 }
