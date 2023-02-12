@@ -3,7 +3,6 @@ package metamorphicRelationsInference.sbes;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -36,13 +35,19 @@ public class SBESChecker {
         vars.stream()
             .filter(var -> getObjectFromVar(var).equals(getObjectFromVar(var)))
             .collect(Collectors.toList());
-    assert vars.stream().allMatch(var -> getObjectFromVar(var).equals(getObjectFromVar(var)));
 
     Set<String> mrsKillingMutant = new HashSet<>();
 
     try {
       Class<?> checker = ClassUtils.getClass("sbes.SBESChecker" + cut.getSimpleName());
       System.out.println(checker.getSimpleName());
+
+      try {
+        assert vars.stream().allMatch(var -> getObjectFromVar(var).equals(getObjectFromVar(var)));
+      } catch (Exception e) {
+        mrsKillingMutant.addAll(Arrays.stream(checker.getDeclaredMethods()).map(Method::getName).collect(Collectors.toSet()));
+        writeResults(cut, checker, mrsKillingMutant);
+      }
 
       for (Method method : checker.getDeclaredMethods()) {
         List<Class<?>> params =
