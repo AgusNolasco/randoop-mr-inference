@@ -63,9 +63,7 @@ public class SBESChecker {
           try {
             result = (boolean) method.invoke(null, args.toArray());
             allFail = false;
-          } catch (InvocationTargetException
-              | IllegalAccessException
-              | IllegalArgumentException e) {
+          } catch (Exception e) {
             continue;
           }
           if (!result) {
