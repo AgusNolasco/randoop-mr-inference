@@ -18,4 +18,4 @@ for filename in os.listdir(dir_path):
         print('Running: ' + subject_name)
         result = subprocess.run(f'/usr/bin/time -f"%e" experiments/run-random.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}', shell=True, stdout=subprocess.PIPE)
 
-subprocess.run(f'python3 gen-summary.py {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} random', shell=True, stdout=subprocess.PIPE)
+subprocess.run(f'python3 gen-summary.py {subject_set} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} random', shell=True, stdout=subprocess.PIPE)
