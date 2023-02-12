@@ -30,12 +30,8 @@ public class SBESChecker {
     System.out.println("********** SBES-Checker **********");
     List<ExecutableSequence> sequences =
         seqs.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
-    List<Variable> vars = loadCUTVars(cut, sequences);
-    vars =
-        vars.stream()
-            .filter(var -> getObjectFromVar(var).equals(getObjectFromVar(var)))
-            .collect(Collectors.toList());
 
+    List<Variable> vars = loadCUTVars(cut, sequences);
     Set<String> mrsKillingMutant = new HashSet<>();
 
     try {
@@ -43,9 +39,16 @@ public class SBESChecker {
       System.out.println(checker.getSimpleName());
 
       try {
+        vars =
+                vars.stream()
+                        .filter(var -> getObjectFromVar(var).equals(getObjectFromVar(var)))
+                        .collect(Collectors.toList());
         assert vars.stream().allMatch(var -> getObjectFromVar(var).equals(getObjectFromVar(var)));
       } catch (Exception e) {
-        mrsKillingMutant.addAll(Arrays.stream(checker.getDeclaredMethods()).map(Method::getName).collect(Collectors.toSet()));
+        mrsKillingMutant.addAll(
+            Arrays.stream(checker.getDeclaredMethods())
+                .map(Method::getName)
+                .collect(Collectors.toSet()));
         writeResults(cut, checker, mrsKillingMutant);
       }
 
