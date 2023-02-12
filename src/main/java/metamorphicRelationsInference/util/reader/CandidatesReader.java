@@ -13,7 +13,7 @@ public class CandidatesReader {
 
   private final Class<?> cut;
   private final String COMPONENTS_DELIMITER = ",";
-  private final String ACTIONS_DELIMITER = ";";
+  private final String ACTIONS_DELIMITER = "'";
   private final String PARAMS_DELIMITER = ":";
 
   public CandidatesReader(Class<?> cut) {
