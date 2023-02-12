@@ -32,3 +32,13 @@ mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 for mutant_number in mutant_numbers:
     print(f'Running over mutant {mutant_number} for: {subject_name} on SBES')
     result = subprocess.run(f'experiments/run-sbes-checker.sh {subject_set} {subject_name} {mutant_number}', shell=True, stdout=subprocess.PIPE)
+
+mutants_killed = 0
+for mutant_number in mutant_numbers:
+    with open(f'output/{subject_name}/sbes-mutation/{mutant_number}/SBES-mutant-results.txt') as f:
+        lines = [line.rstrip() for line in f]
+        result = lines[0].split(' : ')[1]
+        if result == '1':
+            mutants_killed += 1
+
+print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutants_numbers)}')
