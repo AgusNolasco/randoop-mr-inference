@@ -40,9 +40,9 @@ public class SBESChecker {
 
       try {
         vars =
-                vars.stream()
-                        .filter(var -> getObjectFromVar(var).equals(getObjectFromVar(var)))
-                        .collect(Collectors.toList());
+            vars.stream()
+                .filter(var -> getObjectFromVar(var).equals(getObjectFromVar(var)))
+                .collect(Collectors.toList());
         assert vars.stream().allMatch(var -> getObjectFromVar(var).equals(getObjectFromVar(var)));
       } catch (Exception e) {
         mrsKillingMutant.addAll(
@@ -50,6 +50,7 @@ public class SBESChecker {
                 .map(Method::getName)
                 .collect(Collectors.toSet()));
         writeResults(cut, checker, mrsKillingMutant);
+        System.exit(0);
       }
 
       for (Method method : checker.getDeclaredMethods()) {
