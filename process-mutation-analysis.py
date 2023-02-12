@@ -16,7 +16,7 @@ mutation_summary_file = 'output/mutation-analysis-summary.csv'
 data = []
 for subject in os.listdir(output_dir):
 	dir_to_loop = output_dir + subject + "/allow_epa_loops_{}/EPA_AWARE/{}/".format(allow_epa_loops,mrs_to_fuzz)
-	for filename in glob.iglob(dir_to_loop + '**/*.csv', recursive=True):
+	for filename in glob.iglob(dir_to_loop + '**/mutation-results*', recursive=True):
 		print(f'> Procesing file: {filename}')
 		mrs_type = filename.split('-')[2].split('.')[0]
 		df = pd.read_csv(filename)
