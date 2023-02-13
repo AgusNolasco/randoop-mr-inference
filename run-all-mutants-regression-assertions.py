@@ -33,12 +33,24 @@ for mutant_number in mutant_numbers:
     print(f'Running over mutant {mutant_number} for: {subject_name} on regression assertions')
     result = subprocess.run(f'experiments/run-regression-assertions-on-mutant.sh {subject_set} {subject_name} {mutant_number}', shell=True, stdout=subprocess.PIPE)
 
+output_csv_file = f'output/{subject_name}/regression-mutation/summary.csv'
+mutants_row = [-1]
+killed_row = ['killed']
 mutants_killed = 0
 for mutant_number in mutant_numbers:
     with open(f'output/{subject_name}/regression-mutation/{mutant_number}/regression-mutant-results.txt') as f:
+        mutants_row.append(mutant_number)
         lines = [line.rstrip() for line in f]
         result = lines[0].split(' : ')[1]
         if result == '1':
             mutants_killed += 1
+            killed_row.append(1)
+        else:
+            killed_row.append(0)
 
 print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutant_numbers)}')
+
+with open(output_csv_file, 'w', encoding='UTF8') as f:
+    writer = csv.writer(f)
+    writer.writerow(mutants_row)
+    writer.writerow(killed_row)
