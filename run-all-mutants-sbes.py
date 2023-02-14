@@ -22,7 +22,6 @@ with open(f'{subjects_dir}/{subject_name}/mutants.log') as f:
         pattern = re.compile(".*is.*Enabled.*|.*toString.*|.*equals.*|.*\$.*")
         if not pattern.match(mutant):
             mutant_numbers.append(int(mutant.split(':')[0]))
-            print(mutant)
     print(f'Number of total mutants: {len(mutants)}')
 
 print(f'Number of interest mutants: {len(mutant_numbers)}')
@@ -41,4 +40,4 @@ for mutant_number in mutant_numbers:
         if result == '1':
             mutants_killed += 1
 
-print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutant_numbers)}')
+print(f'Mutation score for {subject_name}: {mutants_killed/len(mutant_numbers)*100}')
