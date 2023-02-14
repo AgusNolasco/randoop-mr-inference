@@ -31,6 +31,7 @@ cd $CURR_DIR
 if [ $mutant_compiles -eq 0 ]; then
     java -cp "$subject_cp:$RANDOOP_DIR/randoop-all-4.3.1.jar" -Xbootclasspath/a:${RANDOOP_DIR}/replacecall-4.3.1.jar -javaagent:${RANDOOP_DIR}/replacecall-4.3.1.jar randoop.main.Main gentests --classlist=$input_file --output-limit=2000 --time-limit=0 --literals-level=ALL --literals-file=literals/lits.txt --deterministic=true --forbid-null=true --SBES
 else
+    mkdir -p "output/$subject_name/sbes-mutation/$mutant_number/"
     echo "Mutant $mutant_number killed? : 1" > "output/$subject_name/sbes-mutation/$mutant_number/SBES-mutant-results.txt"
 fi
 
