@@ -41,4 +41,4 @@ for mutant_number in mutant_numbers:
         if result == '1':
             mutants_killed += 1
 
-print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutants_numbers)}')
+print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutant_numbers)}')
