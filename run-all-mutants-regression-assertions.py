@@ -6,7 +6,7 @@ import re
 import numpy as np
 import pandas as pd
 
-# Usage: python3 run-all-mutants-sbes.py {EPA|SBES} {subject_name}
+# Usage: python3 run-all-mutants-regression-assertions.py {EPA|SBES} {subject_name}
 
 outputs_dir = 'output'
 
@@ -22,6 +22,7 @@ with open(f'{subjects_dir}/{subject_name}/mutants.log') as f:
         pattern = re.compile(".*is.*Enabled.*|.*toString.*|.*equals.*|.*\$.*")
         if not pattern.match(mutant):
             mutant_numbers.append(int(mutant.split(':')[0]))
+            print(mutant)
     print(f'Number of total mutants: {len(mutants)}')
 
 print(f'Number of interest mutants: {len(mutant_numbers)}')
@@ -29,15 +30,27 @@ print(f'Number of interest mutants: {len(mutant_numbers)}')
 mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 
 for mutant_number in mutant_numbers:
-    print(f'Running over mutant {mutant_number} for: {subject_name} on SBES')
-    result = subprocess.run(f'experiments/run-sbes-checker.sh {subject_set} {subject_name} {mutant_number}', shell=True, stdout=subprocess.PIPE)
+    print(f'Running over mutant {mutant_number} for: {subject_name} on regression assertions')
+    result = subprocess.run(f'experiments/run-regression-assertions-on-mutant.sh {subject_set} {subject_name} {mutant_number}', shell=True, stdout=subprocess.PIPE)
 
+output_csv_file = f'output/{subject_name}/regression-mutation/summary.csv'
+mutants_row = [-1]
+killed_row = ['killed']
 mutants_killed = 0
 for mutant_number in mutant_numbers:
-    with open(f'output/{subject_name}/sbes-mutation/{mutant_number}/SBES-mutant-results.txt') as f:
+    with open(f'output/{subject_name}/regression-mutation/{mutant_number}/regression-mutant-results.txt') as f:
+        mutants_row.append(mutant_number)
         lines = [line.rstrip() for line in f]
         result = lines[0].split(' : ')[1]
         if result == '1':
             mutants_killed += 1
+            killed_row.append(1)
+        else:
+            killed_row.append(0)
 
-print(f'Mutation score for {subject_name}: {mutants_killed/len(mutant_numbers)*100}')
+print(f'Mutation score for mutant {mutant_number}: {mutants_killed/len(mutant_numbers)}')
+
+with open(output_csv_file, 'w', encoding='UTF8') as f:
+    writer = csv.writer(f)
+    writer.writerow(mutants_row)
+    writer.writerow(killed_row)

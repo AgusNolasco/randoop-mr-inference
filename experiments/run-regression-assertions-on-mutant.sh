@@ -10,8 +10,6 @@ export MUTANT_NUM=$mutant_number
 
 subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
 
-input_file="experiments/$subject_set-subjects/$subject_name.properties"
-
 mkdir -p "$SUBJECTS_DIR/$subject_name/mutants/original-class/"
 
 orig_class_path=$(find $SUBJECTS_DIR/$subject_name/src/main/java/ -type f -name "$subject_name.java")
@@ -28,11 +26,23 @@ cd "$SUBJECTS_DIR/$subject_name/"
 mutant_compiles=$?
 cd $CURR_DIR
 
+mkdir -p "output/$subject_name/regression-mutation/$mutant_number"
+
 if [ $mutant_compiles -eq 0 ]; then
-    java -cp "$subject_cp:$RANDOOP_DIR/randoop-all-4.3.1.jar" -Xbootclasspath/a:${RANDOOP_DIR}/replacecall-4.3.1.jar -javaagent:${RANDOOP_DIR}/replacecall-4.3.1.jar randoop.main.Main gentests --classlist=$input_file --output-limit=2000 --time-limit=0 --literals-level=ALL --literals-file=literals/lits.txt --deterministic=true --forbid-null=true --SBES
+	# Run the mutation analysis here
+	out=$(java -cp "$subject_cp" org.junit.runner.JUnitCore RegressionTest)
+    fail=$(echo "$out" | grep "Tests run: \|OK (")
+    echo "Result: "$fail
+    tmp=$(echo ${fail} | cut -d'(' -f 3)
+    echo $tmp
+    if [ ! -z "${tmp}" ]; then
+    	echo "Mutant $mutant_number killed? : 1" > "output/$subject_name/regression-mutation/$mutant_number/regression-mutant-results.txt"
+    else
+    	echo "Mutant $mutant_number killed? : 0" > "output/$subject_name/regression-mutation/$mutant_number/regression-mutant-results.txt"
+    fi
+    
 else
-    mkdir -p "output/$subject_name/sbes-mutation/$mutant_number/"
-    echo "Mutant $mutant_number killed? : 1" > "output/$subject_name/sbes-mutation/$mutant_number/SBES-mutant-results.txt"
+    echo "Mutant $mutant_number killed? : 1" > "output/$subject_name/regression-mutation/$mutant_number/regression-mutant-results.txt"
 fi
 
 cp $SUBJECTS_DIR/$subject_name/mutants/original-class/$subject_name.java $orig_class_path
