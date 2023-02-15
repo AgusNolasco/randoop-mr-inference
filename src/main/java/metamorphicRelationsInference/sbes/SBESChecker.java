@@ -54,6 +54,9 @@ public class SBESChecker {
       }
 
       for (Method method : checker.getDeclaredMethods()) {
+        if (vars.isEmpty()) {
+          break;
+        }
         List<Class<?>> params =
             Arrays.stream(method.getParameterTypes()).skip(2).collect(Collectors.toList());
         System.out.println("Checking: " + method.getName());
