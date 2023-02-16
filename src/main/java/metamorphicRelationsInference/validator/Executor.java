@@ -31,6 +31,11 @@ public class Executor {
 
   public void setup(MetamorphicRelation mr, Variable var) {
     initAttr();
+
+    if (!getObjectFromVar(var).equals(getObjectFromVar(var))) {
+      throw new RuntimeException("The object to be compared must be the same");
+    }
+
     Pair<Sequence, Variable> left =
         extendSequence(var, mr.getLeftConstructor(), mr.getLeftMethods());
     Pair<Sequence, Variable> right =
@@ -159,5 +164,17 @@ public class Executor {
     } catch (NoSuchMethodException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static Object getObjectFromVar(Variable var) {
+    ExecutableSequence excSeq = new ExecutableSequence(var.sequence);
+    excSeq.execute(new DummyVisitor(), new DummyCheckGenerator());
+    if (!excSeq.isNormalExecution()) {
+      throw new IllegalStateException("Unable to execute this sequence because throws exceptions");
+    }
+    Object[] values =
+        ExecutableSequence.getRuntimeValuesForVars(
+            Collections.singletonList(var), excSeq.executionResults);
+    return values[0];
   }
 }
