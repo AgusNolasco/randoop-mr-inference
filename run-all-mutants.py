@@ -46,7 +46,7 @@ print(f'Number of interest mutants: {len(mutant_numbers)}')
 
 mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 
-for over in ['RANDOM','INFERRED','REDUCED']:
+for over in ['INFERRED','REDUCED']:
     print('Running over: ' + over)
     for mutant_number in mutant_numbers:
         print(f'Running over mutant {mutant_number} for: {subject_name}')
