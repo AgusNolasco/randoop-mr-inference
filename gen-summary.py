@@ -20,8 +20,8 @@ for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
         path_to_output_dir = f'output/{subject}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/'
         if random:
             path_to_output_dir += 'random/'
+        print(subject)
         with open(path_to_output_dir + 'log.txt') as f:
-            print(subject)
             lines = f.readlines()
             clazz = [line for line in lines if 'Class: ' in line][0].split(': ')[1].strip()
             accept_percentage = float([line for line in lines if '% of valid MRs: ' in line][0].split(': ')[1])
