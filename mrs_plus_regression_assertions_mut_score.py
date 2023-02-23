@@ -8,13 +8,13 @@ subject_name  = sys.argv[1]
 
 # Csv files
 regression_csv = f'{outputs_dir}/{subject_name}/regression-mutation/summary.csv'
-random_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-RANDOM.csv'
+#random_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-RANDOM.csv'
 epa_only_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-INFERRED.csv' 
 epa_sat_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-REDUCED.csv'
 sbes_csv = ''
 
 df_regression = pd.read_csv(regression_csv)
-df_random = pd.read_csv(random_csv)
+#df_random = pd.read_csv(random_csv)
 df_epa = pd.read_csv(epa_only_csv)
 df_epa_sat = pd.read_csv(epa_sat_csv)
 
@@ -30,6 +30,7 @@ for column in df_epa_sat:
 mut_score_regression = total_killed/mutants*100
 
 # Mut score for regression + Random
+'''
 killed_by_both = df_regression.copy()
 total_killed = 0
 killed_random = 0
@@ -51,6 +52,7 @@ print(f'mut score random: {mut_score_random}')
 print(f'killed both: {total_killed} - mutants {mutants}')
 print(f'mut score both: {total_killed/mutants*100}')
 print()
+'''
 
 # Mut score for regression + EPA
 killed_by_both = df_regression.copy()
