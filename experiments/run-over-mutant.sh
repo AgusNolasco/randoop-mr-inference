@@ -1,6 +1,6 @@
 #Usage: ./experiments/run.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} {mutant_number} {REDUCED|INFERRED}
 
-source experiments/init_env.sh
+. experiments/init_env.sh
 
 subject_set=$1
 subject_name=$2
