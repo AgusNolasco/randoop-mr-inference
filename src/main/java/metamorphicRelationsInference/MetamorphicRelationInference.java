@@ -27,14 +27,14 @@ public class MetamorphicRelationInference {
       AdditionalOptions options) {
 
     final String mrsToEvalFileName;
-    if (options.isRunOverFuzzedMRs()) {
+    /*if (options.isRunOverFuzzedMRs()) {
       // Use this for precision and recall computation
       mrsToEvalFileName = "fuzzed-mrs.csv";
     } else if (options.isRunOverMutant()) {
       mrsToEvalFileName = "formatted-mrs.csv";
-    } else {
-      mrsToEvalFileName = "candidates.csv";
-    }
+    } else { */
+    mrsToEvalFileName = "candidates.csv";
+    // }
 
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
