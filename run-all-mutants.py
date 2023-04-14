@@ -46,19 +46,19 @@ print(f'Number of interest mutants: {len(mutant_numbers)}')
 
 mutants_dir = f'{subjects_dir}/{subject_name}/mutants/'
 
-for over in ['INFERRED','REDUCED']:
-    print('Running over: ' + over)
-    for mutant_number in mutant_numbers:
-        print(f'Running over mutant {mutant_number} for: {subject_name}')
-        result = subprocess.run(f'experiments/run-over-mutant.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} {mutant_number} {over}', shell=True, stdout=subprocess.PIPE)
+#for over in ['INFERRED','REDUCED']:
+#    print('Running over: ' + over)
+for mutant_number in mutant_numbers:
+    print(f'Running over mutant {mutant_number} for: {subject_name}')
+    #result = subprocess.run(f'experiments/run-over-mutant.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} {mutant_number} {over}', shell=True, stdout=subprocess.PIPE)
+    result = subprocess.run(f'experiments/run-over-mutant.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops} {mutant_number}', shell=True, stdout=subprocess.PIPE)
 
+for over in ['INFERRED','REDUCED']:
     path_to_mrs = ''
     if over == 'REDUCED':
         path_to_mrs = f'../alloy-mr-reducer/output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mrs.txt'
     elif over == 'INFERRED':
         path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/log.txt'
-    elif over == 'RANDOM':
-        path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/random/log.txt'
 
     mrs = []
     with open(path_to_mrs) as mrs_file:
@@ -66,7 +66,7 @@ for over in ['INFERRED','REDUCED']:
         if over == 'REDUCED':
             first_mark = mrs.index('')
             mrs = mrs[first_mark+1:]
-        elif over == 'INFERRED' or over == 'RANDOM':
+        elif over == 'INFERRED':
             first_mark = mrs.index('Valid MRs:')
             mrs = mrs[first_mark+2:]
         second_mark = mrs.index('')
@@ -78,7 +78,7 @@ for over in ['INFERRED','REDUCED']:
     mrs_per_mutant = dict()
     mutant_numbers_to_remove = []
     for mutant_number in mutant_numbers:
-        path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mutants/{mutant_number}/{over}/log.txt'
+        path_to_mrs = f'output/{subject_name}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/mutants/{mutant_number}/log.txt'
         if not os.path.isfile(path_to_mrs):
             print(f'Mutant: {mutant_number} removed because not compile or randoop has a problem with it')
             mutant_numbers_to_remove.append(mutant_number)
