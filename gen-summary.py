@@ -15,8 +15,6 @@ for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
     if os.path.isfile(f'experiments/{subject_set}-subjects/{subject}'):
         subject = subject.split('.')[0]
         path_to_output_dir = f'output/{subject}/allow_epa_loops_{allow_epa_loops}/{gen_strategy}/{mrs_to_fuzz}/'
-        if random:
-            path_to_output_dir += 'random/'
         print(subject)
         with open(path_to_output_dir + 'log.txt') as f:
             lines = f.readlines()
@@ -33,10 +31,7 @@ for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
 
             rows.append([clazz, input1, output, accept_percentage, reject_percentage])
 
-if random:
-    filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-random-resume.csv"
-else:
-    filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
+filename = f"output/{subject_set}-{gen_strategy}-{mrs_to_fuzz}-{allow_epa_loops}-resume.csv"
     
 with open(filename, 'w') as csvfile: 
     csvwriter = csv.writer(csvfile) 
