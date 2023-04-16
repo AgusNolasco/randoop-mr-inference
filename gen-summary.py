@@ -10,9 +10,6 @@ subject_set = sys.argv[1]
 gen_strategy = sys.argv[2]
 mrs_to_fuzz = sys.argv[3]
 allow_epa_loops = sys.argv[4]
-random = False
-if len(sys.argv) == 6 and sys.argv[5] == 'random':
-    random = True
 
 for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
     if os.path.isfile(f'experiments/{subject_set}-subjects/{subject}'):
