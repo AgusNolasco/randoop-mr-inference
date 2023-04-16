@@ -19,10 +19,10 @@ mkdir -p "output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$m
 
 mkdir -p "$SUBJECTS_DIR/$subject_name/mutants/original-class/"
 
-if [[ $subject_name == "Vector2" ]]; then
+if [ $subject_name = Vector2 ]; then
     orig_class_path=$SUBJECTS_DIR/$subject_name/src/main/java/com/example/graphstreamvector2/graphstream/ui/geom/Vector2.java
     mutated_class_path=$SUBJECTS_DIR/$subject_name/mutants/$mutant_number/com/example/graphstreamvector2/graphstream/ui/geom/Vector2.java
-elif [[ $subject_name == "Vector3" ]]; then
+elif [ $subject_name = "Vector3" ]; then
     orig_class_path=$SUBJECTS_DIR/$subject_name/src/main/java/com/example/graphstreamvector3/graphstream/ui/geom/Vector3.java
     mutated_class_path=$SUBJECTS_DIR/$subject_name/mutants/$mutant_number/com/example/graphstreamvector3/graphstream/ui/geom/Vector3.java
 else
