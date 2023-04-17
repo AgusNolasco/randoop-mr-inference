@@ -30,7 +30,7 @@ cp $SUBJECTS_DIR/$subject_name/mutants/original-class/$subject_name.java $orig_c
 CURR_DIR=$PWD
 
 cd "$SUBJECTS_DIR/$subject_name/"
-./gradlew jar
+./gradlew jar > /dev/null
 cd $CURR_DIR
 
 echo "Running $subject_name"

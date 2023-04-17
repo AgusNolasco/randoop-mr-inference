@@ -15,6 +15,6 @@ i = 0
 for filename in os.listdir(dir_path):
     if '.properties' in filename:
         subject_name = filename.split('.properties')[0]
-        subprocess.run(f'experiments/run.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}', shell=True, stdout=subprocess.PIPE)
+        subprocess.run(f'experiments/run.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}', shell=True)
 
 subprocess.run(f'python3 gen-summary.py {subject_set} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}', shell=True, stdout=subprocess.PIPE)
