@@ -19,6 +19,7 @@ public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
   private static final String pathToOutput = System.getenv("MRS_DIR");
+  private static final String subject_name = System.getenv("SUBJECT_NAME");
 
   public static void main(
       Class<?> cut,
@@ -48,7 +49,7 @@ public class MetamorphicRelationInference {
             "/",
             System.getenv("EPA_INFERENCE_DIR"),
             "output",
-            cut.getSimpleName(),
+            subject_name,
             "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
@@ -70,7 +71,7 @@ public class MetamorphicRelationInference {
         String.join(
             "/",
             pathToOutput,
-            cut.getSimpleName(),
+            subject_name,
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
             String.valueOf(options.mrsToFuzz()));
