@@ -125,11 +125,11 @@ public class MetamorphicRelationInference {
     }
 
     if (!options.isRunOverMutant()) {
-      InferredMRsWriter writer = new InferredMRsWriter(cut);
+      InferredMRsWriter writer = new InferredMRsWriter(subject_name);
       writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
       writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-      MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut);
       alloyPred.save(validMRs, options);
     }
   }
