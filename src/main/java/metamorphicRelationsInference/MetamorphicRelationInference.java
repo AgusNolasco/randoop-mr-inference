@@ -19,6 +19,7 @@ public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
   private static final String pathToOutput = System.getenv("MRS_DIR");
+  private static final String subject_name = System.getenv("SUBJECT_NAME");
 
   public static void main(
       Class<?> cut,
@@ -27,14 +28,14 @@ public class MetamorphicRelationInference {
       AdditionalOptions options) {
 
     final String mrsToEvalFileName;
-    if (options.isRunOverFuzzedMRs()) {
+    /*if (options.isRunOverFuzzedMRs()) {
       // Use this for precision and recall computation
       mrsToEvalFileName = "fuzzed-mrs.csv";
     } else if (options.isRunOverMutant()) {
       mrsToEvalFileName = "formatted-mrs.csv";
-    } else {
-      mrsToEvalFileName = "candidates.csv";
-    }
+    } else { */
+    mrsToEvalFileName = "candidates.csv";
+    // }
 
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
@@ -48,7 +49,7 @@ public class MetamorphicRelationInference {
             "/",
             System.getenv("EPA_INFERENCE_DIR"),
             "output",
-            cut.getSimpleName(),
+            subject_name,
             "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
@@ -70,7 +71,7 @@ public class MetamorphicRelationInference {
         String.join(
             "/",
             pathToOutput,
-            cut.getSimpleName(),
+            subject_name,
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
             String.valueOf(options.mrsToFuzz()));
@@ -124,11 +125,11 @@ public class MetamorphicRelationInference {
     }
 
     if (!options.isRunOverMutant()) {
-      InferredMRsWriter writer = new InferredMRsWriter(cut);
+      InferredMRsWriter writer = new InferredMRsWriter(subject_name);
       writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
       writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-      MRsToAlloyPred alloyPred = new MRsToAlloyPred(cut);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut);
       alloyPred.save(validMRs, options);
     }
   }

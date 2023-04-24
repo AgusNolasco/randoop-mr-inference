@@ -15,8 +15,10 @@ public class MRsToAlloyPred {
   private final String OUTPUT_DIR = "output";
   private final Class<?> clazz;
   private final String DELIMITER = " # ";
+  private final String subject_name;
 
-  public MRsToAlloyPred(Class<?> clazz) {
+  public MRsToAlloyPred(String subject_name, Class<?> clazz) {
+    this.subject_name = subject_name;
     this.clazz = clazz;
   }
 
@@ -30,7 +32,7 @@ public class MRsToAlloyPred {
     String dirName =
         OUTPUT_DIR
             + "/"
-            + clazz.getSimpleName()
+            + subject_name
             + "/"
             + "allow_epa_loops_"
             + options.isEPALoopsAllowed()

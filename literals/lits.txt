@@ -59,10 +59,13 @@ CLASSNAME
 java.lang.String
 LITERALS
 String:"8080"
+String:"1234"
 String:"hi!"
 String:"hello"
 String:"bye"
 String:"randoop"
 String:"metamorphic relation"
 String:"spec"
+String:"property"
+String:"oracle"
 END CLASSLITERALS

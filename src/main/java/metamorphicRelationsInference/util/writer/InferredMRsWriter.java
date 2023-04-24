@@ -16,18 +16,14 @@ import org.apache.commons.csv.CSVPrinter;
 
 public class InferredMRsWriter {
 
-  private final Class<?> cut;
   private static final String[] HEADERS = {"Metamorphic Relation", "Survives EPA"};
   private final String OUTPUTS_DIR = "output";
+  private final String subject_name;
 
-  /**
-   * Constructor
-   *
-   * @param cut is the class under test
-   */
-  public InferredMRsWriter(Class<?> cut) {
-    Objects.requireNonNull(cut);
-    this.cut = cut;
+  /** Constructor */
+  public InferredMRsWriter(String subject_name) {
+    Objects.requireNonNull(subject_name);
+    this.subject_name = subject_name;
   }
 
   public void writeAllMRsProcessed(
@@ -41,7 +37,7 @@ public class InferredMRsWriter {
     String dirName =
         OUTPUTS_DIR
             + "/"
-            + cut.getSimpleName()
+            + subject_name
             + "/"
             + "allow_epa_loops_"
             + options.isEPALoopsAllowed()
@@ -90,7 +86,7 @@ public class InferredMRsWriter {
     String dirName =
         OUTPUTS_DIR
             + "/"
-            + cut.getSimpleName()
+            + subject_name
             + "/"
             + "allow_epa_loops_"
             + options.isEPALoopsAllowed()

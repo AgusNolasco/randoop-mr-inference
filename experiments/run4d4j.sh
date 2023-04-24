@@ -10,29 +10,25 @@ allow_epa_loops=$5
 
 export MRS_DIR="$EPA_INFERENCE_DIR/output"
 
-subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
+export SUBJECT_DIR=/tmp/$(echo $subject_name | sed 's/_//')b
 
 export SUBJECT_NAME=$subject_name
 
+subject_cp="$SUBJECT_DIR/target/commons-cli-1.1-SNAPSHOT.jar"
+
 input_file="experiments/$subject_set-subjects/$subject_name.properties"
-# omit_methods_file="$EPA_INFERENCE_DIR/output/$subject_name/methods-to-ignore.txt"
 
 mkdir -p "output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$mrs_to_fuzz/"
 
-if [ $subject_name = Vector2 ]; then
-    orig_class_path=$SUBJECTS_DIR/$subject_name/src/main/java/com/example/graphstreamvector2/graphstream/ui/geom/Vector2.java
-elif [ $subject_name = Vector3 ]; then
-    orig_class_path=$SUBJECTS_DIR/$subject_name/src/main/java/com/example/graphstreamvector3/graphstream/ui/geom/Vector3.java
-else
-    orig_class_path=$(find $SUBJECTS_DIR/$subject_name/src/main/java/ -type f -name "$subject_name.java")
-fi
-
-cp $SUBJECTS_DIR/$subject_name/mutants/original-class/$subject_name.java $orig_class_path
+# TODO: When compute mutation we must have the original class somewhere, and use it here, to ensure
+# that we are running over the original class instead of a mutant
+# orig_class_path=$(find $SUBJECTS_DIR/$subject_name/src/main/java/ -type f -name "$subject_name.java")
+# cp $SUBJECTS_DIR/$subject_name/mutants/original-class/$subject_name.java $orig_class_path
 
 CURR_DIR=$PWD
 
-cd "$SUBJECTS_DIR/$subject_name/"
-./gradlew jar > /dev/null
+cd "$SUBJECT_DIR/"
+defects4j compile > /dev/null
 cd $CURR_DIR
 
 echo "Running $subject_name"

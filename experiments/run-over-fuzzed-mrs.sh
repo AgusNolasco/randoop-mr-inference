@@ -1,6 +1,6 @@
 #Usage: ./experiments/run.sh {subject_set} {subject_name} {gen_strategy} {mrs_to_fuzz} {allow_epa_loops}
 
-source experiments/init_env.sh
+. experiments/init_env.sh
 
 subject_set=$1
 subject_name=$2
@@ -9,6 +9,8 @@ mrs_to_fuzz=$4
 allow_epa_loops=$5
 
 export MRS_DIR="$EPA_INFERENCE_DIR/output"
+
+export SUBJECT_NAME=$subject_name
 
 subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
 
