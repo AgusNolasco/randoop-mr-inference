@@ -10,11 +10,18 @@ allow_epa_loops=$5
 
 export MRS_DIR="$EPA_INFERENCE_DIR/output"
 
-export SUBJECT_DIR=/tmp/$(echo $subject_name | sed 's/_//')b
+export SUBJECT_DIR=/home/investigador/nolasco/d4j-data/$(echo $subject_name | sed 's/_//')b
 
 export SUBJECT_NAME=$subject_name
 
-subject_cp="$SUBJECT_DIR/target/commons-cli-1.1-SNAPSHOT.jar"
+project_name=${subject_name%%_*}
+if [ $project_name = Codec ]; then
+	subject_cp="$SUBJECT_DIR/dist/*"
+elif [ $subject_name = Gson_9 ]; then
+	subject_cp="$SUBJECT_DIR/gson/target/*"
+else
+	subject_cp="$SUBJECT_DIR/target/*"
+fi
 
 input_file="experiments/$subject_set-subjects/$subject_name.properties"
 
@@ -28,7 +35,8 @@ mkdir -p "output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$m
 CURR_DIR=$PWD
 
 cd "$SUBJECT_DIR/"
-defects4j compile > /dev/null
+defects4j compile > /dev/null 2>&1
+ant jar > /dev/null 2>&1
 cd $CURR_DIR
 
 echo "Running $subject_name"
