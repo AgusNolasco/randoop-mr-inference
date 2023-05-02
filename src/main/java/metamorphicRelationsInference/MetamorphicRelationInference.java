@@ -57,7 +57,7 @@ public class MetamorphicRelationInference {
     boolean isEpaBroken = false;
     Map<EPAState, Bag> bags = null;
     try {
-      bags = builder.createBags(sequences);
+      bags = builder.createBags(sequences, options.isRunOverMutant());
     } catch (Exception e) {
       System.out.println("The EPA is broken");
       if (!options.isRunOverMutant()) {
