@@ -9,6 +9,8 @@ allow_epa_loops=$4
 
 export MRS_DIR="$EPA_INFERENCE_DIR/output"
 
+export SUBJECT_NAME=$subject_name
+
 subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
 
 input_file="experiments/$subject_set-subjects/$subject_name.properties"
