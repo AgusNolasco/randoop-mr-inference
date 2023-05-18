@@ -20,9 +20,6 @@ plugins {
 
   // run: ./gradlew <taskname> taskTree
   id "com.dorongold.task-tree" version "2.1.0"
-
-  // https://github.com/n0mer/gradle-git-properties ; target is: generateGitProperties
-  id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 
 
@@ -1037,23 +1034,6 @@ task checklink(type: Exec, group: 'Documentation', dependsOn: 'cloneLibs') {
     }
   }
 }
-
-task installGitHooks(type: Copy) {
-  description "Installs git hooks for pre-commit"
-  from 'scripts/'
-  into '.git/hooks'
-}
-/* Always run this task. */
-gradle.startParameter.taskNames = [":installGitHooks"] + gradle.startParameter.taskNames
-// It's not clear why this dependencies exists, but Gradle issues the following warning:
-//   - Gradle detected a problem with the following location:
-//   '/Users/smillst/jsr308/checker-framework/.git'.
-//   Reason: Task ':checker:generateGitProperties' uses this output of task ':installGitHooks'
-//   without declaring an explicit or implicit dependency. This can lead to incorrect results being
-//   produced, depending on what order the tasks are executed. Please refer to
-//   https://docs.gradle.org/7.1/userguide/validation_problems.html#implicit_dependency for more
-//   details about this problem.
-generateGitProperties.dependsOn(':installGitHooks')
 
 apply from: rootProject.file("gradle-mvn-push.gradle")
 
