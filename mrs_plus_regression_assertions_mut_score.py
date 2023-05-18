@@ -111,7 +111,10 @@ for column in df_epa_sat:
 		continue
 	# Check if sbes kills it
 	killed = 0
-	with open(f'output/{subject_name}/sbes-mutation/{column}/SBES-mutant-results.txt') as f:
+	path_to_sbes_mut_score = f'output/{subject_name}/sbes-mutation/{column}/SBES-mutant-results.txt'
+	if not os.path.isfile(path_to_sbes_mut_score):
+		continue
+	with open(path_to_sbes_mut_score) as f:
 		lines = [line.rstrip() for line in f]
 		result = lines[0].split(' : ')[1]
 		if result == '1':
