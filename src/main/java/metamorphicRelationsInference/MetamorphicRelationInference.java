@@ -25,7 +25,8 @@ public class MetamorphicRelationInference {
       Class<?> cut,
       List<ExecutableSequence> seq,
       AbstractGenerator explorer,
-      AdditionalOptions options) {
+      AdditionalOptions options,
+      int seed) {
 
     final String mrsToEvalFileName;
     if (options.isRunOverFuzzedMRs()) {
@@ -74,7 +75,8 @@ public class MetamorphicRelationInference {
             subject_name,
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
-            String.valueOf(options.mrsToFuzz()));
+            String.valueOf(options.mrsToFuzz()),
+            String.valueOf(seed));
     if (options.isRandom()) {
       pathToMRs += "/random";
     }
@@ -125,11 +127,11 @@ public class MetamorphicRelationInference {
     }
 
     if (!options.isRunOverMutant()) {
-      InferredMRsWriter writer = new InferredMRsWriter(subject_name);
+      InferredMRsWriter writer = new InferredMRsWriter(subject_name, seed);
       writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
       writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut, seed);
       alloyPred.save(validMRs, options);
     }
   }

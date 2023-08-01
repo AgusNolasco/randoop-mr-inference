@@ -554,7 +554,8 @@ public class GenTests extends GenInputsAbstract {
       if (additionalOptions.SBESChecker()) {
         SBESChecker.checkMRs(cut, regressionSequences, componentMgr);
       } else {
-        MetamorphicRelationInference.main(cut, regressionSequences, explorer, additionalOptions);
+        MetamorphicRelationInference.main(
+            cut, regressionSequences, explorer, additionalOptions, randomseed);
       }
       System.exit(0);
       /*-------------------------------------------*/
