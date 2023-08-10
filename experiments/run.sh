@@ -7,6 +7,7 @@ subject_name=$2
 gen_strategy=$3
 mrs_to_fuzz=$4
 allow_epa_loops=$5
+seed=$6
 
 export MRS_DIR="$EPA_INFERENCE_DIR/output"
 
@@ -19,7 +20,7 @@ export EVOSUITE_TESTS="$SUBJECTS_DIR/$subject_name/test/$subject_name\_ESTest.ja
 input_file="experiments/$subject_set-subjects/$subject_name.properties"
 # omit_methods_file="$EPA_INFERENCE_DIR/output/$subject_name/methods-to-ignore.txt"
 
-mkdir -p "output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$mrs_to_fuzz/"
+mkdir -p "output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$mrs_to_fuzz/$seed/"
 
 if [ $subject_name = Vector2 ]; then
     orig_class_path=$SUBJECTS_DIR/$subject_name/src/main/java/com/example/graphstreamvector2/graphstream/ui/geom/Vector2.java
@@ -38,4 +39,4 @@ cd "$SUBJECTS_DIR/$subject_name/"
 cd $CURR_DIR
 
 echo "Running $subject_name"
-/usr/bin/time -f"%e" java -cp "$subject_cp:$RANDOOP_DIR/randoop-all-4.3.1.jar" -Xbootclasspath/a:${RANDOOP_DIR}/replacecall-4.3.1.jar -javaagent:${RANDOOP_DIR}/replacecall-4.3.1.jar randoop.main.Main gentests --classlist=$input_file --output-limit=2000 --time-limit=0 --literals-level=ALL --literals-file=literals/lits.txt --deterministic=true --forbid-null=true --gen-strategy=$gen_strategy --mrs-to-fuzz=$mrs_to_fuzz --allow-epa-loops=$allow_epa_loops > output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$mrs_to_fuzz/log.txt
+/usr/bin/time -f"%e" java -cp "$subject_cp:$RANDOOP_DIR/randoop-all-4.3.1.jar" -Xbootclasspath/a:${RANDOOP_DIR}/replacecall-4.3.1.jar -javaagent:${RANDOOP_DIR}/replacecall-4.3.1.jar randoop.main.Main gentests --classlist=$input_file --output-limit=2000 --time-limit=0 --literals-level=ALL --literals-file=literals/lits.txt --randomseed=$seed --deterministic=true --forbid-null=true --gen-strategy=$gen_strategy --mrs-to-fuzz=$mrs_to_fuzz --allow-epa-loops=$allow_epa_loops > output/$subject_name/allow_epa_loops_$allow_epa_loops/$gen_strategy/$mrs_to_fuzz/$seed/log.txt
