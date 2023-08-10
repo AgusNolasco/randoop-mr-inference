@@ -1322,14 +1322,13 @@ public class GenTests extends GenInputsAbstract {
     if (fileSystem == null) {
       try {
         // FIXME: Remove this Hardcoded URI, is only for debugging
-        // directoryURI =
-        //    new URI(
-        //
-        // "jar:file:/Users/agustinnolasco/Documents/university/MFIS/randoop-mr-inference/build/libs/randoop-all-4.3.1.jar!/specifications/jdk/");
+        directoryURI =
+            new URI(
+                "jar:file:/Users/agustinnolasco/Documents/university/MFIS/randoop-mr-inference/build/libs/randoop-all-4.3.1.jar!/specifications/jdk/");
         fileSystem =
             FileSystems.newFileSystem(directoryURI, Collections.<String, Object>emptyMap());
         fileSystemCache.put(directoryURI, fileSystem);
-      } catch (IOException /*| URISyntaxException */ e) {
+      } catch (IOException | URISyntaxException e) {
         throw new RandoopBug("Error locating directory " + resourceDirectory, e);
       }
     }

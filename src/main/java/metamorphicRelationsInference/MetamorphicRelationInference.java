@@ -1,5 +1,7 @@
 package metamorphicRelationsInference;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.alloy.MRsToAlloyPred;
@@ -10,6 +12,7 @@ import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
+import metamorphicRelationsInference.util.reader.EvoSuiteTestReader;
 import metamorphicRelationsInference.util.writer.InferredMRsWriter;
 import metamorphicRelationsInference.validator.Validator;
 import randoop.generation.AbstractGenerator;
@@ -19,7 +22,8 @@ public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
   private static final String pathToOutput = System.getenv("MRS_DIR");
-  private static final String subject_name = System.getenv("SUBJECT_NAME");
+  private static final String subjectName = System.getenv("SUBJECT_NAME");
+  private static final String evosuiteTests = System.getenv("EVOSUITE_TESTS");
 
   public static void main(
       Class<?> cut,
@@ -38,6 +42,10 @@ public class MetamorphicRelationInference {
       mrsToEvalFileName = "candidates.csv";
     }
 
+    if (evosuiteTests != null && Files.exists(Paths.get(evosuiteTests))) {
+      seq.addAll(EvoSuiteTestReader.readFromFile(evosuiteTests));
+    }
+
     sequences =
         seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
 
@@ -50,7 +58,7 @@ public class MetamorphicRelationInference {
             "/",
             System.getenv("EPA_INFERENCE_DIR"),
             "output",
-            subject_name,
+            subjectName,
             "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
@@ -72,7 +80,7 @@ public class MetamorphicRelationInference {
         String.join(
             "/",
             pathToOutput,
-            subject_name,
+            subjectName,
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
             String.valueOf(options.mrsToFuzz()),
@@ -127,11 +135,11 @@ public class MetamorphicRelationInference {
     }
 
     if (!options.isRunOverMutant()) {
-      InferredMRsWriter writer = new InferredMRsWriter(subject_name, seed);
+      InferredMRsWriter writer = new InferredMRsWriter(subjectName, seed);
       writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
       writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut, seed);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subjectName, cut, seed);
       alloyPred.save(validMRs, options);
     }
   }
