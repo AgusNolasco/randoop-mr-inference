@@ -15,7 +15,7 @@ subject_cp="$SUBJECTS_DIR/$subject_name/build/libs/*"
 
 export SUBJECT_NAME=$subject_name
 
-export EVOSUITE_TESTS=$SUBJECTS_DIR/$subject_name/tests/$subject_name'_ESTest.java'
+export EVOSUITE_TESTS=$(find $EVOSUITE_TEST_DIR/$subject_name/tests/ -type f -name $subject_name'_ESTest.java')
 
 input_file="experiments/$subject_set-subjects/$subject_name.properties"
 # omit_methods_file="$EPA_INFERENCE_DIR/output/$subject_name/methods-to-ignore.txt"
