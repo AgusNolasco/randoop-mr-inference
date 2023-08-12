@@ -29,7 +29,7 @@ public class EvoSuiteTestReader {
   private static List<ExecutableSequence> readFromFile(File file) {
     List<ExecutableSequence> sequences = new ArrayList<>();
     CompilationUnit cu = getCompilationUnit(file);
-    ClassOrInterfaceDeclaration clazz = (ClassOrInterfaceDeclaration) cu.getChildNodes().get(4);
+    ClassOrInterfaceDeclaration clazz = getClass(cu);
     for (MethodDeclaration md : getMethods(clazz)) {
       List<String> imports = getClassImports(cu);
       String code = replaceObjectConstruction(getMethodCode(md));
@@ -37,6 +37,10 @@ public class EvoSuiteTestReader {
       sequences.add(executeSeq(seq));
     }
     return sequences;
+  }
+
+  private static ClassOrInterfaceDeclaration getClass(CompilationUnit cu) {
+    return cu.getType(0).asClassOrInterfaceDeclaration();
   }
 
   private static CompilationUnit getCompilationUnit(File f) {
