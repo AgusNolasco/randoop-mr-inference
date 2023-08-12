@@ -34,7 +34,7 @@ class TypeArguments {
       for (int i = 0; i < argsStrs.length; i++) {
         @SuppressWarnings("signature") // exception caught below if type is wrong
         @FqBinaryName String typeName = argsStrs[i].trim();
-
+        typeName = typeName.replace("...", "[]");
         try {
           argTypes[i] = Type.forFullyQualifiedName(typeName);
         } catch (ClassNotFoundException e) {

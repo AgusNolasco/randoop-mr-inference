@@ -34,7 +34,7 @@ public class EvoSuiteTestReader {
       List<String> imports = getClassImports(cu);
       String code = replaceObjectConstruction(getMethodCode(md));
       Sequence seq = getSeqFromCode(code, imports, clazz.getNameAsString());
-      sequences.add(executeSeq(seq));
+      if (!seq.toCodeString().isEmpty()) sequences.add(executeSeq(seq));
     }
     return sequences;
   }
