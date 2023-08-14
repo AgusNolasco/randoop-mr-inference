@@ -33,8 +33,13 @@ public class EvoSuiteTestReader {
     for (MethodDeclaration md : getMethods(clazz)) {
       List<String> imports = getClassImports(cu);
       String code = replaceObjectConstruction(getMethodCode(md));
-      Sequence seq = getSeqFromCode(code, imports, clazz.getNameAsString());
-      if (!seq.toCodeString().isEmpty()) sequences.add(executeSeq(seq));
+      try {
+        Sequence seq = getSeqFromCode(code, imports, clazz.getNameAsString());
+        if (!seq.toCodeString().isEmpty()) sequences.add(executeSeq(seq));
+      } catch (Throwable e) {
+        e.printStackTrace();
+        System.out.println("Could not generate sequence from: \n\n" + code);
+      }
     }
     return sequences;
   }
@@ -82,7 +87,7 @@ public class EvoSuiteTestReader {
     try {
       return SequenceParser.codeToSequence(code, imports, forClass);
     } catch (SequenceParseException e) {
-      throw new RuntimeException("Could not generate sequence for code: \n\n" + code);
+      throw new RuntimeException(e);
     }
   }
 
