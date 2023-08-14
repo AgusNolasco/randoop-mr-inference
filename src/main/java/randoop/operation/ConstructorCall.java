@@ -2,15 +2,14 @@ package randoop.operation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import randoop.ExceptionalExecution;
 import randoop.ExecutionOutcome;
 import randoop.reflection.ReflectionPredicate;
 import randoop.sequence.Variable;
-import randoop.types.ClassOrInterfaceType;
-import randoop.types.Type;
-import randoop.types.TypeTuple;
+import randoop.types.*;
 import randoop.util.ConstructorReflectionCode;
 import randoop.util.ReflectionExecutor;
 import randoop.util.Util;
@@ -262,7 +261,17 @@ public final class ConstructorCall extends CallableOperation {
       throw new OperationParseException(msg);
     }
 
-    return TypedClassOperation.forConstructor(con);
+    TypedClassOperation operation = TypedClassOperation.forConstructor(con);
+    if (operation.isGeneric()) {
+      List<TypeVariable> typeVariables = operation.getTypeParameters();
+      List<ReferenceType> types = new ArrayList<>();
+      for (TypeVariable ignored : typeVariables) {
+        types.add(ReferenceType.forClass(Object.class));
+      }
+      Substitution substitution = new Substitution(typeVariables, types);
+      operation = operation.substitute(substitution);
+    }
+    return operation;
   }
 
   /**

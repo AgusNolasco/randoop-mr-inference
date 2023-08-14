@@ -126,9 +126,9 @@ public class SequenceParser {
 
     Sequence seq = Sequence.parse(formattedStatements);
 
-    if (!indexToParameterTypes.isEmpty()) {
-      seq = addParameterTypes(seq, indexToParameterTypes);
-    }
+    // if (!indexToParameterTypes.isEmpty()) {
+    //  seq = addParameterTypes(seq, indexToParameterTypes);
+    // }
 
     return new Pair<>(seq, fullyParsed);
   }
@@ -433,7 +433,13 @@ public class SequenceParser {
 
     ResolvedMethodDeclaration methodDec = methodCall.resolve();
     randoopStatement.append(
-        methodDec.getQualifiedSignature().replaceAll("<E>", "").replaceAll("<T>", "") + " : ");
+        methodDec
+                .getQualifiedSignature()
+                .replaceAll("<E>", "")
+                .replaceAll("<T>", "")
+                .replaceAll("\\(E\\)", "(java.lang.Object)")
+                .replaceAll("\\(T\\)", "(java.lang.Object)")
+            + " : ");
 
     if (!methodDec.isStatic()) {
       // If not static we need to add the receiver object identifier as an input var

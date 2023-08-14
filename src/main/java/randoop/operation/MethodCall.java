@@ -2,6 +2,7 @@ package randoop.operation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -11,8 +12,7 @@ import randoop.ExecutionOutcome;
 import randoop.NormalExecution;
 import randoop.reflection.ReflectionPredicate;
 import randoop.sequence.Variable;
-import randoop.types.Type;
-import randoop.types.TypeTuple;
+import randoop.types.*;
 import randoop.util.Log;
 import randoop.util.MethodReflectionCode;
 import randoop.util.ReflectionExecutor;
@@ -266,7 +266,17 @@ public final class MethodCall extends CallableOperation {
       }
     }
 
-    return TypedClassOperation.forMethod(m);
+    TypedClassOperation operation = TypedClassOperation.forMethod(m);
+    if (operation.isGeneric()) {
+      List<TypeVariable> typeVariables = operation.getTypeParameters();
+      List<ReferenceType> types = new ArrayList<>();
+      for (TypeVariable ignored : typeVariables) {
+        types.add(ReferenceType.forClass(Object.class));
+      }
+      Substitution substitution = new Substitution(typeVariables, types);
+      operation = operation.substitute(substitution);
+    }
+    return operation;
   }
 
   /**
