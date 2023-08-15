@@ -37,8 +37,7 @@ public class EvoSuiteTestReader {
         Sequence seq = getSeqFromCode(code, imports, clazz.getNameAsString());
         if (!seq.toCodeString().isEmpty()) sequences.add(executeSeq(seq));
       } catch (Throwable e) {
-        e.printStackTrace();
-        System.out.println("Could not generate sequence from: \n\n" + code);
+        System.out.println("Could not generate sequence from: \n\n" + code + "\n");
       }
     }
     return sequences;
@@ -83,12 +82,9 @@ public class EvoSuiteTestReader {
     return code.replaceAll("Object\\(\\)", "String()");
   }
 
-  private static Sequence getSeqFromCode(String code, List<String> imports, String forClass) {
-    try {
-      return SequenceParser.codeToSequence(code, imports, forClass);
-    } catch (SequenceParseException e) {
-      throw new RuntimeException(e);
-    }
+  private static Sequence getSeqFromCode(String code, List<String> imports, String forClass)
+      throws SequenceParseException {
+    return SequenceParser.codeToSequence(code, imports, forClass);
   }
 
   private static ExecutableSequence executeSeq(Sequence seq) {
