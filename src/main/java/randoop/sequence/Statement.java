@@ -117,7 +117,7 @@ public final class Statement {
     StringBuilder b = new StringBuilder();
     b.append(variableName);
     b.append(" =  ");
-    b.append(operation.getClass().getSimpleName());
+    b.append(operation.getOperation().getClass().getSimpleName());
     b.append(" : ");
     b.append(operation.toParsableString());
     b.append(" : ");
