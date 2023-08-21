@@ -13,7 +13,9 @@ import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
 import metamorphicRelationsInference.util.reader.EvoSuiteTestReader;
+import metamorphicRelationsInference.util.reader.SequenceReader;
 import metamorphicRelationsInference.util.writer.InferredMRsWriter;
+import metamorphicRelationsInference.util.writer.SequenceWriter;
 import metamorphicRelationsInference.validator.Validator;
 import randoop.generation.AbstractGenerator;
 import randoop.sequence.ExecutableSequence;
@@ -26,28 +28,28 @@ public class MetamorphicRelationInference {
   private static final String evosuiteTests = System.getenv("EVOSUITE_TESTS");
 
   public static void main(
-      Class<?> cut,
-      List<ExecutableSequence> seq,
-      AbstractGenerator explorer,
-      AdditionalOptions options,
-      int seed) {
+      Class<?> cut, AbstractGenerator explorer, AdditionalOptions options, int seed) {
 
     final String mrsToEvalFileName;
     if (options.isRunOverFuzzedMRs()) {
-      // Use this for precision and recall computation
       mrsToEvalFileName = "fuzzed-mrs.csv";
-      // } else if (options.isRunOverMutant()) {
-      //  mrsToEvalFileName = "formatted-mrs.csv";
     } else {
       mrsToEvalFileName = "candidates.csv";
     }
 
-    if (evosuiteTests != null && Files.exists(Paths.get(evosuiteTests))) {
-      seq.addAll(EvoSuiteTestReader.readFromFile(evosuiteTests));
+    if (options.isRunOverMutant()) {
+      sequences = SequenceReader.readSequences(subjectName, seed, options);
+    } else {
+      sequences = explorer.getRegressionSequences();
+      if (evosuiteTests != null && Files.exists(Paths.get(evosuiteTests))) {
+        sequences.addAll(EvoSuiteTestReader.readFromFile(evosuiteTests));
+      }
     }
 
     sequences =
-        seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
+        sequences.stream()
+            .filter(ExecutableSequence::isNormalExecution)
+            .collect(Collectors.toList());
 
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
@@ -141,6 +143,11 @@ public class MetamorphicRelationInference {
 
       MRsToAlloyPred alloyPred = new MRsToAlloyPred(subjectName, cut, seed);
       alloyPred.save(validMRs, options);
+    }
+
+    if (!options.isRunOverMutant()) {
+      SequenceWriter sequenceWriter = new SequenceWriter(subjectName, seed);
+      sequenceWriter.saveSequences(sequences, options);
     }
   }
 }
