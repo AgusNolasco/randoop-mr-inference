@@ -36,9 +36,9 @@ public class SequenceReader {
           ExecutableSequence seq = new ExecutableSequence(Sequence.parse(newSequence));
           seq.execute(new DummyVisitor(), new DummyCheckGenerator());
           sequences.add(seq);
+        } catch (SequenceParseException ignored) {
+        } finally {
           newSequence.clear();
-        } catch (SequenceParseException e) {
-          e.printStackTrace();
         }
       } else {
         newSequence.add(line);
