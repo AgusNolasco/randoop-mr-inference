@@ -42,7 +42,9 @@ public class MetamorphicRelationInference {
     } else {
       sequences = explorer.getRegressionSequences();
       if (evosuiteTests != null && Files.exists(Paths.get(evosuiteTests))) {
-        sequences.addAll(EvoSuiteTestReader.readFromFile(evosuiteTests));
+        List<ExecutableSequence> evoSuiteTests = EvoSuiteTestReader.readFromFile(evosuiteTests);
+        sequences.addAll(evoSuiteTests);
+        System.out.println(evoSuiteTests.size() + " Evo+EPA tests added successfully");
       }
     }
 
