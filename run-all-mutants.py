@@ -98,7 +98,7 @@ for over in ['INFERRED','REDUCED']:
 
     mutant_numbers = set(mutant_numbers) - set(mutant_numbers_to_remove)
 
-    data = pd.DataFrame(data=np.zeros((len(mrs), len(mutant_numbers)), dtype=int), index=mrs, columns=mutant_numbers)
+    data = pd.DataFrame(data=np.zeros((len(mrs), len(mutant_numbers)), dtype=int), index=mrs, columns=list(mutant_numbers))
 
     for mutant_number in mutant_numbers:
         mrs_killing_mutant = list(set(mrs) - set(mrs_per_mutant[mutant_number]))
