@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import metamorphicRelationsInference.util.OperationInputs;
+import metamorphicRelationsInference.util.TypeInputs;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.util.CollectionsPlume;
 import org.plumelib.util.StringsPlume;
@@ -836,6 +838,59 @@ public class ForwardGenerator extends AbstractGenerator {
     return new InputsAndSuccessFlag(true, sequences, variables);
   }
 
+  public OperationInputs getInputsFor(TypedOperation operation, int count) {
+    TypeTuple inputTypes = operation.getInputTypes();
+    OperationInputs inputs = new OperationInputs();
+    List<TypeInputs> inputsPerType = new ArrayList<>();
+
+    int combinations = 1;
+    for (int i = 1; i < inputTypes.size(); i++) {
+      TypeInputs typeInputs =
+          getRandomVariables(
+              componentManager.getSequencesForType(operation, i, false).toJDKList(),
+              inputTypes.get(i),
+              count);
+      combinations *= typeInputs.size();
+      inputsPerType.add(typeInputs);
+    }
+
+    if (inputTypes.isEmpty()) {
+      inputs.add(new InputsAndSuccessFlag(true, new ArrayList<>(), new ArrayList<>()));
+      return inputs;
+    }
+
+    int[] indexes = new int[inputTypes.size() - 1];
+    for (int i = 0; i < combinations; i++) {
+      List<Sequence> sequences = new ArrayList<>();
+      int totStatements = 0;
+      List<Integer> variables = new ArrayList<>();
+
+      for (int j = 0; j < inputsPerType.size(); j++) {
+        TypeInputs typeInputs = inputsPerType.get(j);
+        int index = indexes[j];
+        Variable randomVariable = typeInputs.getVar(index);
+        Sequence chosenSeq = typeInputs.getSeq(index);
+        variables.add(totStatements + randomVariable.index);
+        sequences.add(chosenSeq);
+        totStatements += chosenSeq.size();
+      }
+      increaseIndexes(indexes, inputsPerType);
+      inputs.add(new InputsAndSuccessFlag(true, sequences, variables));
+    }
+
+    return inputs;
+  }
+
+  private void increaseIndexes(int[] indexes, List<TypeInputs> inputsPerType) {
+    for (int i = 0; i < indexes.length; i++) {
+      if (indexes[i] < inputsPerType.get(i).size() - 1) {
+        indexes[i]++;
+        return;
+      }
+      indexes[i] = 0;
+    }
+  }
+
   // A pair of a variable and a sequence
   private static class VarAndSeq {
     final Variable var;
@@ -845,6 +900,18 @@ public class ForwardGenerator extends AbstractGenerator {
       this.var = var;
       this.seq = seq;
     }
+  }
+
+  private TypeInputs getRandomVariables(List<Sequence> candidates, Type inputType, int count) {
+    TypeInputs inputs = new TypeInputs();
+    int candidatesSize = candidates.size();
+    for (int i = 0; i < count && i < candidatesSize; i++) {
+      Sequence chosenSeq = candidates.get(Randomness.nextRandomInt(candidates.size()));
+      candidates.remove(chosenSeq);
+      Variable randomVariable = chosenSeq.randomVariableForTypeLastStatement(inputType, false);
+      inputs.add(randomVariable, chosenSeq);
+    }
+    return inputs;
   }
 
   /**

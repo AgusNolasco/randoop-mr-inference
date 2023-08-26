@@ -3,7 +3,6 @@ package metamorphicRelationsInference.validator;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.bag.Bag;
-import metamorphicRelationsInference.distance.Distance;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.AdditionalOptions;
@@ -29,6 +28,9 @@ public class Validator {
 
     for (MetamorphicRelation mr : mrs) {
       allMRsProcessed.add(mr);
+      if (mr.toString().contains("[S1] -> λ = push(Object) pop()")) {
+        System.out.println(mr);
+      }
       System.out.println("----------------------");
       System.out.println("To be evaluated: " + mr);
       Set<Bag> bagsWhereCheck =
@@ -80,18 +82,17 @@ public class Validator {
     boolean allFail = true;
     for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
       Variable var = pair.getFst();
-      Object result1, result2;
+      boolean isValid;
       try {
         executor.setup(mr, var);
-        result1 = executor.getLeftResult();
-        result2 = executor.getRightResult();
+        isValid = executor.checkProperty(10);
         allFail = false;
       } catch (Exception e) {
         continue;
       }
-      if (!Distance.strongEquals(result1, result2)) {
+      if (!isValid) {
         System.out.println("Counter example found for state: " + bag.getState());
-        mr.addCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
+        mr.addCounterExample(bag.getState(), executor.getSequences(), executor.getCounterExample());
         return false;
       }
     }
