@@ -205,7 +205,6 @@ public class Executor {
         leftResult = computeResult(leftSeq, leftSeqAndVar.getSnd());
         rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
       } catch (NonNormalExecutionException e) {
-        System.out.println(e.getMessage());
         continue;
       }
       allFail = false;

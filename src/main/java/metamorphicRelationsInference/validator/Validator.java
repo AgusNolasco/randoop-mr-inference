@@ -37,7 +37,7 @@ public class Validator {
         validMRs.add(mr);
       } else {
         if (!mr.hasCounterExamples()) {
-          System.out.println("All the executed sequences fail for this MR");
+          System.out.println("All the executions fail for a given trace");
         }
         System.out.println("MRs invalidated");
       }
