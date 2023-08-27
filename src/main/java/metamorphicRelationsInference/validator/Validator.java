@@ -83,6 +83,7 @@ public class Validator {
         executor.setup(mr, var);
         isValid = executor.checkProperty(25);
         if (executor.allFail()) {
+          System.out.println("MR failing in:\n" + var.sequence);
           return false;
         }
       } catch (Exception e) {
