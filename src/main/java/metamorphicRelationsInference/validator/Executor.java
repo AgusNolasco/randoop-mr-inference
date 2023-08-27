@@ -31,6 +31,7 @@ public class Executor {
   private List<Method> leftMethods, rightMethods;
   private Sequence leftSeq, rightSeq;
   private Pair<Object, Object> counterExample;
+  private boolean allFail;
 
   public Executor(AbstractGenerator explorer) {
     this.explorer = explorer;
@@ -100,11 +101,12 @@ public class Executor {
     return new Pair<>(leftSeq, rightSeq);
   }
 
-  private Object computeResult(Sequence sequence, Variable var) {
+  private Object computeResult(Sequence sequence, Variable var) throws NonNormalExecutionException {
     ExecutableSequence executableSequence = new ExecutableSequence(sequence);
     executableSequence.execute(new DummyVisitor(), new DummyCheckGenerator());
     if (!executableSequence.isNormalExecution()) {
-      throw new IllegalStateException("Unable to execute this sequence because throws exceptions");
+      throw new NonNormalExecutionException(
+          "Unable to execute this sequence because throws exceptions");
     }
     Object[] values =
         ExecutableSequence.getRuntimeValuesForVars(
@@ -187,6 +189,7 @@ public class Executor {
     int[] leftIndexes = new int[leftValues.size()];
     int[] rightIndexes = new int[rightValues.size()];
     int maxCombinations = maxCombinationsOf(leftValues, rightValues);
+    allFail = true;
     for (int i = 0; i < times && i < maxCombinations; i++) {
       List<InputsAndSuccessFlag> leftInputs = selectInputs(leftValues, leftIndexes);
       List<InputsAndSuccessFlag> rightInputs = selectInputs(rightValues, rightIndexes);
@@ -196,8 +199,16 @@ public class Executor {
           extendSequence(origVar, rightConstr, rightMethods, rightInputs);
       leftSeq = leftSeqAndVar.getFst();
       rightSeq = rightSeqAndVar.getFst();
-      Object leftResult = computeResult(leftSeq, leftSeqAndVar.getSnd());
-      Object rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
+      Object leftResult;
+      Object rightResult;
+      try {
+        leftResult = computeResult(leftSeq, leftSeqAndVar.getSnd());
+        rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
+      } catch (NonNormalExecutionException e) {
+        System.out.println(e.getMessage());
+        continue;
+      }
+      allFail = false;
       if (!Distance.strongEquals(leftResult, rightResult)) {
         counterExample = new Pair<>(leftResult, rightResult);
         return false;
@@ -241,5 +252,9 @@ public class Executor {
 
   public Pair<Object, Object> getCounterExample() {
     return counterExample;
+  }
+
+  public boolean allFail() {
+    return allFail;
   }
 }
