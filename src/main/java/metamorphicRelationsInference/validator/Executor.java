@@ -186,7 +186,8 @@ public class Executor {
     counterExample = null;
     int[] leftIndexes = new int[leftValues.size()];
     int[] rightIndexes = new int[rightValues.size()];
-    for (int i = 0; i < times; i++) {
+    int maxCombinations = maxCombinationsOf(leftValues, rightValues);
+    for (int i = 0; i < times && i < maxCombinations; i++) {
       List<InputsAndSuccessFlag> leftInputs = selectInputs(leftValues, leftIndexes);
       List<InputsAndSuccessFlag> rightInputs = selectInputs(rightValues, rightIndexes);
       Pair<Sequence, Variable> leftSeqAndVar =
@@ -203,6 +204,18 @@ public class Executor {
       }
     }
     return true;
+  }
+
+  private int maxCombinationsOf(
+      List<OperationInputs> leftValues, List<OperationInputs> rightValues) {
+    int comb1 = 1, comb2 = 1;
+    for (OperationInputs inputs : leftValues) {
+      comb1 *= inputs.size();
+    }
+    for (OperationInputs inputs : rightValues) {
+      comb2 *= inputs.size();
+    }
+    return Math.max(comb1, comb2);
   }
 
   private List<InputsAndSuccessFlag> selectInputs(List<OperationInputs> values, int[] indexes) {

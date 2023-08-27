@@ -28,9 +28,6 @@ public class Validator {
 
     for (MetamorphicRelation mr : mrs) {
       allMRsProcessed.add(mr);
-      if (mr.toString().contains("[S1] -> λ = push(Object) pop()")) {
-        System.out.println(mr);
-      }
       System.out.println("----------------------");
       System.out.println("To be evaluated: " + mr);
       Set<Bag> bagsWhereCheck =
@@ -85,7 +82,7 @@ public class Validator {
       boolean isValid;
       try {
         executor.setup(mr, var);
-        isValid = executor.checkProperty(10);
+        isValid = executor.checkProperty(25);
         allFail = false;
       } catch (Exception e) {
         continue;
