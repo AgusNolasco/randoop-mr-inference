@@ -844,7 +844,10 @@ public class ForwardGenerator extends AbstractGenerator {
     List<TypeInputs> inputsPerType = new ArrayList<>();
 
     int combinations = 1;
-    for (int i = 1; i < inputTypes.size(); i++) {
+
+    int start = operation.isMethodCall() ? 1 : 0;
+
+    for (int i = start; i < inputTypes.size(); i++) {
       TypeInputs typeInputs =
           getRandomVariables(
               componentManager.getSequencesForType(operation, i, false).toJDKList(),
@@ -859,7 +862,7 @@ public class ForwardGenerator extends AbstractGenerator {
       return inputs;
     }
 
-    int[] indexes = new int[inputTypes.size() - 1];
+    int[] indexes = new int[inputTypes.size() - start];
     for (int i = 0; i < combinations; i++) {
       List<Sequence> sequences = new ArrayList<>();
       int totStatements = 0;
