@@ -3,7 +3,6 @@ package metamorphicRelationsInference.validator;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.bag.Bag;
-import metamorphicRelationsInference.distance.Distance;
 import metamorphicRelationsInference.epa.EPAState;
 import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.AdditionalOptions;
@@ -38,7 +37,7 @@ public class Validator {
         validMRs.add(mr);
       } else {
         if (!mr.hasCounterExamples()) {
-          System.out.println("All the executed sequences fail for this MR");
+          System.out.println("All the executions fail for a given trace");
         }
         System.out.println("MRs invalidated");
       }
@@ -77,25 +76,26 @@ public class Validator {
 
   private boolean isValidInBag(MetamorphicRelation mr, Bag bag) {
     System.out.println("In: " + bag.toString());
-    boolean allFail = true;
     for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
       Variable var = pair.getFst();
-      Object result1, result2;
+      boolean isValid;
       try {
         executor.setup(mr, var);
-        result1 = executor.getLeftResult();
-        result2 = executor.getRightResult();
-        allFail = false;
+        isValid = executor.checkProperty(25);
+        if (executor.allFail()) {
+          System.out.println("MR failing in:\n" + var.sequence);
+          return false;
+        }
       } catch (Exception e) {
         continue;
       }
-      if (!Distance.strongEquals(result1, result2)) {
+      if (!isValid) {
         System.out.println("Counter example found for state: " + bag.getState());
-        mr.addCounterExample(bag.getState(), executor.getSequences(), new Pair<>(result1, result2));
+        mr.addCounterExample(bag.getState(), executor.getSequences(), executor.getCounterExample());
         return false;
       }
     }
-    return !allFail;
+    return true;
   }
 
   public Set<MetamorphicRelation> getAllMRsProcessed() {
