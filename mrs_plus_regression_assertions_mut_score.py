@@ -5,12 +5,13 @@ import os
 outputs_dir = 'output'
 
 subject_name  = sys.argv[1]
+seed = sys.argv[2]
 
 # Csv files
 regression_csv = f'{outputs_dir}/{subject_name}/regression-mutation/summary.csv'
 #random_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-RANDOM.csv'
-epa_only_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-INFERRED.csv' 
-epa_sat_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-REDUCED.csv'
+epa_only_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/{seed}/mutants/mutation-results-INFERRED.csv' 
+epa_sat_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/{seed}/mutants/mutation-results-REDUCED.csv'
 sbes_csv = ''
 
 df_regression = pd.read_csv(regression_csv)
