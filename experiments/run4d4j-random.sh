@@ -15,9 +15,7 @@ export SUBJECT_DIR=/home/investigador/nolasco/d4j-data/$(echo $subject_name | se
 export SUBJECT_NAME=$subject_name
 
 project_name=${subject_name%%_*}
-if [ $project_name = Codec ]; then
-	subject_cp="$SUBJECT_DIR/dist/*"
-elif [ $subject_name = Gson_9 ]; then
+if [ $subject_name = Gson_9 ]; then
 	subject_cp="$SUBJECT_DIR/gson/target/*"
 else
 	subject_cp="$SUBJECT_DIR/target/*"
