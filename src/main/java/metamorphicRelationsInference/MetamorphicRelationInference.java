@@ -41,7 +41,9 @@ public class MetamorphicRelationInference {
       sequences = SequenceReader.readSequences(subjectName, seed, options);
     } else {
       sequences = explorer.getRegressionSequences();
-      if (evosuiteTests != null && Files.exists(Paths.get(evosuiteTests))) {
+      if (evosuiteTests != null
+          && !evosuiteTests.isEmpty()
+          && Files.exists(Paths.get(evosuiteTests))) {
         List<ExecutableSequence> evoSuiteTests = EvoSuiteTestReader.readFromFile(evosuiteTests);
         sequences.addAll(evoSuiteTests);
         System.out.println(evoSuiteTests.size() + " Evo+EPA tests added successfully");
