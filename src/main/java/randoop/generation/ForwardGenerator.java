@@ -31,12 +31,7 @@ import randoop.sequence.Statement;
 import randoop.sequence.Value;
 import randoop.sequence.Variable;
 import randoop.test.DummyCheckGenerator;
-import randoop.types.ClassOrInterfaceType;
-import randoop.types.InstantiatedType;
-import randoop.types.JDKTypes;
-import randoop.types.JavaTypes;
-import randoop.types.Type;
-import randoop.types.TypeTuple;
+import randoop.types.*;
 import randoop.util.ListOfLists;
 import randoop.util.Log;
 import randoop.util.MultiMap;
@@ -906,6 +901,11 @@ public class ForwardGenerator extends AbstractGenerator {
   }
 
   private TypeInputs getRandomVariables(List<Sequence> candidates, Type inputType, int count) {
+    if (inputType instanceof TypeVariable) {
+      TypeVariable typeVariable = (TypeVariable) inputType;
+      ReferenceBound referenceBound = (ReferenceBound) typeVariable.getUpperTypeBound();
+      inputType = referenceBound.getBoundType();
+    }
     TypeInputs inputs = new TypeInputs();
     int candidatesSize = candidates.size();
     for (int i = 0; i < count && i < candidatesSize; i++) {
