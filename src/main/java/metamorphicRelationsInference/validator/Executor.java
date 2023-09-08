@@ -15,6 +15,7 @@ import org.plumelib.util.CollectionsPlume;
 import randoop.DummyVisitor;
 import randoop.generation.AbstractGenerator;
 import randoop.generation.InputsAndSuccessFlag;
+import randoop.operation.TypedClassOperation;
 import randoop.operation.TypedOperation;
 import randoop.sequence.ExecutableSequence;
 import randoop.sequence.Sequence;
@@ -83,10 +84,12 @@ public class Executor {
     int inputsIndex = 0;
     int varIndex = var.index;
     if (constructor != null) {
-      Pair<Sequence, Integer> pair1 =
+      Pair<Pair<Sequence, Integer>, Substitution> pair1 =
           appendConstructor(constructor, sequence, inputs.get(inputsIndex++));
-      sequence = pair1.getFst();
-      varIndex = pair1.getSnd();
+      sequence = pair1.getFst().getFst();
+      varIndex = pair1.getFst().getSnd();
+      ;
+      s = pair1.getSnd();
     }
 
     for (Method m : methods) {
@@ -114,9 +117,19 @@ public class Executor {
     return values[0];
   }
 
-  private Pair<Sequence, Integer> appendConstructor(
+  private Pair<Pair<Sequence, Integer>, Substitution> appendConstructor(
       Constructor<?> constructor, Sequence sequence, InputsAndSuccessFlag input) {
-    TypedOperation operation = TypedOperation.forConstructor(constructor);
+    TypedClassOperation operation = TypedOperation.forConstructor(constructor);
+    Substitution s = null;
+    if (operation.getDeclaringType() instanceof GenericClassType) {
+      GenericClassType genericClassType = (GenericClassType) operation.getDeclaringType();
+      List<ReferenceType> referenceTypes = new ArrayList<>();
+      for (TypeVariable e : genericClassType.getTypeParameters()) {
+        referenceTypes.add(ReferenceType.forClass(Object.class));
+      }
+      s = new Substitution(genericClassType.getTypeParameters(), referenceTypes);
+      operation = operation.substitute(s);
+    }
     Sequence auxSeq = null;
     boolean isNormalExec = false;
     for (int i = 0; i < 1000 && !isNormalExec; i++) {
@@ -136,7 +149,7 @@ public class Executor {
     int newObjVarIndex = sequence.getLastVariable().index;
     TypedOperation op = TypedOperation.forMethod(getClassMethod());
     sequence = sequence.extend(op, sequence.getVariable(newObjVarIndex));
-    return new Pair<>(sequence, newObjVarIndex);
+    return new Pair<>(new Pair<>(sequence, newObjVarIndex), s);
   }
 
   private Sequence appendMethod(
