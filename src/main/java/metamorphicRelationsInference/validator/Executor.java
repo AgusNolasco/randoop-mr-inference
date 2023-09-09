@@ -204,20 +204,20 @@ public class Executor {
     int maxCombinations = maxCombinationsOf(leftValues, rightValues);
     allFail = true;
     for (int i = 0; i < times && i < maxCombinations; i++) {
-      List<InputsAndSuccessFlag> leftInputs = selectInputs(leftValues, leftIndexes);
-      List<InputsAndSuccessFlag> rightInputs = selectInputs(rightValues, rightIndexes);
-      Pair<Sequence, Variable> leftSeqAndVar =
-          extendSequence(origVar, leftConstr, leftMethods, leftInputs);
-      Pair<Sequence, Variable> rightSeqAndVar =
-          extendSequence(origVar, rightConstr, rightMethods, rightInputs);
-      leftSeq = leftSeqAndVar.getFst();
-      rightSeq = rightSeqAndVar.getFst();
       Object leftResult;
       Object rightResult;
       try {
+        List<InputsAndSuccessFlag> leftInputs = selectInputs(leftValues, leftIndexes);
+        List<InputsAndSuccessFlag> rightInputs = selectInputs(rightValues, rightIndexes);
+        Pair<Sequence, Variable> leftSeqAndVar =
+            extendSequence(origVar, leftConstr, leftMethods, leftInputs);
+        Pair<Sequence, Variable> rightSeqAndVar =
+            extendSequence(origVar, rightConstr, rightMethods, rightInputs);
+        leftSeq = leftSeqAndVar.getFst();
+        rightSeq = rightSeqAndVar.getFst();
         leftResult = computeResult(leftSeq, leftSeqAndVar.getSnd());
         rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
-      } catch (NonNormalExecutionException e) {
+      } catch (Exception e) {
         continue;
       }
       allFail = false;

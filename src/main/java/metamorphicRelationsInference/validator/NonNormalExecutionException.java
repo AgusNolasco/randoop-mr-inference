@@ -1,6 +1,6 @@
 package metamorphicRelationsInference.validator;
 
-public class NonNormalExecutionException extends Throwable {
+public class NonNormalExecutionException extends Exception {
 
   static final long serialVersionUID = 0;
 
