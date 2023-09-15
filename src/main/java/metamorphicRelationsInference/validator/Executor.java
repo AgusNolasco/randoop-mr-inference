@@ -33,6 +33,7 @@ public class Executor {
   private Sequence leftSeq, rightSeq;
   private Pair<Object, Object> counterExample;
   private boolean allFail;
+  private List<Exception> exceptions;
 
   public Executor(AbstractGenerator explorer) {
     this.explorer = explorer;
@@ -51,6 +52,7 @@ public class Executor {
     rightMethods = mr.getRightMethods();
     leftValues = getListOfArgs(leftConstr, leftMethods, sampleSize);
     rightValues = getListOfArgs(rightConstr, rightMethods, sampleSize);
+    exceptions = new ArrayList<>();
   }
 
   private List<OperationInputs> getListOfArgs(
@@ -108,6 +110,7 @@ public class Executor {
     ExecutableSequence executableSequence = new ExecutableSequence(sequence);
     executableSequence.execute(new DummyVisitor(), new DummyCheckGenerator());
     if (!executableSequence.isNormalExecution()) {
+      exceptions.addAll(executableSequence.getExceptions());
       throw new NonNormalExecutionException(
           "Unable to execute this sequence because throws exceptions");
     }
@@ -268,5 +271,9 @@ public class Executor {
 
   public boolean allFail() {
     return allFail;
+  }
+
+  public List<Exception> getExceptions() {
+    return exceptions;
   }
 }

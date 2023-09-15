@@ -84,6 +84,11 @@ public class Validator {
         isValid = executor.checkProperty(25);
         if (executor.allFail()) {
           System.out.println("MR failing in:\n" + var.sequence);
+          System.out.println(
+              "The exceptions were: \n"
+                  + executor.getExceptions().stream()
+                      .map(Objects::toString)
+                      .collect(Collectors.joining("\n")));
           return false;
         }
       } catch (Exception e) {

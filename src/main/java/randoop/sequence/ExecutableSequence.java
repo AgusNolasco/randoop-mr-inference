@@ -595,6 +595,17 @@ public class ExecutableSequence {
     return -1;
   }
 
+  public List<Exception> getExceptions() {
+    List<Exception> exceptions = new ArrayList<>();
+    for (int i = 0; i < this.sequence.size(); i++) {
+      if ((getResult(i) instanceof ExceptionalExecution)) {
+        ExceptionalExecution e = (ExceptionalExecution) getResult(i);
+        exceptions.add((Exception) e.getException());
+      }
+    }
+    return exceptions;
+  }
+
   /**
    * Return true if an exception of the given class (or a class compatible with it) was thrown
    * during this sequence's execution
