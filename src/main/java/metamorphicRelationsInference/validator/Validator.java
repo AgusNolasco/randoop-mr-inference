@@ -87,7 +87,7 @@ public class Validator {
           System.out.println(
               "The exceptions were: \n"
                   + executor.getExceptions().stream()
-                      .map(Objects::toString)
+                      .map(Object::toString)
                       .collect(Collectors.joining("\n")));
           return false;
         }

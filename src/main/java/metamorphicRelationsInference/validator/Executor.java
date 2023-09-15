@@ -221,6 +221,7 @@ public class Executor {
         leftResult = computeResult(leftSeq, leftSeqAndVar.getSnd());
         rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
       } catch (Exception e) {
+        exceptions.add(e);
         continue;
       }
       allFail = false;
