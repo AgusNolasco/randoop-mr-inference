@@ -19,6 +19,7 @@ for subject in os.listdir(f'experiments/{subject_set}-subjects/'):
         print(subject)
         with open(path_to_output_dir + 'log.txt') as f:
             lines = f.readlines()
+            print(len(lines))
             clazz = [line for line in lines if 'Class: ' in line][0].split(': ')[1].strip()
             accept_percentage = float([line for line in lines if '% of valid MRs: ' in line][0].split(': ')[1])
             reject_percentage = float([line for line in lines if '% of invalid MRs: ' in line][0].split(': ')[1])
