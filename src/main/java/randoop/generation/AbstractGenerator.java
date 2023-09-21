@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import metamorphicRelationsInference.util.OperationInputs;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.options.Option;
 import org.plumelib.options.OptionGroup;
@@ -253,6 +254,8 @@ public abstract class AbstractGenerator {
   public abstract @Nullable ExecutableSequence step();
 
   public abstract InputsAndSuccessFlag selectInputs(TypedOperation operation, boolean omitReceiver);
+
+  public abstract OperationInputs getInputsFor(TypedOperation operation, int count);
 
   /**
    * Returns the count of attempts to generate a sequence so far.

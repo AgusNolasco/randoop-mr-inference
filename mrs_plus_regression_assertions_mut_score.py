@@ -5,12 +5,13 @@ import os
 outputs_dir = 'output'
 
 subject_name  = sys.argv[1]
+seed = sys.argv[2]
 
 # Csv files
 regression_csv = f'{outputs_dir}/{subject_name}/regression-mutation/summary.csv'
 #random_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-RANDOM.csv'
-epa_only_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-INFERRED.csv' 
-epa_sat_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/mutants/mutation-results-REDUCED.csv'
+epa_only_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/{seed}/mutants/mutation-results-INFERRED.csv' 
+epa_sat_csv = f'{outputs_dir}/{subject_name}/allow_epa_loops_true/EPA_AWARE/1000/{seed}/mutants/mutation-results-REDUCED.csv'
 sbes_csv = ''
 
 df_regression = pd.read_csv(regression_csv)
@@ -111,7 +112,10 @@ for column in df_epa_sat:
 		continue
 	# Check if sbes kills it
 	killed = 0
-	with open(f'output/{subject_name}/sbes-mutation/{column}/SBES-mutant-results.txt') as f:
+	path_to_sbes_mut_score = f'output/{subject_name}/sbes-mutation/{column}/SBES-mutant-results.txt'
+	if not os.path.isfile(path_to_sbes_mut_score):
+		continue
+	with open(path_to_sbes_mut_score) as f:
 		lines = [line.rstrip() for line in f]
 		result = lines[0].split(' : ')[1]
 		if result == '1':

@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import metamorphicRelationsInference.util.OperationInputs;
+import metamorphicRelationsInference.util.TypeInputs;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.plumelib.util.CollectionsPlume;
 import org.plumelib.util.StringsPlume;
@@ -29,12 +31,7 @@ import randoop.sequence.Statement;
 import randoop.sequence.Value;
 import randoop.sequence.Variable;
 import randoop.test.DummyCheckGenerator;
-import randoop.types.ClassOrInterfaceType;
-import randoop.types.InstantiatedType;
-import randoop.types.JDKTypes;
-import randoop.types.JavaTypes;
-import randoop.types.Type;
-import randoop.types.TypeTuple;
+import randoop.types.*;
 import randoop.util.ListOfLists;
 import randoop.util.Log;
 import randoop.util.MultiMap;
@@ -720,6 +717,7 @@ public class ForwardGenerator extends AbstractGenerator {
       // The user may have requested that we use null values as inputs with some given frequency.
       // If this is the case, then use null instead with some probability.
       if (!isReceiver
+          && !GenInputsAbstract.forbid_null
           && GenInputsAbstract.null_ratio != 0
           && Randomness.weightedCoinFlip(GenInputsAbstract.null_ratio)) {
         Log.logPrintf("Using null as input.%n");
@@ -835,6 +833,62 @@ public class ForwardGenerator extends AbstractGenerator {
     return new InputsAndSuccessFlag(true, sequences, variables);
   }
 
+  public OperationInputs getInputsFor(TypedOperation operation, int count) {
+    TypeTuple inputTypes = operation.getInputTypes();
+    OperationInputs inputs = new OperationInputs();
+    List<TypeInputs> inputsPerType = new ArrayList<>();
+
+    int combinations = 1;
+
+    int start = operation.isMethodCall() ? 1 : 0;
+
+    for (int i = start; i < inputTypes.size(); i++) {
+      TypeInputs typeInputs =
+          getRandomVariables(
+              componentManager.getSequencesForType(operation, i, false).toJDKList(),
+              inputTypes.get(i),
+              count);
+      combinations *= typeInputs.size();
+      inputsPerType.add(typeInputs);
+    }
+
+    if (inputTypes.isEmpty()) {
+      inputs.add(new InputsAndSuccessFlag(true, new ArrayList<>(), new ArrayList<>()));
+      return inputs;
+    }
+
+    int[] indexes = new int[inputTypes.size() - start];
+    for (int i = 0; i < combinations; i++) {
+      List<Sequence> sequences = new ArrayList<>();
+      int totStatements = 0;
+      List<Integer> variables = new ArrayList<>();
+
+      for (int j = 0; j < inputsPerType.size(); j++) {
+        TypeInputs typeInputs = inputsPerType.get(j);
+        int index = indexes[j];
+        Variable randomVariable = typeInputs.getVar(index);
+        Sequence chosenSeq = typeInputs.getSeq(index);
+        variables.add(totStatements + randomVariable.index);
+        sequences.add(chosenSeq);
+        totStatements += chosenSeq.size();
+      }
+      increaseIndexes(indexes, inputsPerType);
+      inputs.add(new InputsAndSuccessFlag(true, sequences, variables));
+    }
+
+    return inputs;
+  }
+
+  private void increaseIndexes(int[] indexes, List<TypeInputs> inputsPerType) {
+    for (int i = 0; i < indexes.length; i++) {
+      if (indexes[i] < inputsPerType.get(i).size() - 1) {
+        indexes[i]++;
+        return;
+      }
+      indexes[i] = 0;
+    }
+  }
+
   // A pair of a variable and a sequence
   private static class VarAndSeq {
     final Variable var;
@@ -844,6 +898,23 @@ public class ForwardGenerator extends AbstractGenerator {
       this.var = var;
       this.seq = seq;
     }
+  }
+
+  private TypeInputs getRandomVariables(List<Sequence> candidates, Type inputType, int count) {
+    if (inputType instanceof TypeVariable) {
+      TypeVariable typeVariable = (TypeVariable) inputType;
+      ReferenceBound referenceBound = (ReferenceBound) typeVariable.getUpperTypeBound();
+      inputType = referenceBound.getBoundType();
+    }
+    TypeInputs inputs = new TypeInputs();
+    int candidatesSize = candidates.size();
+    for (int i = 0; i < count && i < candidatesSize; i++) {
+      Sequence chosenSeq = candidates.get(Randomness.nextRandomInt(candidates.size()));
+      candidates.remove(chosenSeq);
+      Variable randomVariable = chosenSeq.randomVariableForTypeLastStatement(inputType, false);
+      inputs.add(randomVariable, chosenSeq);
+    }
+    return inputs;
   }
 
   /**

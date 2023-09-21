@@ -16,10 +16,12 @@ public class MRsToAlloyPred {
   private final Class<?> clazz;
   private final String DELIMITER = " # ";
   private final String subject_name;
+  private final int seed;
 
-  public MRsToAlloyPred(String subject_name, Class<?> clazz) {
+  public MRsToAlloyPred(String subject_name, Class<?> clazz, int seed) {
     this.subject_name = subject_name;
     this.clazz = clazz;
+    this.seed = seed;
   }
 
   public void save(List<MetamorphicRelation> mrs, AdditionalOptions options) {
@@ -40,6 +42,8 @@ public class MRsToAlloyPred {
             + options.generationStrategy()
             + "/"
             + options.mrsToFuzz()
+            + "/"
+            + seed
             + "/";
     if (options.isRandom()) {
       dirName += "random/";

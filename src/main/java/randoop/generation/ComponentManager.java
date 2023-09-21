@@ -12,10 +12,7 @@ import randoop.sequence.ClassLiterals;
 import randoop.sequence.PackageLiterals;
 import randoop.sequence.Sequence;
 import randoop.sequence.SequenceCollection;
-import randoop.types.ClassOrInterfaceType;
-import randoop.types.JavaTypes;
-import randoop.types.PrimitiveType;
-import randoop.types.Type;
+import randoop.types.*;
 import randoop.util.ListOfLists;
 import randoop.util.Log;
 import randoop.util.SimpleList;
@@ -180,6 +177,12 @@ public class ComponentManager {
   SimpleList<Sequence> getSequencesForType(TypedOperation operation, int i, boolean onlyReceivers) {
 
     Type neededType = operation.getInputTypes().get(i);
+
+    if (neededType instanceof TypeVariable) {
+      TypeVariable typeVariable = (TypeVariable) neededType;
+      ReferenceBound referenceBound = (ReferenceBound) typeVariable.getUpperTypeBound();
+      neededType = referenceBound.getBoundType();
+    }
 
     if (onlyReceivers && neededType.isNonreceiverType()) {
       throw new RandoopBug(

@@ -19,11 +19,13 @@ public class InferredMRsWriter {
   private static final String[] HEADERS = {"Metamorphic Relation", "Survives EPA"};
   private final String OUTPUTS_DIR = "output";
   private final String subject_name;
+  private final int seed;
 
   /** Constructor */
-  public InferredMRsWriter(String subject_name) {
+  public InferredMRsWriter(String subject_name, int seed) {
     Objects.requireNonNull(subject_name);
     this.subject_name = subject_name;
+    this.seed = seed;
   }
 
   public void writeAllMRsProcessed(
@@ -45,6 +47,8 @@ public class InferredMRsWriter {
             + options.generationStrategy()
             + "/"
             + options.mrsToFuzz()
+            + "/"
+            + seed
             + "/";
     if (options.isRandom()) {
       dirName += "random/";
@@ -94,6 +98,8 @@ public class InferredMRsWriter {
             + options.generationStrategy()
             + "/"
             + options.mrsToFuzz()
+            + "/"
+            + seed
             + "/";
     if (options.isRandom()) {
       dirName += "random/";

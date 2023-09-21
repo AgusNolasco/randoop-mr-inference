@@ -18,9 +18,7 @@ import randoop.main.RandoopBug;
 import randoop.operation.OperationParseException;
 import randoop.operation.OperationParser;
 import randoop.operation.TypedOperation;
-import randoop.types.JavaTypes;
-import randoop.types.NonParameterizedType;
-import randoop.types.Type;
+import randoop.types.*;
 import randoop.util.ListOfLists;
 import randoop.util.Log;
 import randoop.util.OneMoreElementList;
@@ -796,6 +794,10 @@ public final class Sequence {
         throw new IllegalArgumentException(msg);
       }
       Type inputType = operation.getInputTypes().get(i);
+      if (inputType instanceof TypeVariable) {
+        ReferenceBound bound = (ReferenceBound) ((TypeVariable) inputType).getUpperTypeBound();
+        inputType = bound.getBoundType();
+      }
       if (!inputType.isAssignableFrom(newRefConstraint)) {
         String msg =
             String.format(

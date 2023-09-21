@@ -1,5 +1,7 @@
 package metamorphicRelationsInference;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import metamorphicRelationsInference.alloy.MRsToAlloyPred;
@@ -10,7 +12,10 @@ import metamorphicRelationsInference.metamorphicRelation.MetamorphicRelation;
 import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
+import metamorphicRelationsInference.util.reader.EvoSuiteTestReader;
+import metamorphicRelationsInference.util.reader.SequenceReader;
 import metamorphicRelationsInference.util.writer.InferredMRsWriter;
+import metamorphicRelationsInference.util.writer.SequenceWriter;
 import metamorphicRelationsInference.validator.Validator;
 import randoop.generation.AbstractGenerator;
 import randoop.sequence.ExecutableSequence;
@@ -19,26 +24,36 @@ public class MetamorphicRelationInference {
 
   private static List<ExecutableSequence> sequences;
   private static final String pathToOutput = System.getenv("MRS_DIR");
-  private static final String subject_name = System.getenv("SUBJECT_NAME");
+  private static final String subjectName = System.getenv("SUBJECT_NAME");
+  private static final String evosuiteTests = System.getenv("EVOSUITE_TESTS");
 
   public static void main(
-      Class<?> cut,
-      List<ExecutableSequence> seq,
-      AbstractGenerator explorer,
-      AdditionalOptions options) {
+      Class<?> cut, AbstractGenerator explorer, AdditionalOptions options, int seed) {
 
     final String mrsToEvalFileName;
-    /*if (options.isRunOverFuzzedMRs()) {
-      // Use this for precision and recall computation
+    if (options.isRunOverFuzzedMRs()) {
       mrsToEvalFileName = "fuzzed-mrs.csv";
-    } else if (options.isRunOverMutant()) {
-      mrsToEvalFileName = "formatted-mrs.csv";
-    } else { */
-    mrsToEvalFileName = "candidates.csv";
-    // }
+    } else {
+      mrsToEvalFileName = "candidates.csv";
+    }
+
+    if (options.isRunOverMutant()) {
+      sequences = SequenceReader.readSequences(subjectName, seed, options);
+    } else {
+      sequences = explorer.getRegressionSequences();
+      if (evosuiteTests != null
+          && !evosuiteTests.isEmpty()
+          && Files.exists(Paths.get(evosuiteTests))) {
+        List<ExecutableSequence> evoSuiteTests = EvoSuiteTestReader.readFromFile(evosuiteTests);
+        sequences.addAll(evoSuiteTests);
+        System.out.println(evoSuiteTests.size() + " Evo+EPA tests added successfully");
+      }
+    }
 
     sequences =
-        seq.stream().filter(ExecutableSequence::isNormalExecution).collect(Collectors.toList());
+        sequences.stream()
+            .filter(ExecutableSequence::isNormalExecution)
+            .collect(Collectors.toList());
 
     Objects.requireNonNull(cut);
     Objects.requireNonNull(sequences);
@@ -49,7 +64,7 @@ public class MetamorphicRelationInference {
             "/",
             System.getenv("EPA_INFERENCE_DIR"),
             "output",
-            subject_name,
+            subjectName,
             "enabled-methods-per-state.txt");
     Set<EPAState> states =
         EnabledMethodsReader.readEnabledMethodsPerState(cut, pathToEnabledMethodsPerState);
@@ -57,7 +72,7 @@ public class MetamorphicRelationInference {
     boolean isEpaBroken = false;
     Map<EPAState, Bag> bags = null;
     try {
-      bags = builder.createBags(sequences);
+      bags = builder.createBags(sequences, options.isRunOverMutant());
     } catch (Exception e) {
       System.out.println("The EPA is broken");
       if (!options.isRunOverMutant()) {
@@ -71,10 +86,11 @@ public class MetamorphicRelationInference {
         String.join(
             "/",
             pathToOutput,
-            subject_name,
+            subjectName,
             "allow_epa_loops_" + options.isEPALoopsAllowed(),
             options.generationStrategy().toString(),
-            String.valueOf(options.mrsToFuzz()));
+            String.valueOf(options.mrsToFuzz()),
+            String.valueOf(seed));
     if (options.isRandom()) {
       pathToMRs += "/random";
     }
@@ -125,12 +141,17 @@ public class MetamorphicRelationInference {
     }
 
     if (!options.isRunOverMutant()) {
-      InferredMRsWriter writer = new InferredMRsWriter(subject_name);
+      InferredMRsWriter writer = new InferredMRsWriter(subjectName, seed);
       writer.writeAllMRsProcessed(validator.getAllMRsProcessed(), bags.keySet(), options);
       writer.writeAllMRsProcessedFormatted(validMRs, options);
 
-      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subject_name, cut);
+      MRsToAlloyPred alloyPred = new MRsToAlloyPred(subjectName, cut, seed);
       alloyPred.save(validMRs, options);
+    }
+
+    if (!options.isRunOverMutant()) {
+      SequenceWriter sequenceWriter = new SequenceWriter(subjectName, seed);
+      sequenceWriter.saveSequences(sequences, options);
     }
   }
 }

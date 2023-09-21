@@ -41,6 +41,9 @@ public class ReferenceArgument extends TypeArgument {
     if (this == obj) {
       return true;
     }
+    if (obj instanceof WildcardArgument) {
+      return true;
+    }
     if (!(obj instanceof ReferenceArgument)) {
       return false;
     }
