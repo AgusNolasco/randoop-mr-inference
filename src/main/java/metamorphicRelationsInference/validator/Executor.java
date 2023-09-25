@@ -39,9 +39,10 @@ public class Executor {
     this.explorer = explorer;
   }
 
-  public void setup(MetamorphicRelation mr, Variable var) {
+  public boolean setup(MetamorphicRelation mr, Variable var) {
     if (!getObjectFromVar(var).equals(getObjectFromVar(var))) {
-      throw new RuntimeException("The object to be compared must be the same");
+      System.out.println("The object to be compared must be the same");
+      return false;
     }
 
     int sampleSize = 5;
@@ -53,6 +54,7 @@ public class Executor {
     leftValues = getListOfArgs(leftConstr, leftMethods, sampleSize);
     rightValues = getListOfArgs(rightConstr, rightMethods, sampleSize);
     exceptions = new ArrayList<>();
+    return true;
   }
 
   private List<OperationInputs> getListOfArgs(

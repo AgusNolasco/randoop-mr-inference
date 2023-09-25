@@ -76,11 +76,16 @@ public class Validator {
 
   private boolean isValidInBag(MetamorphicRelation mr, Bag bag) {
     System.out.println("In: " + bag.toString());
+    boolean allSetUpsFail = true;
     for (Pair<Variable, Integer> pair : bag.getVariablesAndIndexes()) {
       Variable var = pair.getFst();
       boolean isValid;
       try {
-        executor.setup(mr, var);
+        boolean setUpFails = !executor.setup(mr, var);
+        allSetUpsFail &= setUpFails;
+        if (setUpFails) {
+          continue;
+        }
         isValid = executor.checkProperty(25);
         if (executor.allFail()) {
           System.out.println("MR failing in:\n" + var.sequence);
@@ -100,7 +105,7 @@ public class Validator {
         return false;
       }
     }
-    return true;
+    return !allSetUpsFail;
   }
 
   public Set<MetamorphicRelation> getAllMRsProcessed() {
