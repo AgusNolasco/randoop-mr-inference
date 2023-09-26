@@ -39,13 +39,12 @@ public class Executor {
     this.explorer = explorer;
   }
 
-  public boolean setup(MetamorphicRelation mr, Variable var) {
+  public boolean setup(MetamorphicRelation mr, Variable var, int sampleSize) {
     if (!getObjectFromVar(var).equals(getObjectFromVar(var))) {
       System.out.println("The object to be compared must be the same");
       return false;
     }
 
-    int sampleSize = 5;
     origVar = var;
     leftConstr = mr.getLeftConstructor();
     rightConstr = mr.getRightConstructor();
@@ -92,7 +91,6 @@ public class Executor {
           appendConstructor(constructor, sequence, inputs.get(inputsIndex++));
       sequence = pair1.getFst().getFst();
       varIndex = pair1.getFst().getSnd();
-      ;
       s = pair1.getSnd();
     }
 

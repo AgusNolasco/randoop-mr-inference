@@ -81,7 +81,7 @@ public class Validator {
       Variable var = pair.getFst();
       boolean isValid;
       try {
-        boolean setUpFails = !executor.setup(mr, var);
+        boolean setUpFails = !executor.setup(mr, var, 5);
         allSetUpsFail &= setUpFails;
         if (setUpFails) {
           continue;
