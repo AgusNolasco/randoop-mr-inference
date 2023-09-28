@@ -42,7 +42,6 @@ public class InputsAndSuccessFlag {
 
   public String toString() {
     return sequences.stream().map(Sequence::toString).collect(Collectors.joining("\n"))
-        + "\n"
         + indices.toString();
   }
 }
