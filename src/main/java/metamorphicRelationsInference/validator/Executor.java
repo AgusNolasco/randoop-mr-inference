@@ -209,9 +209,11 @@ public class Executor {
     for (int i = 0; i < times && i < maxCombinations; i++) {
       Object leftResult;
       Object rightResult;
+      List<InputsAndSuccessFlag> leftInputs = null;
+      List<InputsAndSuccessFlag> rightInputs = null;
       try {
-        List<InputsAndSuccessFlag> leftInputs = selectInputs(leftValues, leftIndexes);
-        List<InputsAndSuccessFlag> rightInputs = selectInputs(rightValues, rightIndexes);
+        leftInputs = selectInputs(leftValues, leftIndexes);
+        rightInputs = selectInputs(rightValues, rightIndexes);
         Pair<Sequence, Variable> leftSeqAndVar =
             extendSequence(origVar, leftConstr, leftMethods, leftInputs);
         Pair<Sequence, Variable> rightSeqAndVar =
@@ -222,6 +224,11 @@ public class Executor {
         rightResult = computeResult(rightSeq, rightSeqAndVar.getSnd());
       } catch (Exception e) {
         exceptions.add(e);
+        if (leftInputs != null && rightInputs != null) {
+          System.out.println("Failing with: ");
+          System.out.println("on left  side: " + leftInputs);
+          System.out.println("on right side: " + rightInputs);
+        }
         continue;
       }
       allFail = false;
