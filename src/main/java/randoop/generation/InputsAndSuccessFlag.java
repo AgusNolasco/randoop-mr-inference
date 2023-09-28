@@ -1,6 +1,7 @@
 package randoop.generation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import randoop.sequence.Sequence;
 
 /**
@@ -37,5 +38,11 @@ public class InputsAndSuccessFlag {
     this.success = success;
     this.sequences = sequences;
     this.indices = indices;
+  }
+
+  public String toString() {
+    return sequences.stream().map(Sequence::toString).collect(Collectors.joining("\n"))
+        + "\n"
+        + indices.toString();
   }
 }
