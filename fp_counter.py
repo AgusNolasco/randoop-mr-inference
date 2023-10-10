@@ -31,10 +31,11 @@ with open(f2) as file:
         lines2.add(line.split(' # ')[0])
 
 lines1 = set(split_mrs(lines1))
-lines2 = (split_mrs(lines2))
+lines2 = set(split_mrs(lines2))
+
 
 print('\nFalse positive properties: \n')
-diff = lines1.symmetric_difference(lines2)
+#diff = lines1.symmetric_difference(lines2)
+diff = set(lines2) - set(lines1)
 print(*diff, sep='\n')
-
 print(f'\nCount: {len(diff)}')
