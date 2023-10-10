@@ -13,7 +13,6 @@ import metamorphicRelationsInference.util.AdditionalOptions;
 import metamorphicRelationsInference.util.reader.CandidatesReader;
 import metamorphicRelationsInference.util.reader.EnabledMethodsReader;
 import metamorphicRelationsInference.util.reader.EvoSuiteTestReader;
-import metamorphicRelationsInference.util.reader.SequenceReader;
 import metamorphicRelationsInference.util.writer.InferredMRsWriter;
 import metamorphicRelationsInference.util.writer.SequenceWriter;
 import metamorphicRelationsInference.validator.Validator;
@@ -37,18 +36,18 @@ public class MetamorphicRelationInference {
       mrsToEvalFileName = "candidates.csv";
     }
 
-    if (options.isRunOverMutant()) {
-      sequences = SequenceReader.readSequences(subjectName, seed, options);
-    } else {
-      sequences = explorer.getRegressionSequences();
-      if (evosuiteTests != null
-          && !evosuiteTests.isEmpty()
-          && Files.exists(Paths.get(evosuiteTests))) {
-        List<ExecutableSequence> evoSuiteTests = EvoSuiteTestReader.readFromFile(evosuiteTests);
-        sequences.addAll(evoSuiteTests);
-        System.out.println(evoSuiteTests.size() + " Evo+EPA tests added successfully");
-      }
+    // if (options.isRunOverMutant()) {
+    //   sequences = SequenceReader.readSequences(subjectName, seed, options);
+    // } else {
+    sequences = explorer.getRegressionSequences();
+    if (evosuiteTests != null
+        && !evosuiteTests.isEmpty()
+        && Files.exists(Paths.get(evosuiteTests))) {
+      List<ExecutableSequence> evoSuiteTests = EvoSuiteTestReader.readFromFile(evosuiteTests);
+      sequences.addAll(evoSuiteTests);
+      System.out.println(evoSuiteTests.size() + " Evo+EPA tests added successfully");
     }
+    // }
 
     sequences =
         sequences.stream()

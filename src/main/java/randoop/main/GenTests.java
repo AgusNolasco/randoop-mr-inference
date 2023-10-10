@@ -480,27 +480,26 @@ public class GenTests extends GenInputsAbstract {
     }
 
     // Generate tests
-    if (!additionalOptions.isRunOverMutant()) {
-      try {
-        explorer.createAndClassifySequences();
-      } catch (SequenceExceptionError e) {
-        printSequenceExceptionError(explorer, e);
-        System.exit(1);
-      } catch (RandoopInstantiationError e) {
-        throw new RandoopBug("Error instantiating operation " + e.getOpName(), e);
-      } catch (RandoopGenerationError e) {
-        throw new RandoopBug(
-            "Error in generation with operation " + e.getInstantiatedOperation(), e);
-      } catch (SequenceExecutionException e) {
-        throw new RandoopBug("Error executing generated sequence", e);
-      } catch (RandoopLoggingError e) {
-        throw new RandoopBug("Logging error", e);
-      } catch (Throwable e) {
-        System.out.printf(
-            "createAndClassifySequences threw an exception%n%s%n", UtilPlume.stackTraceToString(e));
-        throw e;
-      }
+    // if (!additionalOptions.isRunOverMutant()) {
+    try {
+      explorer.createAndClassifySequences();
+    } catch (SequenceExceptionError e) {
+      printSequenceExceptionError(explorer, e);
+      System.exit(1);
+    } catch (RandoopInstantiationError e) {
+      throw new RandoopBug("Error instantiating operation " + e.getOpName(), e);
+    } catch (RandoopGenerationError e) {
+      throw new RandoopBug("Error in generation with operation " + e.getInstantiatedOperation(), e);
+    } catch (SequenceExecutionException e) {
+      throw new RandoopBug("Error executing generated sequence", e);
+    } catch (RandoopLoggingError e) {
+      throw new RandoopBug("Logging error", e);
+    } catch (Throwable e) {
+      System.out.printf(
+          "createAndClassifySequences threw an exception%n%s%n", UtilPlume.stackTraceToString(e));
+      throw e;
     }
+    // }
 
     // post generation
     if (GenInputsAbstract.dont_output_tests) {
@@ -1324,10 +1323,14 @@ public class GenTests extends GenInputsAbstract {
     FileSystem fileSystem = fileSystemCache.get(directoryURI);
     if (fileSystem == null) {
       try {
+        // FIXME: Remove this Hardcoded URI, is only for debugging
+        directoryURI =
+            new URI(
+                "jar:file:/Users/agustinnolasco/Documents/university/MFIS/randoop-mr-inference/build/libs/randoop-all-4.3.1.jar!/specifications/jdk/");
         fileSystem =
             FileSystems.newFileSystem(directoryURI, Collections.<String, Object>emptyMap());
         fileSystemCache.put(directoryURI, fileSystem);
-      } catch (IOException e) {
+      } catch (IOException | URISyntaxException e) {
         throw new RandoopBug("Error locating directory " + resourceDirectory, e);
       }
     }
